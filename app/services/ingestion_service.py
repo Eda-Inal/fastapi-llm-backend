@@ -53,6 +53,10 @@ class IngestionService:
         if not chunks:
             raise ValueError("Document produced zero chunks after preprocessing.")
 
+        embeddings = await self.embeddings.embed_batch([c.text for c in chunks])
+        if embeddings is None:
+            raise RuntimeError("Embedding failed; document not persisted.")
+
         doc = await create_document(
             session,
             filename=payload.filename,
@@ -60,21 +64,14 @@ class IngestionService:
             document_type=payload.document_type,
             tags=payload.tags,
             user_id=payload.user_id,
-            embedding_model_name=None,
-            chunk_count=0,
+            embedding_model_name=embeddings[0].model_name,
+            chunk_count=len(chunks),
         )
 
         chunks_created = 0
-        chunks_skipped = 0
         tokens_processed = 0
-        resolved_model_name: str | None = None
 
-        for idx, item in enumerate(chunks):
-            emb = await self.embeddings.embed_text(item.text)
-            if emb is None:
-                chunks_skipped += 1
-                continue
-
+        for idx, (item, emb) in enumerate(zip(chunks, embeddings)):
             await create_document_chunk(
                 session,
                 document_id=doc.id,
@@ -87,13 +84,9 @@ class IngestionService:
             )
             tokens_processed += item.token_count
             chunks_created += 1
-            resolved_model_name = emb.model_name
 
-        if chunks_created == 0:
-            raise RuntimeError("Embedding failed for all chunks; nothing persisted.")
+        resolved_model_name = embeddings[0].model_name
 
-        doc.chunk_count = chunks_created
-        doc.embedding_model_name = resolved_model_name
         await session.commit()
         await session.refresh(doc)
 
@@ -102,7 +95,6 @@ class IngestionService:
             "document_ingested",
             document_id=doc.id,
             chunks_created=chunks_created,
-            chunks_skipped=chunks_skipped,
             tokens_processed=tokens_processed,
             elapsed_ms=elapsed_ms,
         )
@@ -110,7 +102,7 @@ class IngestionService:
         return DocumentIngestResponse(
             document_id=doc.id,
             chunks_created=chunks_created,
-            chunks_skipped=chunks_skipped,
+            chunks_skipped=0,
             tokens_processed=tokens_processed,
             elapsed_ms=elapsed_ms,
             embedding_model=resolved_model_name or "unknown",
@@ -144,18 +136,16 @@ class IngestionService:
         if not chunks:
             raise ValueError("Document produced zero chunks after preprocessing.")
 
+        started = time.perf_counter()
+        embeddings = await self.embeddings.embed_batch([c.text for c in chunks])
+        if embeddings is None:
+            raise RuntimeError("Embedding failed; document not reprocessed.")
+
         chunks_created = 0
-        chunks_skipped = 0
         tokens_processed = 0
         resolved_model_name: str | None = None
-        started = time.perf_counter()
 
-        for idx, item in enumerate(chunks):
-            emb = await self.embeddings.embed_text(item.text)
-            if emb is None:
-                chunks_skipped += 1
-                continue
-
+        for idx, (item, emb) in enumerate(zip(chunks, embeddings)):
             await create_document_chunk(
                 session,
                 document_id=document_id,
@@ -170,9 +160,6 @@ class IngestionService:
             chunks_created += 1
             resolved_model_name = emb.model_name
 
-        if chunks_created == 0:
-            raise RuntimeError("Embedding failed for all chunks during reprocess.")
-
         doc.chunk_count = chunks_created
         doc.embedding_model_name = resolved_model_name
         await session.commit()
@@ -182,7 +169,7 @@ class IngestionService:
         return DocumentIngestResponse(
             document_id=doc.id,
             chunks_created=chunks_created,
-            chunks_skipped=chunks_skipped,
+            chunks_skipped=0,
             tokens_processed=tokens_processed,
             elapsed_ms=elapsed_ms,
             embedding_model=resolved_model_name or "unknown",
@@ -219,36 +206,38 @@ class IngestionService:
         )
 
         started = time.perf_counter()
-        chunk_index = 0
+
+        # Collect all chunks from all pages before embedding.
+        all_chunks: list[tuple] = []  # (chunk_record, page_number)
+        for page in pages:
+            for item in chunk_document(page["text"]):
+                all_chunks.append((item, page["page"]))
+
+        if not all_chunks:
+            raise ValueError("PDF produced zero chunks after preprocessing.")
+
+        embeddings = await self.embeddings.embed_batch([c.text for c, _ in all_chunks])
+        if embeddings is None:
+            raise RuntimeError("Embedding failed; PDF not persisted.")
+
         chunks_created = 0
-        chunks_skipped = 0
         tokens_processed = 0
         resolved_model_name: str | None = None
 
-        for page in pages:
-            page_chunks = chunk_document(page["text"])
-            for item in page_chunks:
-                emb = await self.embeddings.embed_text(item.text)
-                if emb is None:
-                    chunks_skipped += 1
-                    continue
-                await create_document_chunk(
-                    session,
-                    document_id=doc.id,
-                    chunk_index=chunk_index,
-                    text=item.text,
-                    embedding=emb.vector,
-                    chunk_token_count=item.token_count,
-                    page_number=page["page"],
-                    section_heading=item.section_heading,
-                )
-                chunk_index += 1
-                chunks_created += 1
-                tokens_processed += item.token_count
-                resolved_model_name = emb.model_name
-
-        if chunks_created == 0:
-            raise RuntimeError("Embedding failed for all chunks; nothing persisted.")
+        for chunk_index, ((item, page_num), emb) in enumerate(zip(all_chunks, embeddings)):
+            await create_document_chunk(
+                session,
+                document_id=doc.id,
+                chunk_index=chunk_index,
+                text=item.text,
+                embedding=emb.vector,
+                chunk_token_count=item.token_count,
+                page_number=page_num,
+                section_heading=item.section_heading,
+            )
+            chunks_created += 1
+            tokens_processed += item.token_count
+            resolved_model_name = emb.model_name
 
         doc.chunk_count = chunks_created
         doc.embedding_model_name = resolved_model_name
@@ -260,7 +249,6 @@ class IngestionService:
             "pdf_ingested",
             document_id=doc.id,
             chunks_created=chunks_created,
-            chunks_skipped=chunks_skipped,
             tokens_processed=tokens_processed,
             elapsed_ms=elapsed_ms,
         )
@@ -268,7 +256,7 @@ class IngestionService:
         return DocumentIngestResponse(
             document_id=doc.id,
             chunks_created=chunks_created,
-            chunks_skipped=chunks_skipped,
+            chunks_skipped=0,
             tokens_processed=tokens_processed,
             elapsed_ms=elapsed_ms,
             embedding_model=resolved_model_name or "unknown",
