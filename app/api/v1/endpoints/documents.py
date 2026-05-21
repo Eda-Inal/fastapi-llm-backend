@@ -96,14 +96,7 @@ async def get_documents(
     offset: int = Query(default=0, ge=0),
     db: AsyncSession = Depends(get_db),
 ) -> DocumentListResponse:
-    docs = await list_documents(session=db, user_id=user_id, limit=limit, offset=offset)
-    if tags:
-        wanted = set(tags)
-        docs = [
-            d
-            for d in docs
-            if isinstance(d.tags, list) and bool(wanted.intersection(set(str(x) for x in d.tags)))
-        ]
+    docs = await list_documents(session=db, user_id=user_id, tags=tags, limit=limit, offset=offset)
     items = [_to_document_read(d) for d in docs]
     return DocumentListResponse(total=len(items), items=items)
 

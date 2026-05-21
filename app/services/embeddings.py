@@ -31,6 +31,22 @@ class EmbeddingService:
 
     def __init__(self) -> None:
         self._cache: dict[str, EmbeddingResult] = {}
+        self._client: httpx.AsyncClient | None = None
+
+    async def _get_client(self) -> httpx.AsyncClient:
+        if self._client is None or self._client.is_closed:
+            api_key = settings.embedding_api_key or settings.groq_api_key
+            base_url = settings.embedding_base_url or settings.groq_base_url
+            self._client = httpx.AsyncClient(
+                base_url=base_url,
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                timeout=httpx.Timeout(settings.embedding_timeout),
+                verify=getattr(settings, "groq_verify_ssl", True),
+            )
+        return self._client
 
     def _cache_key(self, text: str, model_name: str) -> str:
         digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -62,14 +78,7 @@ class EmbeddingService:
             logger.debug("embedding_cache_hit", model=target_model)
             return cached
 
-        api_key = settings.embedding_api_key or settings.groq_api_key
-        base_url = settings.embedding_base_url or settings.groq_base_url
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        }
         payload: dict[str, Any] = {"model": target_model, "input": text}
-        timeout = httpx.Timeout(settings.embedding_timeout)
         retries = max(1, settings.embedding_max_retries)
 
         log = logger.bind(model=target_model)
@@ -77,13 +86,8 @@ class EmbeddingService:
         for attempt in range(retries):
             started = time.perf_counter()
             try:
-                async with httpx.AsyncClient(
-                    base_url=base_url,
-                    headers=headers,
-                    timeout=timeout,
-                    verify=getattr(settings, "groq_verify_ssl", True),
-                ) as client:
-                    response = await client.post("/embeddings", json=payload)
+                client = await self._get_client()
+                response = await client.post("/embeddings", json=payload)
 
                 latency_ms = int((time.perf_counter() - started) * 1000)
                 if response.status_code >= 400:

@@ -12,6 +12,7 @@ from app.db.session import AsyncSessionLocal
 from app.mcp_server.tools.base import Tool
 from app.services.embeddings import EmbeddingService
 from app.services.rag_metrics import rag_metrics
+from app.services.reranker import RerankerService
 
 logger = structlog.get_logger()
 
@@ -40,6 +41,7 @@ class RagSearchTool(Tool):
 
     def __init__(self) -> None:
         self.embeddings = EmbeddingService()
+        self.reranker = RerankerService()
 
     @staticmethod
     def _coerce_top_k(value: Any) -> int:
@@ -100,6 +102,14 @@ class RagSearchTool(Tool):
                 return "Retrieval unavailable: embedding error."
 
             is_hybrid = settings.hybrid_search_enabled
+            use_reranker = self.reranker.enabled
+
+            # Over-fetch when reranker is enabled so it has more candidates.
+            fetch_k = (
+                top_k * settings.reranker_overfetch_multiplier
+                if use_reranker
+                else top_k
+            )
 
             query_started = time.perf_counter()
             async with AsyncSessionLocal() as session:
@@ -107,7 +117,7 @@ class RagSearchTool(Tool):
                     session,
                     query_vector=emb.vector,
                     query_text=query.strip() if is_hybrid else None,
-                    top_k=top_k,
+                    top_k=fetch_k,
                     metadata_filter=metadata_filter,
                 )
             pgvector_query_ms = int((time.perf_counter() - query_started) * 1000)
@@ -123,7 +133,6 @@ class RagSearchTool(Tool):
 
             # In hybrid mode the score is an RRF value (different scale from
             # cosine similarity), so the dense threshold is not meaningful.
-            # Use a near-zero floor to suppress empty/error rows only.
             effective_threshold = 0.0 if is_hybrid else threshold
             filtered_rows = [(chunk, doc, sim) for chunk, doc, sim in rows if sim > effective_threshold]
             below_threshold_count = len(rows) - len(filtered_rows)
@@ -138,6 +147,29 @@ class RagSearchTool(Tool):
                 )
                 return "No relevant information found in knowledge base."
 
+            # --- Reranking stage ---
+            if use_reranker and len(filtered_rows) > 1:
+                candidate_texts = [chunk.text.strip() for chunk, _, _ in filtered_rows]
+                rerank_results = await self.reranker.rerank(
+                    query=query.strip(),
+                    documents=candidate_texts,
+                    top_n=top_k,
+                )
+                # Rebuild filtered_rows in reranked order.
+                reranked: list[tuple] = []
+                for orig_idx, rerank_score in rerank_results:
+                    if orig_idx < len(filtered_rows):
+                        chunk, doc, initial_sim = filtered_rows[orig_idx]
+                        reranked.append((chunk, doc, rerank_score))
+                if reranked:
+                    filtered_rows = reranked[:top_k]
+                else:
+                    filtered_rows = filtered_rows[:top_k]
+                score_label = "Rerank-score"
+            else:
+                filtered_rows = filtered_rows[:top_k]
+                score_label = "Similarity"
+
             blocks: list[str] = []
             for chunk, doc, similarity in filtered_rows:
                 source_line = self._format_source(
@@ -151,7 +183,7 @@ class RagSearchTool(Tool):
                     "\n".join(
                         [
                             source_line,
-                            f"Similarity: {similarity:.3f}",
+                            f"{score_label}: {similarity:.3f}",
                             f"Content: \"{content}\"",
                         ]
                     )
@@ -168,6 +200,7 @@ class RagSearchTool(Tool):
                 embedding_latency_ms=embedding_latency_ms,
                 pgvector_query_ms=pgvector_query_ms,
                 has_metadata_filter=bool(metadata_filter),
+                reranker_used=use_reranker,
             )
             rag_metrics.record_retrieval(
                 top_similarity=top_similarity,

@@ -33,6 +33,7 @@ class ChatLog(Base):
     # Conversation metadata
     conversation_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
     turn_index: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    user_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
 
     # Timestamps
     created_at: Mapped[str] = mapped_column(

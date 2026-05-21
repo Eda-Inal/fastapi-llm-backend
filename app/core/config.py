@@ -240,6 +240,17 @@ class Settings(BaseSettings):
     hybrid_fetch_multiplier: int = 3
 
     # ------------------------------------------------------------------
+    # Reranking (optional — improves retrieval precision)
+    # ------------------------------------------------------------------
+    reranker_enabled: bool = False
+    reranker_base_url: str = "https://api.jina.ai/v1"
+    reranker_api_key: str | None = None
+    reranker_model: str = "jina-reranker-v2-base-multilingual"
+    reranker_timeout: float = 10.0
+    reranker_top_n: int | None = None
+    reranker_overfetch_multiplier: int = 3
+
+    # ------------------------------------------------------------------
     # RAG / document chunking (used by chunk_document when args omitted)
     # ------------------------------------------------------------------
     chunk_size_tokens: int = 500

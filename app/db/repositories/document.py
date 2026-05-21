@@ -80,12 +80,17 @@ async def list_documents(
     session: AsyncSession,
     *,
     user_id: str | None = None,
+    tags: list[str] | None = None,
     limit: int = 50,
     offset: int = 0,
 ) -> list[Document]:
     stmt = select(Document).order_by(Document.created_at.desc()).limit(limit).offset(offset)
     if user_id:
         stmt = stmt.where(Document.user_id == user_id)
+    if tags:
+        normalized = [str(t) for t in tags if isinstance(t, (str, int, float))]
+        if normalized:
+            stmt = stmt.where(Document.tags.contains(normalized))
     result = await session.execute(stmt)
     return list(result.scalars().all())
 
@@ -212,13 +217,13 @@ async def _hybrid_search(
     }
 
     # --- Sparse leg: ranked chunk IDs by ts_rank ---
+    meta_clauses = _metadata_where_clauses(metadata_filter)
+    all_where = meta_clauses + ["dc.text_search @@ plainto_tsquery('english', :q)"]
     sparse_sql = text(
         "SELECT dc.id, ts_rank(dc.text_search, plainto_tsquery('english', :q)) AS fts_score "
         "FROM document_chunks dc "
         "JOIN documents d ON d.id = dc.document_id "
-        + _metadata_where_sql(metadata_filter)
-        + (" AND " if metadata_filter else " WHERE ")
-        + "dc.text_search @@ plainto_tsquery('english', :q) "
+        "WHERE " + " AND ".join(all_where) + " "
         "ORDER BY fts_score DESC "
         "LIMIT :fetch_k"
     )
@@ -286,8 +291,8 @@ def _apply_metadata_filters(stmt, metadata_filter: dict):
     return stmt
 
 
-def _metadata_where_sql(metadata_filter: dict) -> str:
-    """Return raw SQL WHERE fragment (without the WHERE keyword) for metadata filters."""
+def _metadata_where_clauses(metadata_filter: dict) -> list[str]:
+    """Return a list of raw SQL boolean expressions for metadata filters."""
     clauses: list[str] = []
     user_id = metadata_filter.get("user_id")
     if isinstance(user_id, str) and user_id.strip():
@@ -295,13 +300,14 @@ def _metadata_where_sql(metadata_filter: dict) -> str:
     document_type = metadata_filter.get("document_type")
     if isinstance(document_type, str) and document_type.strip():
         clauses.append("d.document_type = :filter_document_type")
-    if not clauses:
-        return ""
-    return "WHERE " + " AND ".join(clauses)
+    tags = metadata_filter.get("tags")
+    if isinstance(tags, list) and tags:
+        clauses.append("d.tags @> :filter_tags::jsonb")
+    return clauses
 
 
 def _metadata_sql_params(metadata_filter: dict) -> dict:
-    """Return bind parameters that match _metadata_where_sql."""
+    """Return bind parameters that match _metadata_where_clauses."""
     params: dict = {}
     user_id = metadata_filter.get("user_id")
     if isinstance(user_id, str) and user_id.strip():
@@ -309,6 +315,10 @@ def _metadata_sql_params(metadata_filter: dict) -> dict:
     document_type = metadata_filter.get("document_type")
     if isinstance(document_type, str) and document_type.strip():
         params["filter_document_type"] = document_type
+    tags = metadata_filter.get("tags")
+    if isinstance(tags, list) and tags:
+        import json as _json
+        params["filter_tags"] = _json.dumps([str(t) for t in tags])
     return params
 
 

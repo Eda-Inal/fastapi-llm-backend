@@ -37,6 +37,26 @@ def _resolve_provider(model: str) -> tuple[str, str]:
 
 
 class LLMClient:
+    def __init__(self) -> None:
+        self._clients: dict[str, httpx.AsyncClient] = {}
+
+    def _get_client(self, base_url: str, api_key: str) -> httpx.AsyncClient:
+        """Return a shared httpx client per (base_url) to enable connection reuse."""
+        existing = self._clients.get(base_url)
+        if existing is not None and not existing.is_closed:
+            return existing
+        client = httpx.AsyncClient(
+            base_url=base_url,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            timeout=httpx.Timeout(settings.groq_read_timeout),
+            verify=getattr(settings, "groq_verify_ssl", True),
+        )
+        self._clients[base_url] = client
+        return client
+
     async def stream_chat_completion(
         self,
         *,
@@ -89,97 +109,85 @@ class LLMClient:
         }
         payload = {k: v for k, v in payload.items() if v is not None}
 
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        }
-
-        timeout = httpx.Timeout(settings.groq_read_timeout)
-
         provider = AVAILABLE_MODELS.get(model, {}).get("provider", "groq")
         log.info("llm_request", provider=provider, base_url=base_url)
 
         try:
-            async with httpx.AsyncClient(
-                base_url=base_url,
-                headers=headers,
-                timeout=timeout,
-                verify=getattr(settings, "groq_verify_ssl", True),
-            ) as client:
-                async with client.stream(
-                    "POST",
-                    "/chat/completions",
-                    json=payload,
-                ) as r:
-                    if r.status_code >= 400:
-                        body = await r.aread()
-                        message = body.decode("utf-8", errors="replace") if body else ""
-                        log.error("llm_http_error", status=r.status_code, body=message[:500])
-                        yield {
-                            "type": "error",
-                            "status": r.status_code,
-                            "message": message or f"HTTP error {r.status_code} from {provider}",
-                        }
+            client = self._get_client(base_url, api_key)
+            async with client.stream(
+                "POST",
+                "/chat/completions",
+                json=payload,
+            ) as r:
+                if r.status_code >= 400:
+                    body = await r.aread()
+                    message = body.decode("utf-8", errors="replace") if body else ""
+                    log.error("llm_http_error", status=r.status_code, body=message[:500])
+                    yield {
+                        "type": "error",
+                        "status": r.status_code,
+                        "message": message or f"HTTP error {r.status_code} from {provider}",
+                    }
+                    yield {"type": "done", "finish_reason": "error"}
+                    return
+
+                async for line in r.aiter_lines():
+                    if not line:
+                        continue
+
+                    line = line.strip()
+
+                    if line == "data: [DONE]":
+                        yield {"type": "done", "finish_reason": "stop"}
+                        return
+
+                    if not line.startswith("data: "):
+                        continue
+
+                    raw = line[6:].strip()
+                    if not raw:
+                        continue
+
+                    try:
+                        data = json.loads(raw)
+                    except json.JSONDecodeError:
+                        log.debug("llm_sse_non_json", raw=raw[:200])
+                        continue
+
+                    if isinstance(data, dict) and "error" in data:
+                        err = data.get("error") or {}
+                        msg = err.get("message") or str(err) or "Streaming error"
+                        log.error("llm_stream_error_payload", message=msg)
+                        yield {"type": "error", "status": None, "message": msg}
                         yield {"type": "done", "finish_reason": "error"}
                         return
 
-                    async for line in r.aiter_lines():
-                        if not line:
-                            continue
+                    choices = data.get("choices") if isinstance(data, dict) else None
+                    if not choices:
+                        continue
 
-                        line = line.strip()
+                    choice0 = choices[0] if isinstance(choices, list) and choices else None
+                    if not isinstance(choice0, dict):
+                        continue
 
-                        if line == "data: [DONE]":
-                            yield {"type": "done", "finish_reason": "stop"}
-                            return
+                    delta = choice0.get("delta") or {}
+                    if not isinstance(delta, dict):
+                        continue
 
-                        if not line.startswith("data: "):
-                            continue
+                    if "tool_calls" in delta and delta["tool_calls"] is not None:
+                        tool_calls = delta.get("tool_calls")
+                        if isinstance(tool_calls, list) and tool_calls:
+                            yield {"type": "tool_call", "tool_calls": tool_calls}
+                        continue
 
-                        raw = line[6:].strip()
-                        if not raw:
-                            continue
+                    if "content" in delta:
+                        yield {"type": "chunk", "text": delta.get("content")}
+                        continue
 
-                        try:
-                            data = json.loads(raw)
-                        except json.JSONDecodeError:
-                            log.debug("llm_sse_non_json", raw=raw[:200])
-                            continue
-
-                        if isinstance(data, dict) and "error" in data:
-                            err = data.get("error") or {}
-                            msg = err.get("message") or str(err) or "Streaming error"
-                            log.error("llm_stream_error_payload", message=msg)
-                            yield {"type": "error", "status": None, "message": msg}
-                            yield {"type": "done", "finish_reason": "error"}
-                            return
-
-                        choices = data.get("choices") if isinstance(data, dict) else None
-                        if not choices:
-                            continue
-
-                        choice0 = choices[0] if isinstance(choices, list) and choices else None
-                        if not isinstance(choice0, dict):
-                            continue
-
-                        delta = choice0.get("delta") or {}
-                        if not isinstance(delta, dict):
-                            continue
-
-                        if "tool_calls" in delta and delta["tool_calls"] is not None:
-                            tool_calls = delta.get("tool_calls")
-                            if isinstance(tool_calls, list) and tool_calls:
-                                yield {"type": "tool_call", "tool_calls": tool_calls}
-                            continue
-
-                        if "content" in delta:
-                            yield {"type": "chunk", "text": delta.get("content")}
-                            continue
-
-                        finish_reason = choice0.get("finish_reason")
-                        if finish_reason:
-                            yield {"type": "done", "finish_reason": finish_reason}
-                            return
+                    finish_reason = choice0.get("finish_reason")
+                    if finish_reason:
+                        yield {"type": "done", "finish_reason": finish_reason}
+                        return
 
         except httpx.HTTPError as e:
             log.error("llm_network_error", error=str(e))

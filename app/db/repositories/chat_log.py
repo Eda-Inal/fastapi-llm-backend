@@ -21,6 +21,7 @@ async def create_chat_log(
     seed: int | None = None,
     conversation_id: str | None = None,
     turn_index: int | None = None,
+    user_id: str | None = None,
 ) -> ChatLog:
     """
     Persist a single LLM interaction into the database.
@@ -42,6 +43,7 @@ async def create_chat_log(
         seed=seed,
         conversation_id=conversation_id,
         turn_index=turn_index,
+        user_id=user_id,
     )
 
     session.add(chat_log)
@@ -54,10 +56,14 @@ async def create_chat_log(
 async def list_chat_logs_by_conversation(
     session: AsyncSession,
     conversation_id: str,
+    user_id: str | None = None,
     limit: int = 20,
 ) -> List[ChatLog]:
     """
     Fetch recent chat logs for a given conversation_id.
+
+    When *user_id* is provided the query is scoped to that user so
+    that one user cannot load another user's conversation history.
 
     Returns at most `limit` items, ordered from oldest to newest.
     Priority ordering:
@@ -70,6 +76,8 @@ async def list_chat_logs_by_conversation(
         .order_by(ChatLog.turn_index.asc().nulls_last(), ChatLog.created_at.asc())
         .limit(limit)
     )
+    if user_id is not None:
+        stmt = stmt.where(ChatLog.user_id == user_id)
 
     result = await session.execute(stmt)
     return list(result.scalars().all())

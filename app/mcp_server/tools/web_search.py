@@ -14,6 +14,14 @@ class WebSearchTool(Tool):
         "required": ["query"],
     }
 
+    def __init__(self) -> None:
+        self._client: httpx.AsyncClient | None = None
+
+    def _get_client(self) -> httpx.AsyncClient:
+        if self._client is None or self._client.is_closed:
+            self._client = httpx.AsyncClient(timeout=10)
+        return self._client
+
     async def run(self, args: dict) -> str:
         """
         IMPORTANT RULE:
@@ -34,11 +42,10 @@ class WebSearchTool(Tool):
                 "max_results": 3,
             }
 
-            async with httpx.AsyncClient(timeout=10) as client:
-                r = await client.post("https://api.tavily.com/search", json=payload)
-                if r.status_code >= 400:
-                    return f"Web search failed: HTTP {r.status_code}"
-                data = r.json()
+            r = await self._get_client().post("https://api.tavily.com/search", json=payload)
+            if r.status_code >= 400:
+                return f"Web search failed: HTTP {r.status_code}"
+            data = r.json()
 
             results = data.get("results", [])
             if not isinstance(results, list) or not results:

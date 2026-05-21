@@ -17,6 +17,12 @@ class RemoteMCPClient(MCPClient):
     def __init__(self) -> None:
         self.base_url = settings.mcp_server_url
         self.timeout = settings.mcp_timeout
+        self._client: httpx.AsyncClient | None = None
+
+    def _get_client(self) -> httpx.AsyncClient:
+        if self._client is None or self._client.is_closed:
+            self._client = httpx.AsyncClient(timeout=self.timeout)
+        return self._client
 
     async def list_tools(self) -> List[Dict]:
         if not self.base_url:
@@ -24,8 +30,7 @@ class RemoteMCPClient(MCPClient):
 
         try:
             url = f"{self.base_url}/tools"
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
-                r = await client.get(url)
+            r = await self._get_client().get(url)
 
             if r.status_code != 200:
                 logger.warning("mcp_remote_list_tools_http_error", status=r.status_code)
@@ -66,8 +71,7 @@ class RemoteMCPClient(MCPClient):
                 "arguments": args or {},
             }
 
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
-                r = await client.post(url, json=payload)
+            r = await self._get_client().post(url, json=payload)
 
             if r.status_code != 200:
                 logger.error(
@@ -102,8 +106,7 @@ class RemoteMCPClient(MCPClient):
 
         try:
             url = f"{self.base_url}/metrics"
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
-                r = await client.get(url)
+            r = await self._get_client().get(url)
 
             if r.status_code != 200:
                 logger.warning("mcp_remote_get_metrics_http_error", status=r.status_code)

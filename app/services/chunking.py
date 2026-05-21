@@ -110,17 +110,17 @@ def _split_table_runs(text: str) -> list[tuple[str, str]]:
 
 def _extract_list_segments(text: str) -> list[tuple[str, str]]:
     """
-    Split a plain-text segment into ('prose', block) and ('list_item', line) parts.
+    Split a plain-text segment into ('prose', block) and ('list_block', block) parts.
 
-    Each line that matches a numbered (1. / 1) ) or bulleted (- / * / •) list
-    marker becomes its own ('list_item', ...) entry so it can be stored as an
-    independent chunk.  Non-list lines are grouped into ('prose', ...) blocks.
-    Existing table / code-fence handling is untouched — this runs only on plain
-    segments produced by _split_table_runs.
+    Consecutive list items (numbered or bulleted) are grouped into a single
+    ('list_block', ...) entry so they share one embedding vector with full
+    context instead of becoming many tiny individual chunks.
+    Non-list lines are grouped into ('prose', ...) blocks as before.
     """
     lines = text.split("\n")
     parts: list[tuple[str, str]] = []
     prose_buf: list[str] = []
+    list_buf: list[str] = []
 
     def _flush_prose() -> None:
         if prose_buf:
@@ -129,14 +129,23 @@ def _extract_list_segments(text: str) -> list[tuple[str, str]]:
                 parts.append(("prose", block))
             prose_buf.clear()
 
+    def _flush_list() -> None:
+        if list_buf:
+            block = "\n".join(list_buf).strip()
+            if block:
+                parts.append(("list_block", block))
+            list_buf.clear()
+
     for line in lines:
         if _LIST_ITEM_RE.match(line) and line.strip():
             _flush_prose()
-            parts.append(("list_item", line.strip()))
+            list_buf.append(line.strip())
         else:
+            _flush_list()
             prose_buf.append(line)
 
     _flush_prose()
+    _flush_list()
     return parts or [("prose", text)]
 
 
@@ -310,7 +319,7 @@ def _chunk_plain_text(
     max_tokens: int,
     overlap: int,
 ) -> list[str]:
-    """Plain text: table runs → list-item extraction → recursive split."""
+    """Plain text: table runs → list-block grouping → recursive split."""
     text = text.strip()
     if not text:
         return []
@@ -319,21 +328,23 @@ def _chunk_plain_text(
     all_chunks: list[str] = []
     for kind, seg in runs:
         if kind == "table":
-            # Atomic when possible; if huge, split lines only
             if count_tokens(seg) <= max_tokens:
                 all_chunks.append(seg)
             else:
                 lines = seg.split("\n")
                 all_chunks.extend(_merge_parts_under_limit(lines, "\n", max_tokens, overlap))
         else:
-            # Extract list items as individual chunks; prose falls through to
-            # the existing recursive splitter unchanged.
             for lkind, lseg in _extract_list_segments(seg):
-                if lkind == "list_item":
+                if lkind == "list_block":
+                    # Consecutive list items are grouped; split on
+                    # individual items if the block exceeds max_tokens.
                     if count_tokens(lseg) <= max_tokens:
                         all_chunks.append(lseg)
                     else:
-                        all_chunks.extend(_split_oversized_segment(lseg, max_tokens, overlap))
+                        items = lseg.split("\n")
+                        all_chunks.extend(
+                            _merge_parts_under_limit(items, "\n", max_tokens, overlap)
+                        )
                 else:
                     all_chunks.extend(_split_oversized_segment(lseg, max_tokens, overlap))
 

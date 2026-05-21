@@ -5,13 +5,22 @@ This module initializes the FastAPI app, registers API routers,
 and exposes a basic health check endpoint.
 """
 
-from fastapi  import FastAPI
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.router import router as api_v1_router
 from app.core.logging import setup_logging
 
 setup_logging()
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(api_v1_router)
 

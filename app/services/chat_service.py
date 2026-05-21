@@ -5,9 +5,10 @@ import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repositories.chat_log import create_chat_log, list_chat_logs_by_conversation
+from app.schemas.chat_bulk import BulkChatItem
 from app.services.groq_client import LLMClient
 from app.services.mcp.remote_client import RemoteMCPClient
-from app.core.config import settings
+from app.core.config import settings, AVAILABLE_MODELS
 from app.utils.token_counter import (
     estimate_messages_tokens,
     truncate_rag_chunks,
@@ -70,6 +71,17 @@ class ChatService:
             url=settings.mcp_server_url,
         )
 
+    @staticmethod
+    def _is_protected(m: dict, tail_start: int, idx: int) -> bool:
+        """Messages in the current turn (from tail_start onward) are protected
+        from eviction so the LLM always sees the user question, tool calls /
+        results, and finalization prompt."""
+        if idx >= tail_start:
+            return True
+        if m.get("role") == "system":
+            return True
+        return False
+
     def _apply_context_budget(
         self,
         messages: list[dict],
@@ -79,8 +91,22 @@ class ChatService:
     ) -> list[dict]:
         """
         Trim message history/tool payloads to fit model input budget.
+
+        Protected (never evicted): system messages and the *current turn*
+        which is everything from the last user message onward — i.e. the
+        user question, assistant tool-call, tool results, and finalization
+        prompt.  Only conversation **history** preceding the current turn
+        is eligible for removal.
         """
         trimmed = [dict(m) if isinstance(m, dict) else m for m in messages]
+
+        # Locate the start of the current turn: the last user message.
+        tail_start = 0
+        for i in range(len(trimmed) - 1, -1, -1):
+            m = trimmed[i]
+            if isinstance(m, dict) and m.get("role") == "user":
+                tail_start = i
+                break
 
         # 1) Trim rag_search tool payload first, keeping top chunks.
         for m in trimmed:
@@ -97,19 +123,20 @@ class ChatService:
             kept = truncate_rag_chunks(blocks, rag_tool_budget)
             m["content"] = "\n---\n".join(kept)
 
-        # 2) Remove oldest non-system messages until under budget.
+        # 2) Remove oldest **history** messages (before current turn).
         def _over_budget() -> bool:
             return estimate_messages_tokens(trimmed) > max_input_tokens
 
         idx = 0
         while _over_budget() and idx < len(trimmed):
             m = trimmed[idx]
-            if isinstance(m, dict) and m.get("role") not in ("system",):
+            if isinstance(m, dict) and not self._is_protected(m, tail_start, idx):
                 trimmed.pop(idx)
+                tail_start -= 1
                 continue
             idx += 1
 
-        # 3) Last resort: trim longest tool content.
+        # 3) Last resort: trim longest tool content (even in current turn).
         if _over_budget():
             tool_indices = []
             for i, m in enumerate(trimmed):
@@ -154,6 +181,7 @@ class ChatService:
             history_logs = await list_chat_logs_by_conversation(
                 session=session,
                 conversation_id=conversation_id,
+                user_id=user_id,
                 limit=20,
             )
 
@@ -473,7 +501,7 @@ class ChatService:
                 if not saw_final:
                     yield {
                         "type": "chunk",
-                        "text": "Tool sonuçlarını aldım ancak model final cevabı üretmedi.",
+                        "text": "Tool results received but the model did not produce a final response.",
                     }
                     yield {"type": "done", "finish_reason": "stop"}
                 break
@@ -501,5 +529,54 @@ class ChatService:
             seed=seed,
             conversation_id=conversation_id,
             turn_index=turn_index,
+            user_id=user_id,
         )
         await session.commit()
+
+    async def bulk_complete(
+        self,
+        *,
+        session: AsyncSession,
+        items: list[BulkChatItem],
+    ) -> list[dict]:
+        """
+        Non-streaming bulk completions. Each item is an independent request
+        processed sequentially. Returns a list of {model, response, error?} dicts.
+        """
+        results: list[dict] = []
+
+        for idx, item in enumerate(items):
+            model = item.model or settings.groq_default_model
+            if model not in AVAILABLE_MODELS:
+                results.append({"index": idx, "model": model, "response": None, "error": f"Unsupported model: {model}"})
+                continue
+
+            collected: list[str] = []
+            error_msg: str | None = None
+
+            try:
+                async for event in self.client.stream_chat_completion(
+                    messages=item.messages,
+                    model=model,
+                    tools=None,
+                    temperature=item.temperature,
+                ):
+                    etype = event.get("type")
+                    if etype == "chunk" and event.get("text"):
+                        collected.append(event["text"])
+                    elif etype == "error":
+                        error_msg = event.get("message", "Unknown error")
+                        break
+                    elif etype == "done":
+                        break
+            except Exception as exc:
+                error_msg = str(exc)
+
+            results.append({
+                "index": idx,
+                "model": model,
+                "response": "".join(collected) if collected else None,
+                "error": error_msg,
+            })
+
+        return results
