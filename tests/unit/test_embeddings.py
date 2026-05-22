@@ -18,6 +18,7 @@ class _FakeResponse:
 class _FakeAsyncClient:
     def __init__(self, post_callable, **kwargs) -> None:
         self._post_callable = post_callable
+        self.is_closed = False
 
     async def __aenter__(self):
         return self

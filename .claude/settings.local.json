@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(curl -s http://localhost:8001/tools)",
-      "Bash(python -m json.tool)"
+      "Bash(python -m json.tool)",
+      "Bash(.venv/Scripts/python.exe -m pytest tests/unit/test_rag_search_tool.py -v)"
     ]
   }
 }

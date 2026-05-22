@@ -23,16 +23,28 @@ logger = structlog.get_logger()
 RAG_TOOL_CALL_SYSTEM_MESSAGE = {
     "role": "system",
     "content": (
-        "Before calling any tool, classify the question. "
-        "Only call web_search directly — skipping rag_search — if the question asks for "
-        "data that changes by the minute or hour: live stock prices, currency exchange rates, "
-        "current weather, live sports scores, today's flight prices, breaking news headlines. "
-        "For everything else — including company facts, employee counts, founding dates, "
-        "product details, general knowledge, or any topic that could be in an uploaded document — "
-        "call rag_search first. "
-        "If rag_search returns no relevant results, respond with "
-        "'This information was not found in your documents.' "
-        "Do NOT call web_search as a fallback."
+        "Tool routing rules:\n\n"
+        "You have three tools available. Choose the one that best fits the user's "
+        "question. Do not force a fixed order — judge each question on its own merit.\n\n"
+        "1. rag_search — The user's uploaded documents (private knowledge base). "
+        "Use this when the question is about user-specific content: policies, manuals, "
+        "reports, contracts, internal notes, or anything the user has uploaded. "
+        "If unsure whether the answer lives in their documents, prefer trying rag_search.\n\n"
+        "2. web_search — Live or current external information. Use this for weather, "
+        "news, real-time events, recent updates, public facts that change over time, "
+        "or general-knowledge questions where the answer cannot be in the user's "
+        "private documents.\n\n"
+        "3. calculator — Arithmetic expressions. Use this for any non-trivial "
+        "calculation instead of doing mental math.\n\n"
+        "Guidelines:\n"
+        "- You may call multiple tools when a question requires it (e.g., retrieve a "
+        "number with rag_search, then compute with calculator).\n"
+        "- If rag_search returns nothing relevant, tell the user honestly that the "
+        "information was not in their documents. Do NOT automatically retry with "
+        "web_search unless the question genuinely calls for external information.\n"
+        "- For simple conversational messages (greetings, clarifications, thanks), "
+        "no tool is needed — respond directly.\n"
+        "- Choose the minimum number of tools required. Do not call tools unnecessarily."
     ),
 }
 
@@ -376,7 +388,7 @@ class ChatService:
                                         "Answer ONLY using the retrieved context above. "
                                         "Do not use your training knowledge to override these values. "
                                         "Use the exact values from the text. "
-                                        "End your response with: Kaynak: [filename]"
+                                        "End your response with: Source: [filename]"
                                     ),
                                 }
                             ]

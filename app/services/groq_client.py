@@ -38,11 +38,14 @@ def _resolve_provider(model: str) -> tuple[str, str]:
 
 class LLMClient:
     def __init__(self) -> None:
-        self._clients: dict[str, httpx.AsyncClient] = {}
+        # Cache key includes api_key to avoid returning a client created with
+        # stale credentials when key rotates.
+        self._clients: dict[tuple[str, str], httpx.AsyncClient] = {}
 
     def _get_client(self, base_url: str, api_key: str) -> httpx.AsyncClient:
-        """Return a shared httpx client per (base_url) to enable connection reuse."""
-        existing = self._clients.get(base_url)
+        """Return a shared httpx client per (base_url, api_key) to enable connection reuse."""
+        cache_key = (base_url, api_key)
+        existing = self._clients.get(cache_key)
         if existing is not None and not existing.is_closed:
             return existing
         client = httpx.AsyncClient(
@@ -54,7 +57,7 @@ class LLMClient:
             timeout=httpx.Timeout(settings.groq_read_timeout),
             verify=getattr(settings, "groq_verify_ssl", True),
         )
-        self._clients[base_url] = client
+        self._clients[cache_key] = client
         return client
 
     async def stream_chat_completion(
@@ -115,7 +118,6 @@ class LLMClient:
             for key in ("frequency_penalty", "presence_penalty", "seed"):
                 payload.pop(key, None)
 
-        provider = AVAILABLE_MODELS.get(model, {}).get("provider", "groq")
         log.info("llm_request", provider=provider, base_url=base_url)
 
         try:

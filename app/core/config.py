@@ -181,7 +181,6 @@ class Settings(BaseSettings):
     # ------------------------------------------------------------------
     # MCP
     # ------------------------------------------------------------------
-    mcp_enabled: bool = False
     mcp_server_url: str | None = None
     # Must exceed embedding_timeout * embedding_max_retries to avoid premature timeouts.
     mcp_timeout: float = 120.0

@@ -41,7 +41,7 @@ async def call_tool(payload: ToolCallRequest):
         return {"success": False, "result": "Tool not found"}
 
     try:
-        result = await tool.run(args)
+        result = await tool.execute(args)
         return {"success": result.ok, "result": result.content}
     except Exception:
         log.error("tool_call_failed", exc_info=True)

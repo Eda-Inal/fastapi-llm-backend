@@ -20,8 +20,10 @@ logger = structlog.get_logger()
 class RagSearchTool(Tool):
     name = "rag_search"
     description = (
-        "MUST be called first for every question without exception. "
-        "Searches the user's private knowledge base of uploaded documents."
+        "Search the user's uploaded documents (private RAG knowledge base) "
+        "using semantic similarity. "
+        "Returns relevant passages with source filename, page number, and similarity score. "
+        "Optional hybrid search and reranking are applied internally."
     )
     parameters = {
         "type": "object",
@@ -29,6 +31,28 @@ class RagSearchTool(Tool):
             "query": {
                 "type": "string",
                 "description": "Natural-language search query to retrieve relevant document passages.",
+            },
+            "top_k": {
+                "type": "integer",
+                "description": (
+                    "Number of passages to retrieve. "
+                    "Use higher values (8-10) for broad or complex questions, "
+                    "lower values (3-5) for narrow or factual questions."
+                ),
+                "minimum": 3,
+                "maximum": 10,
+                "default": 5,
+            },
+            "similarity_threshold": {
+                "type": "number",
+                "description": (
+                    "Minimum semantic similarity score for a passage to be included. "
+                    "Higher values return only closely matching passages; "
+                    "lower values cast a wider net. Default 0.7 works for most cases."
+                ),
+                "minimum": 0.5,
+                "maximum": 0.9,
+                "default": 0.7,
             },
         },
         "required": ["query"],
@@ -46,15 +70,14 @@ class RagSearchTool(Tool):
             requested = int(value.strip())
         else:
             requested = settings.rag_default_top_k
-        requested = max(1, requested)
-        return min(requested, settings.rag_max_top_k)
+        return max(3, min(10, requested))
 
     @staticmethod
     def _coerce_threshold(value: Any) -> float:
         try:
             if value is None:
                 return float(settings.rag_similarity_threshold)
-            return float(value)
+            return max(0.5, min(0.9, float(value)))
         except (TypeError, ValueError):
             return float(settings.rag_similarity_threshold)
 

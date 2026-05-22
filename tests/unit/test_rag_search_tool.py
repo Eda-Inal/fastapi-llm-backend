@@ -4,6 +4,7 @@ import asyncio
 from datetime import datetime
 from types import SimpleNamespace
 
+from app.core.config import settings
 from app.mcp_server.tools.rag_search import RagSearchTool
 from app.services.embeddings import EmbeddingResult
 
@@ -30,7 +31,8 @@ def test_rag_search_returns_no_results_message(monkeypatch) -> None:
     monkeypatch.setattr("app.mcp_server.tools.rag_search.AsyncSessionLocal", lambda: _FakeSessionCtx())
 
     out = asyncio.run(tool.run({"query": "company policy"}))
-    assert out == "No relevant information found in knowledge base."
+    assert out.ok is True
+    assert out.content == "No relevant information found in knowledge base."
 
 
 def test_rag_search_formats_citations(monkeypatch) -> None:
@@ -57,18 +59,26 @@ def test_rag_search_formats_citations(monkeypatch) -> None:
     monkeypatch.setattr("app.mcp_server.tools.rag_search.AsyncSessionLocal", lambda: _FakeSessionCtx())
 
     out = asyncio.run(tool.run({"query": "VPN policy", "top_k": 5}))
-    assert "Source: manual.pdf (page 3, section Access)" in out
-    assert "Similarity: 0.910" in out
-    assert "Content: \"Employees must use VPN.\"" in out
+    assert out.ok is True
+    assert "Source: manual.pdf (page 3, section Access)" in out.content
+    assert "Similarity: 0.910" in out.content
+    assert "Content: \"Employees must use VPN.\"" in out.content
 
 
 def test_rag_search_invalid_query(monkeypatch) -> None:
     tool = RagSearchTool()
     out = asyncio.run(tool.run({"query": ""}))
-    assert out == "RAG search not used: missing or invalid query."
+    assert out.ok is False
+    assert out.content == "RAG search not used: missing or invalid query."
 
 
 def test_rag_search_below_threshold_returns_no_results(monkeypatch) -> None:
+    """
+    Hybrid search modunda similarity threshold uygulanmaz (RRF skoru cosine ile
+    ölçek uyumsuz olduğu için). Bu test threshold davranışını izole etmek için
+    hybrid'i devre dışı bırakır.
+    """
+    monkeypatch.setattr(settings, "hybrid_search_enabled", False)
     tool = RagSearchTool()
 
     async def _fake_embed_text(text: str, model_name=None):
@@ -92,4 +102,5 @@ def test_rag_search_below_threshold_returns_no_results(monkeypatch) -> None:
     monkeypatch.setattr("app.mcp_server.tools.rag_search.AsyncSessionLocal", lambda: _FakeSessionCtx())
 
     out = asyncio.run(tool.run({"query": "policy", "similarity_threshold": 0.7}))
-    assert out == "No relevant information found in knowledge base."
+    assert out.ok is True
+    assert out.content == "No relevant information found in knowledge base."

@@ -5,11 +5,20 @@ from app.core.config import settings
 
 class WebSearchTool(Tool):
     name = "web_search"
-    description = "Search the web. Call only when rag_search returns no relevant results."
+    description = (
+        "Search the public web (via Tavily) for live or current information — "
+        "weather, news, real-time events, recent updates. "
+        "Returns up to 3 results as a combined text snippet with URLs and content excerpts. "
+        "This is NOT a fallback for rag_search; use only when the question explicitly "
+        "requires current or live external information."
+    )
     parameters = {
         "type": "object",
         "properties": {
-            "query": {"type": "string"}
+            "query": {
+                "type": "string",
+                "description": "Search query — a concise, keyword-rich phrase. Use natural language, not boolean operators.",
+            }
         },
         "required": ["query"],
     }

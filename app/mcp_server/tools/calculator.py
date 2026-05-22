@@ -17,7 +17,12 @@ _ALLOWED_OPERATORS = {
 
 class CalculatorTool(Tool):
     name = "calculator"
-    description = "Perform safe mathematical calculations."
+    description = (
+        "Evaluate a mathematical expression safely. "
+        "Supports +, -, *, /, ** and unary minus. "
+        "Does NOT support functions like sqrt, log, abs, sin, etc. "
+        "Input must be a plain arithmetic expression as a string."
+    )
     parameters = {
         "type": "object",
         "properties": {
