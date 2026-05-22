@@ -4,6 +4,7 @@ import httpx
 import structlog
 
 from app.core.config import settings
+from app.mcp_server.tools.base import ToolResult
 from app.services.mcp.client import MCPClient
 
 logger = structlog.get_logger()
@@ -56,9 +57,9 @@ class RemoteMCPClient(MCPClient):
             logger.error("mcp_remote_list_tools_exception", exc_info=True)
             return []
 
-    async def call_tool(self, name: str, args: dict) -> str:
+    async def call_tool(self, name: str, args: dict) -> ToolResult:
         if not self.base_url:
-            return "MCP server not configured."
+            return ToolResult(ok=False, content="MCP server not configured.")
 
         log = logger.bind(tool=name)
 
@@ -74,31 +75,28 @@ class RemoteMCPClient(MCPClient):
             r = await self._get_client().post(url, json=payload)
 
             if r.status_code != 200:
-                logger.error(
-                    "mcp_remote_call_http_error",
-                    status=r.status_code,
-                )
-                return f"MCP call failed: HTTP {r.status_code}"
+                logger.error("mcp_remote_call_http_error", status=r.status_code)
+                return ToolResult(ok=False, content=f"MCP call failed: HTTP {r.status_code}")
 
             try:
                 data = r.json()
             except Exception:
                 logger.error("mcp_remote_call_json_parse_error", exc_info=True)
-                return "MCP call failed: invalid JSON response."
+                return ToolResult(ok=False, content="MCP call failed: invalid JSON response.")
 
-            result = data.get("result") if isinstance(data, dict) else None
+            if not isinstance(data, dict):
+                return ToolResult(ok=False, content="MCP call returned no result.")
 
-            if isinstance(result, str):
-                return result
+            content = data.get("result")
+            if not isinstance(content, str):
+                content = str(content) if content is not None else "MCP call returned no result."
 
-            if result is None:
-                return "MCP call returned no result."
-
-            return str(result)
+            ok = bool(data.get("success", True))
+            return ToolResult(ok=ok, content=content)
 
         except Exception:
             logger.error("mcp_remote_call_exception", exc_info=True)
-            return "MCP call failed due to unexpected error."
+            return ToolResult(ok=False, content="MCP call failed due to unexpected error.")
 
     async def get_metrics(self) -> dict:
         if not self.base_url:

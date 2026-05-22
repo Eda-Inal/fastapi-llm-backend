@@ -2,7 +2,7 @@ import ast
 import operator as op
 import re
 
-from app.mcp_server.tools.base import Tool
+from app.mcp_server.tools.base import Tool, ToolResult
 
 
 _ALLOWED_OPERATORS = {
@@ -47,34 +47,26 @@ class CalculatorTool(Tool):
             )
         raise ValueError("Unsupported expression")
 
-    async def run(self, args: dict) -> str:
-        """
-        Executes the calculator tool.
-
-        IMPORTANT RULE:
-        - This method MUST NEVER raise an exception.
-        - On any error, it must return a string.
-        """
-
+    async def run(self, args: dict) -> ToolResult:
         try:
             expr = args.get("expression", "")
             if not isinstance(expr, str):
-                return "Calculator not used: invalid expression type."
+                return ToolResult(ok=False, content="Calculator not used: invalid expression type.")
 
             expr = expr.replace("^", "**").strip()
 
             if not re.search(r"\d", expr):
-                return "Calculator not used: no numeric expression detected."
+                return ToolResult(ok=False, content="Calculator not used: no numeric expression detected.")
 
             clean_expr = re.sub(r"[^0-9+\-*/(). **]", "", expr)
 
             if not clean_expr:
-                return "Calculator not used: expression is empty after sanitization."
+                return ToolResult(ok=False, content="Calculator not used: expression is empty after sanitization.")
 
             tree = ast.parse(clean_expr, mode="eval")
             result = self._eval(tree.body)
 
-            return f"{clean_expr} = {result}"
+            return ToolResult(ok=True, content=f"{clean_expr} = {result}")
 
         except Exception:
-            return "Calculator could not evaluate the given expression."
+            return ToolResult(ok=False, content="Calculator could not evaluate the given expression.")

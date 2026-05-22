@@ -9,7 +9,7 @@ import structlog
 from app.core.config import settings
 from app.db.repositories.document import search_document_chunks
 from app.db.session import AsyncSessionLocal
-from app.mcp_server.tools.base import Tool
+from app.mcp_server.tools.base import Tool, ToolResult
 from app.services.embeddings import EmbeddingService
 from app.services.rag_metrics import rag_metrics
 from app.services.reranker import RerankerService
@@ -72,16 +72,11 @@ class RagSearchTool(Tool):
         location = f" ({', '.join(loc_parts)})" if loc_parts else ""
         return f"Source: {filename}{location}, uploaded {created_str}"
 
-    async def run(self, args: dict[str, Any]) -> str:
-        """
-        IMPORTANT RULE:
-        - This method MUST NEVER raise an exception.
-        - On any error, it must return a string.
-        """
+    async def run(self, args: dict[str, Any]) -> ToolResult:
         try:
             query = args.get("query")
             if not isinstance(query, str) or not query.strip():
-                return "RAG search not used: missing or invalid query."
+                return ToolResult(ok=False, content="RAG search not used: missing or invalid query.")
 
             top_k = self._coerce_top_k(args.get("top_k"))
             threshold = self._coerce_threshold(args.get("similarity_threshold"))
@@ -94,7 +89,7 @@ class RagSearchTool(Tool):
             embedding_latency_ms = int((time.perf_counter() - embed_started) * 1000)
             if emb is None:
                 rag_metrics.record_embedding_failure()
-                return "Retrieval unavailable: embedding error."
+                return ToolResult(ok=False, content="Retrieval unavailable: embedding error.")
 
             is_hybrid = settings.hybrid_search_enabled
             use_reranker = self.reranker.enabled
@@ -124,7 +119,7 @@ class RagSearchTool(Tool):
                     pgvector_query_ms=pgvector_query_ms,
                     returned_chunks=0,
                 )
-                return "No relevant information found in knowledge base."
+                return ToolResult(ok=True, content="No relevant information found in knowledge base.")
 
             # In hybrid mode the score is an RRF value (different scale from
             # cosine similarity), so the dense threshold is not meaningful.
@@ -140,7 +135,7 @@ class RagSearchTool(Tool):
                     pgvector_query_ms=pgvector_query_ms,
                     returned_chunks=0,
                 )
-                return "No relevant information found in knowledge base."
+                return ToolResult(ok=True, content="No relevant information found in knowledge base.")
 
             # --- Reranking stage ---
             if use_reranker and len(filtered_rows) > 1:
@@ -204,7 +199,7 @@ class RagSearchTool(Tool):
                 returned_chunks=len(filtered_rows),
             )
 
-            return "\n---\n".join(blocks)
+            return ToolResult(ok=True, content="\n---\n".join(blocks))
         except Exception:
             logger.error("rag_search_failed_unexpectedly", exc_info=True)
-            return "Retrieval failed unexpectedly."
+            return ToolResult(ok=False, content="Retrieval failed unexpectedly.")

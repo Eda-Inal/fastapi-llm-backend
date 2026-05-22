@@ -5,6 +5,7 @@ import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repositories.chat_log import create_chat_log, list_chat_logs_by_conversation
+from app.mcp_server.tools.base import ToolResult
 from app.schemas.chat_bulk import BulkChatItem
 from app.services.groq_client import LLMClient
 from app.services.mcp.remote_client import RemoteMCPClient
@@ -243,6 +244,7 @@ class ChatService:
         max_total_tool_calls = 10
         total_tool_calls_executed = 0
         any_tool_executed = False
+        last_rag_result: ToolResult | None = None
 
         def merge_tool_call_delta(state: dict, deltas: list[dict]) -> None:
             for d in deltas:
@@ -360,10 +362,9 @@ class ChatService:
                             rag_args["metadata_filter"] = {"user_id": user_id}
                         rag_result = await self.mcp.call_tool("rag_search", rag_args)
                         rag_found = (
-                            isinstance(rag_result, str)
-                            and rag_result.strip()
-                            and "No relevant information" not in rag_result
-                            and "Retrieval" not in rag_result
+                            rag_result.ok
+                            and rag_result.content.strip()
+                            and "No relevant information" not in rag_result.content
                         )
                         if rag_found:
                             effective_messages = list(effective_messages) + [
@@ -371,7 +372,7 @@ class ChatService:
                                     "role": "system",
                                     "content": (
                                         "Retrieved context from the knowledge base:\n"
-                                        f"{rag_result}\n\n"
+                                        f"{rag_result.content}\n\n"
                                         "Answer ONLY using the retrieved context above. "
                                         "Do not use your training knowledge to override these values. "
                                         "Use the exact values from the text. "
@@ -461,12 +462,15 @@ class ChatService:
 
                 result = await self.mcp.call_tool(name, args)
 
+                if name == "rag_search" and result.ok:
+                    last_rag_result = result
+
                 effective_messages.append(
                     {
                         "role": "tool",
                         "name": name,
                         "tool_call_id": tool_call_id,
-                        "content": result,
+                        "content": result.content if result.ok else f"[{name} unavailable: {result.content}]",
                     }
                 )
 
@@ -475,28 +479,21 @@ class ChatService:
 
 
             if any_tool_executed:
-                # If rag_search returned actual content, re-inject it as a
-                # dedicated system message so the model cannot overlook it.
-                rag_result_for_grounding = next(
-                    (
-                        m for m in reversed(effective_messages)
-                        if isinstance(m, dict)
-                        and m.get("role") == "tool"
-                        and m.get("name") == "rag_search"
-                        and isinstance(m.get("content"), str)
-                        and "No relevant information" not in m["content"]
-                        and "Retrieval unavailable" not in m["content"]
-                    ),
-                    None,
-                )
-                if rag_result_for_grounding:
+                # Re-inject the last successful rag_search result as a system
+                # message so the model cannot overlook retrieved content.
+                # Only added when ok=True and content is not a "no results" response.
+                if (
+                    last_rag_result is not None
+                    and last_rag_result.ok
+                    and "No relevant information" not in last_rag_result.content
+                ):
                     effective_messages.append({
                         "role": "system",
                         "content": (
                             "The following is the EXACT text retrieved from the user's documents. "
                             "You MUST answer using only the values and facts shown below. "
                             "Do not use your training knowledge to change, update, or contradict these values:\n\n"
-                            + rag_result_for_grounding["content"]
+                            + last_rag_result.content
                         ),
                     })
 

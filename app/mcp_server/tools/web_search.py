@@ -1,5 +1,5 @@
 import httpx
-from app.mcp_server.tools.base import Tool
+from app.mcp_server.tools.base import Tool, ToolResult
 from app.core.config import settings
 
 
@@ -22,19 +22,14 @@ class WebSearchTool(Tool):
             self._client = httpx.AsyncClient(timeout=10)
         return self._client
 
-    async def run(self, args: dict) -> str:
-        """
-        IMPORTANT RULE:
-        - This method MUST NEVER raise an exception.
-        - On any error, it must return a string.
-        """
+    async def run(self, args: dict) -> ToolResult:
         try:
             query = args.get("query")
             if not isinstance(query, str) or not query.strip():
-                return "Web search not used: missing or invalid query."
+                return ToolResult(ok=False, content="Web search not used: missing or invalid query.")
 
             if not getattr(settings, "tavily_api_key", None):
-                return "Web search not available: missing Tavily API key."
+                return ToolResult(ok=False, content="Web search not available: missing Tavily API key.")
 
             payload = {
                 "api_key": settings.tavily_api_key,
@@ -44,18 +39,19 @@ class WebSearchTool(Tool):
 
             r = await self._get_client().post("https://api.tavily.com/search", json=payload)
             if r.status_code >= 400:
-                return f"Web search failed: HTTP {r.status_code}"
+                return ToolResult(ok=False, content=f"Web search failed: HTTP {r.status_code}")
             data = r.json()
 
             results = data.get("results", [])
             if not isinstance(results, list) or not results:
-                return "Web search returned no results."
+                return ToolResult(ok=True, content="Web search returned no results.")
 
-            return "\n".join(
+            formatted = "\n".join(
                 f"{i.get('url', '')}: {i.get('content', '')}"
                 for i in results
                 if isinstance(i, dict)
-            ).strip() or "Web search returned results but could not format them."
+            ).strip()
+            return ToolResult(ok=True, content=formatted or "Web search returned results but could not format them.")
 
         except Exception:
-            return "Web search failed due to an unexpected error."
+            return ToolResult(ok=False, content="Web search failed due to an unexpected error.")

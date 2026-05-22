@@ -38,13 +38,11 @@ async def call_tool(payload: ToolCallRequest):
 
     tool = registry.get(name)
     if tool is None:
-        return {"result": "Tool not found"}
+        return {"success": False, "result": "Tool not found"}
 
     try:
         result = await tool.run(args)
-        if not isinstance(result, str):
-            result = str(result)
-        return {"result": result}
+        return {"success": result.ok, "result": result.content}
     except Exception:
         log.error("tool_call_failed", exc_info=True)
-        return {"result": "Tool execution failed"}
+        return {"success": False, "result": "Tool execution failed"}

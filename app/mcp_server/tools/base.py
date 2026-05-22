@@ -1,5 +1,12 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Any
+
+
+@dataclass
+class ToolResult:
+    ok: bool
+    content: str
 
 
 class Tool(ABC):
@@ -22,5 +29,5 @@ class Tool(ABC):
         }
 
     @abstractmethod
-    async def run(self, args: dict[str, Any]) -> str:
+    async def run(self, args: dict[str, Any]) -> ToolResult:
         raise NotImplementedError
