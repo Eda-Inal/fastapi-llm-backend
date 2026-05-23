@@ -194,6 +194,14 @@ class LLMClient:
 
                     finish_reason = choice0.get("finish_reason")
                     if finish_reason:
+                        if isinstance(data.get("usage"), dict):
+                            u = data["usage"]
+                            yield {
+                                "type": "usage",
+                                "prompt_tokens": u.get("prompt_tokens", 0),
+                                "completion_tokens": u.get("completion_tokens", 0),
+                                "total_tokens": u.get("total_tokens", 0),
+                            }
                         yield {"type": "done", "finish_reason": finish_reason}
                         return
 

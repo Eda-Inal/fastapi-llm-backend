@@ -258,6 +258,13 @@ class Settings(BaseSettings):
     short_doc_single_chunk_max_tokens: int = 100
     min_chunk_tokens: int = 20
 
+    # ------------------------------------------------------------------
+    # LangSmith tracing
+    # ------------------------------------------------------------------
+    langsmith_api_key: str | None = None
+    langsmith_project: str = "groq-stream-fastapi"
+    langsmith_tracing_enabled: bool = False
+
     class Config:
         env_file = ".env"
 
