@@ -22,41 +22,37 @@ from app.utils.token_counter import (
 logger = structlog.get_logger()
 
 
-RAG_TOOL_CALL_SYSTEM_MESSAGE = {
+ROUTING_SYSTEM_MESSAGE = {
     "role": "system",
     "content": (
-        "Tool routing rules:\n\n"
-        "You have three tools available. Choose the one that best fits the user's "
-        "question. Do not force a fixed order — judge each question on its own merit.\n\n"
-        "1. rag_search — The user's uploaded documents (private knowledge base). "
-        "Use this when the question is about user-specific content: policies, manuals, "
-        "reports, contracts, internal notes, or anything the user has uploaded. "
-        "If unsure whether the answer lives in their documents, prefer trying rag_search.\n\n"
-        "2. web_search — Live or current external information. Use this for weather, "
-        "news, real-time events, recent updates, public facts that change over time, "
-        "or general-knowledge questions where the answer cannot be in the user's "
-        "private documents.\n\n"
-        "3. calculator — Use for ANY arithmetic the user explicitly asks you to "
-        "compute, regardless of how easy the numbers look. This includes "
-        "multiplication, division, percentages, and combined expressions, even "
-        "when the question is phrased in natural language (e.g., 'what is X "
-        "multiplied by Y', 'how much is 18% of 1250'). Do not perform the math "
-        "in your head — always route arithmetic requests through this tool so "
-        "the result is verifiable.\n\n"
-        "Guidelines:\n"
-        "- You may call multiple tools when a question requires it (e.g., retrieve a "
-        "number with rag_search, then compute with calculator).\n"
-        "- If rag_search returns nothing relevant, tell the user honestly that the "
-        "information was not in their documents. Do NOT automatically retry with "
-        "web_search unless the question genuinely calls for external information.\n"
-        "- For static general-knowledge questions whose answer does not change "
-        "over time (historical dates, geography, basic science, definitions, "
-        "classical authors, established formulas), answer directly from your "
-        "own knowledge without calling any tool. Reserve web_search for live "
-        "or changing information.\n"
-        "- For simple conversational messages (greetings, clarifications, thanks), "
-        "no tool is needed — respond directly.\n"
-        "- Choose the minimum number of tools required. Do not call tools unnecessarily."
+        "You are a routing agent. Your ONLY task is to decide whether to call a tool. "
+        "Do NOT write any text response — only make tool calls if needed.\n\n"
+        "Available tools:\n"
+        "1. rag_search — user's private uploaded documents (policies, manuals, "
+        "reports, contracts, internal notes). If unsure whether the answer lives "
+        "in their documents, prefer trying rag_search.\n"
+        "2. web_search — live or current external information (weather, news, "
+        "real-time events, public facts that change over time).\n"
+        "3. calculator — ANY arithmetic the user explicitly asks to compute, "
+        "regardless of how easy the numbers look (e.g. 'what is 18% of 1250'). "
+        "Never compute in your head — always route through this tool.\n\n"
+        "Rules:\n"
+        "- If a tool is needed: call it. Output no text.\n"
+        "- You may call multiple tools when a question requires it.\n"
+        "- For static general-knowledge questions (historical dates, geography, "
+        "definitions, classical authors, established formulas): output nothing. "
+        "A separate step will answer.\n"
+        "- For simple conversational messages (greetings, thanks): output nothing.\n"
+        "- Choose the minimum number of tools required."
+    ),
+}
+
+DIRECT_ANSWER_SYSTEM_MESSAGE = {
+    "role": "system",
+    "content": (
+        "Answer the user's question clearly and concisely from your own knowledge. "
+        "Be accurate, helpful, and direct. "
+        "Do not reference any tools or documents."
     ),
 }
 
@@ -367,11 +363,11 @@ class ChatService:
                     isinstance(m, dict)
                     and m.get("role") == "system"
                     and isinstance(m.get("content"), str)
-                    and "private knowledge base via the rag_search tool" in m["content"]
+                    and "You are a routing agent" in m["content"]
                     for m in effective_messages
                 )
                 if not already_guided:
-                    effective_messages = [RAG_TOOL_CALL_SYSTEM_MESSAGE] + effective_messages
+                    effective_messages = [ROUTING_SYSTEM_MESSAGE] + effective_messages
 
             def merge_tool_call_delta(state: dict, deltas: list[dict]) -> None:
                 for d in deltas:
@@ -527,7 +523,7 @@ class ChatService:
                                 ]
                                 log.info("rag_empty_asking_user_for_web_search")
 
-                        buffered_chunks = []
+                        fallback_chunks: list[dict] = []
                         retry_final_event: dict | None = None
 
                         # ── LLM call 2: fallback retry without tools ────────────
@@ -551,17 +547,47 @@ class ChatService:
                             seed=seed,
                         ):
                             if event.get("type") == "chunk" and event.get("text"):
-                                buffered_chunks.append(event)
+                                fallback_chunks.append(event)
                             elif event.get("type") in ("error", "done"):
                                 retry_final_event = event
                                 break
 
-                    for ev in buffered_chunks:
-                        full_response.append(ev.get("text", ""))
-                        yield ev
+                        for ev in fallback_chunks:
+                            full_response.append(ev.get("text", ""))
+                            yield ev
 
-                    if tool_call_generation_failed and retry_final_event:
-                        yield retry_final_event
+                        if retry_final_event:
+                            yield retry_final_event
+                        break
+
+                    # ── Phase 2: direct answer (no tool needed) ─────────────────
+                    # LLM 1 (routing) produced no tool call — its buffered text is
+                    # discarded. A fresh call with a clean answer prompt ensures the
+                    # model focuses solely on answering, not on tool selection.
+                    effective_messages.append(DIRECT_ANSWER_SYSTEM_MESSAGE)
+
+                    async for event in self._traced_llm_call(
+                        parent_run=root_run,
+                        name=f"llm.{model}.direct_answer",
+                        metadata={
+                            "round": round_no,
+                            "with_tools": False,
+                            "reason": "no_tool_needed",
+                        },
+                        messages=effective_messages,
+                        model=model,
+                        tools=None,
+                        temperature=temperature,
+                        max_tokens=max_tokens,
+                        top_p=top_p,
+                        frequency_penalty=frequency_penalty,
+                        presence_penalty=presence_penalty,
+                        stop=stop,
+                        seed=seed,
+                    ):
+                        if event.get("type") == "chunk" and event.get("text"):
+                            full_response.append(event["text"])
+                        yield event
                     break
 
                 openai_tool_calls = build_openai_tool_calls(tool_state)
