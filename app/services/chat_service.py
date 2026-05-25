@@ -445,13 +445,8 @@ class ChatService:
                     messages=effective_messages,
                     model=model,
                     tools=tools_schema,
-                    temperature=temperature,
-                    max_tokens=max_tokens,
-                    top_p=top_p,
-                    frequency_penalty=frequency_penalty,
-                    presence_penalty=presence_penalty,
-                    stop=stop,
-                    seed=seed,
+                    temperature=0,
+                    max_tokens=256,
                 ):
                     etype = event.get("type")
 
