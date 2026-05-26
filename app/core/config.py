@@ -16,26 +16,37 @@ AVAILABLE_MODELS: Dict[str, Any] = {
     "llama-3.3-70b-versatile": {
         "provider": "groq",
         "tier": "judge",
-        "stream": True,
+        "stream": False,
         "context_window": 131072,
+        "rate_limits": {"rpm": 30, "rpd": 1000, "tpm": 12000, "tpd": 100000},
     },
     "llama-3.1-8b-instant": {
         "provider": "groq",
         "tier": "fast",
-        "stream": True,
+        "stream": False,
         "context_window": 131072,
+        "rate_limits": {"rpm": 30, "rpd": 14400, "tpm": 6000, "tpd": 500000},
     },
     "meta-llama/llama-4-scout-17b-16e-instruct": {
         "provider": "groq",
         "tier": "balanced",
-        "stream": True,
+        "stream": False,
         "context_window": 131072,
+        "rate_limits": {"rpm": 30, "rpd": 1000, "tpm": 30000, "tpd": 500000},
     },
     "qwen/qwen3-32b": {
         "provider": "groq",
         "tier": "balanced",
-        "stream": True,
+        "stream": False,
         "context_window": 131072,
+        "rate_limits": {"rpm": 60, "rpd": 1000, "tpm": 6000, "tpd": 500000},
+    },
+    "openai/gpt-oss-120b": {
+        "provider": "groq",
+        "tier": "balanced",
+        "stream": False,
+        "context_window": 131072,
+        "rate_limits": {"rpm": 30, "rpd": 1000, "tpm": 8000, "tpd": 200000},
     },
 
     # ──────────────────────────────────────────────────────────────────
@@ -44,27 +55,69 @@ AVAILABLE_MODELS: Dict[str, Any] = {
     "openai/gpt-oss-120b:free": {
         "provider": "openrouter",
         "tier": "balanced",
-        "stream": True,
+        "stream": False,
         "context_window": 131072,
     },
     "google/gemma-4-31b-it:free": {
         "provider": "openrouter",
         "tier": "balanced",
-        "stream": True,
+        "stream": False,
         "context_window": 262144,
     },
     "google/gemma-4-26b-a4b-it:free": {
         "provider": "openrouter",
         "tier": "fast",
-        "stream": True,
+        "stream": False,
         "context_window": 262144,
     },
     "meta-llama/llama-3.3-70b-instruct:free": {
         "provider": "openrouter",
         "tier": "balanced",
-        "stream": True,
+        "stream": False,
         "context_window": 131072,
     },
+
+    # ──────────────────────────────────────────────────────────────────
+    # Google Gemini (Direct API — OpenAI-compatible)
+    # Model IDs: https://ai.google.dev/gemini-api/docs/models
+    # Disabled below: free-tier quota limit 0 (429) until billing is enabled.
+    # ──────────────────────────────────────────────────────────────────
+    # "gemini-2.5-pro": {
+    #     "provider": "gemini",
+    #     "tier": "balanced",
+    #     "stream": False,
+    #     "context_window": 1048576,
+    # },
+    "gemini-2.5-flash": {
+        "provider": "gemini",
+        "tier": "fast",
+        "stream": False,
+        "context_window": 1048576,
+    },
+    "gemini-3.5-flash": {
+        "provider": "gemini",
+        "tier": "balanced",
+        "stream": False,
+        "context_window": 1048576,
+    },
+    "gemini-2.5-flash-lite": {
+        "provider": "gemini",
+        "tier": "fast",
+        "stream": False,
+        "context_window": 1048576,
+    },
+    # "gemini-3.1-pro-preview": {
+    #     "provider": "gemini",
+    #     "tier": "balanced",
+    #     "stream": False,
+    #     "context_window": 1048576,
+    # },
+    # "gemini-2.5-computer-use-preview-10-2025": {
+    #     "provider": "gemini",
+    #     "tier": "preview",
+    #     "stream": False,
+    #     "context_window": 128000,
+    # },
 
 }
 

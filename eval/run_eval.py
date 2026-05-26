@@ -31,6 +31,7 @@ _load_env()
 os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://placeholder:x@localhost/x")
 
 from langsmith import evaluate  # noqa: E402
+from app.core.config import AVAILABLE_MODELS  # noqa: E402
 
 # ── config ────────────────────────────────────────────────────────────────────
 
@@ -39,35 +40,58 @@ ROUTE_URL     = "http://localhost:8000/api/v1/eval/route"
 HEALTH_URL    = "http://localhost:8000/api/v1/chat/models"
 # Set MODEL to any model in AVAILABLE_MODELS. Uses a separate provider so
 # eval runs don't consume the chat app's Groq token quota.
-MODEL         = "meta-llama/llama-4-scout-17b-16e-instruct"
+MODEL = "openai/gpt-oss-120b"
 
 # ── rate-limit guard ──────────────────────────────────────────────────────────
-# llama-4-scout on Groq: ~30 RPM limit. At 2s delay = max 15 req/min — safe.
-REQUEST_DELAY = 2.0   # seconds between every question
+# REQUEST_DELAY is auto-computed from model's rate_limits in AVAILABLE_MODELS.
+# Binding constraint: max(rpm_delay, tpm_delay) + 15% safety margin.
+_TOKENS_PER_REQUEST = 580  # estimated tokens per eval/route call
+
+def _compute_delay(model: str) -> float:
+    limits = AVAILABLE_MODELS.get(model, {}).get("rate_limits")
+    if not limits:
+        return 2.0  # fallback
+    rpm_delay = 60.0 / limits["rpm"]
+    tpm_delay = 60.0 / (limits["tpm"] / _TOKENS_PER_REQUEST)
+    return round(max(rpm_delay, tpm_delay) * 1.15, 1)
+
+REQUEST_DELAY = _compute_delay(MODEL)
 GROUP_SIZE    = 5     # questions per group
 GROUP_PAUSE   = 15.0  # extra seconds after each group
 
-RETRY_MAX          = 4
-RETRY_INITIAL_WAIT = 15.0
+RETRY_MAX = 3  # max retries on RPM rate-limit (not used for daily quota)
 
 # ── Filter ────────────────────────────────────────────────────────────────────
 # Leave empty to run all questions.
 # Add substrings to run only matching questions (case-insensitive).
 FILTER: list[str] = []
+# Filter by expected tool. Leave empty to run all. e.g. "web_search"
+FILTER_TOOL: str = "none"
 
 _results_log: list[dict] = []
 _call_count   = 0
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
+class _RateLimitError(Exception):
+    def __init__(self, retry_after: int | None) -> None:
+        self.retry_after = retry_after  # None = daily quota exhausted
+
+
 def _call_route(question: str) -> str:
-    """
-    POST /api/v1/eval/route and return the tool name selected by the routing LLM.
-    Returns empty string on HTTP error or rate-limit so caller can retry.
-    """
+    """POST /api/v1/eval/route and return the tool name selected by the routing LLM."""
     with httpx.Client(timeout=30) as client:
         r = client.post(ROUTE_URL, json={"question": question, "model": MODEL})
-        if r.status_code == 429 or r.status_code >= 500:
+        if r.status_code == 429:
+            retry_after = None
+            try:
+                detail = r.json().get("detail")
+                if isinstance(detail, dict):
+                    retry_after = detail.get("retry_after")
+            except Exception:
+                pass
+            raise _RateLimitError(retry_after)
+        if r.status_code >= 500:
             return ""
         r.raise_for_status()
         return r.json().get("tool", "none")
@@ -82,25 +106,21 @@ def target(inputs: dict) -> dict:
 
     question = inputs["question"]
 
-    wait = RETRY_INITIAL_WAIT
-    tool_used = ""
+    tool_used = "none"
     for attempt in range(1, RETRY_MAX + 1):
-        tool_used = _call_route(question)
-        if tool_used:
+        try:
+            tool_used = _call_route(question)
             break
-        if attempt < RETRY_MAX:
-            print(
-                f"\n  [rate-limited]  retry {attempt}/{RETRY_MAX - 1} in {wait:.0f}s...",
-                flush=True,
-            )
-            time.sleep(wait)
-            wait = min(wait * 2, 60.0)
-        else:
-            print(
-                f"\n  [GIVE UP] {question[:55]!r} — no response after {RETRY_MAX} attempts",
-                flush=True,
-            )
-            tool_used = "none"
+        except _RateLimitError as e:
+            if e.retry_after is None:
+                print(f"\n  [QUOTA] {question[:55]!r} — daily quota exhausted, skipping", flush=True)
+                break
+            if attempt < RETRY_MAX:
+                wait = e.retry_after + 1
+                print(f"\n  [rate-limited] retry {attempt}/{RETRY_MAX - 1} in {wait}s...", flush=True)
+                time.sleep(wait)
+            else:
+                print(f"\n  [GIVE UP] {question[:55]!r} — rate-limited {RETRY_MAX} times", flush=True)
 
     time.sleep(REQUEST_DELAY)
 
@@ -151,15 +171,16 @@ if __name__ == "__main__":
 
     _warmup()
 
-    if FILTER:
+    if FILTER or FILTER_TOOL:
         client = Client()
         all_examples = list(client.list_examples(dataset_name=DATASET_NAME))
-        data = [
-            e for e in all_examples
-            if any(f.lower() in e.inputs["question"].lower() for f in FILTER)
-        ]
+        data = all_examples
+        if FILTER:
+            data = [e for e in data if any(f.lower() in e.inputs["question"].lower() for f in FILTER)]
+        if FILTER_TOOL:
+            data = [e for e in data if e.outputs.get("expected_tool") == FILTER_TOOL]
         if not data:
-            print(f"No questions matched FILTER={FILTER}. Exiting.")
+            print(f"No questions matched filters. Exiting.")
             raise SystemExit(1)
         print("=" * 60)
         print(f"Dataset : {DATASET_NAME}  (filtered: {len(data)}/{len(all_examples)})")
@@ -168,7 +189,11 @@ if __name__ == "__main__":
         print("=" * 60)
         print(f"Dataset : {DATASET_NAME}  (all questions)")
 
+    limits = AVAILABLE_MODELS.get(MODEL, {}).get("rate_limits")
+    limit_str = f"RPM={limits['rpm']} TPM={limits['tpm']}" if limits else "no rate_limits defined"
     print(f"Model   : {MODEL}")
+    print(f"Limits  : {limit_str}")
+    print(f"Delay   : {REQUEST_DELAY}s/question  (GROUP_PAUSE={GROUP_PAUSE}s every {GROUP_SIZE})")
     print(f"API     : {ROUTE_URL}")
     print("=" * 60)
 

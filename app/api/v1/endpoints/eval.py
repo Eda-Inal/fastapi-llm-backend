@@ -54,6 +54,8 @@ async def route_question(payload: RouteRequest) -> RouteResponse:
         messages=messages,
         model=model,
         tools=tools_schema,
+        temperature=0,
+        max_tokens=256,
     ):
         etype = event.get("type")
         if etype == "tool_call":
@@ -66,7 +68,14 @@ async def route_question(payload: RouteRequest) -> RouteResponse:
                     tool_state[key]["name"] = fn["name"]
                 if isinstance(fn.get("arguments"), str):
                     tool_state[key]["arguments"] += fn["arguments"]
-        elif etype in ("done", "error"):
+        elif etype == "error":
+            if event.get("status") == 429:
+                raise HTTPException(status_code=429, detail={
+                    "message": event.get("message", "Rate limit reached"),
+                    "retry_after": event.get("retry_after"),
+                })
+            break
+        elif etype == "done":
             break
 
     if not tool_state:

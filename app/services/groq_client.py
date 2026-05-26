@@ -1,4 +1,5 @@
 import json
+import re
 from typing import Any, AsyncIterator
 
 import httpx
@@ -97,11 +98,15 @@ class LLMClient:
             yield {"type": "done", "finish_reason": "error"}
             return
 
+        model_info = AVAILABLE_MODELS.get(model, {})
+        provider = model_info.get("provider", "groq")
+        use_stream = model_info.get("stream", True)
+
         payload: dict[str, Any] = {
             "model": model,
             "messages": messages,
             "tools": tools,
-            "stream": True,
+            "stream": use_stream,
             "temperature": temperature,
             "max_tokens": max_tokens,
             "top_p": top_p,
@@ -113,7 +118,6 @@ class LLMClient:
         payload = {k: v for k, v in payload.items() if v is not None}
 
         # Gemini does not support these OpenAI-specific parameters.
-        provider = AVAILABLE_MODELS.get(model, {}).get("provider", "groq")
         if provider == "gemini":
             for key in ("frequency_penalty", "presence_penalty", "seed"):
                 payload.pop(key, None)
@@ -157,6 +161,66 @@ class LLMClient:
 
         try:
             client = self._get_client(base_url, api_key)
+
+            if not use_stream:
+                response = await client.post("/chat/completions", json=payload)
+                if response.status_code >= 400:
+                    body = response.content.decode("utf-8", errors="replace")
+                    log.error("llm_http_error", status=response.status_code, body=body[:500])
+                    err: dict = {
+                        "type": "error",
+                        "status": response.status_code,
+                        "message": body or f"HTTP error {response.status_code} from {provider}",
+                    }
+                    if response.status_code == 429:
+                        raw_ra = response.headers.get("retry-after") or response.headers.get("Retry-After")
+                        if raw_ra and raw_ra.isdigit():
+                            err["retry_after"] = int(raw_ra)
+                        else:
+                            m = re.search(r'retry in ([\d.]+)s', body)
+                            if m:
+                                err["retry_after"] = int(float(m.group(1))) + 1
+                    yield err
+                    yield {"type": "done", "finish_reason": "error"}
+                    return
+
+                data = response.json()
+                choices = data.get("choices") or []
+                choice0 = choices[0] if choices else {}
+                message = choice0.get("message") or {}
+
+                tool_calls = message.get("tool_calls")
+                if tool_calls:
+                    normalized = [
+                        {
+                            "index": i,
+                            "function": {
+                                "name": tc.get("function", {}).get("name"),
+                                "arguments": tc.get("function", {}).get("arguments", ""),
+                            },
+                        }
+                        for i, tc in enumerate(tool_calls)
+                    ]
+                    yield {"type": "tool_call", "tool_calls": normalized}
+
+                content = message.get("content")
+                if content:
+                    filtered = _filter_think(content)
+                    if filtered:
+                        yield {"type": "chunk", "text": filtered}
+
+                if isinstance(data.get("usage"), dict):
+                    u = data["usage"]
+                    yield {
+                        "type": "usage",
+                        "prompt_tokens": u.get("prompt_tokens", 0),
+                        "completion_tokens": u.get("completion_tokens", 0),
+                        "total_tokens": u.get("total_tokens", 0),
+                    }
+
+                yield {"type": "done", "finish_reason": choice0.get("finish_reason", "stop")}
+                return
+
             async with client.stream(
                 "POST",
                 "/chat/completions",
@@ -175,6 +239,10 @@ class LLMClient:
                         raw_ra = r.headers.get("retry-after") or r.headers.get("Retry-After")
                         if raw_ra and raw_ra.isdigit():
                             err["retry_after"] = int(raw_ra)
+                        else:
+                            m = re.search(r'retry in ([\d.]+)s', message)
+                            if m:
+                                err["retry_after"] = int(float(m.group(1))) + 1
                     yield err
                     yield {"type": "done", "finish_reason": "error"}
                     return
