@@ -7,7 +7,7 @@ from typing import Any
 import structlog
 
 from app.core.config import settings
-from app.db.repositories.document import search_document_chunks
+from app.db.repositories.document import count_stale_chunks, search_document_chunks
 from app.db.session import AsyncSessionLocal
 from app.mcp_server.tools.base import Tool, ToolResult
 from app.services.embeddings import EmbeddingService
@@ -108,7 +108,9 @@ class RagSearchTool(Tool):
                 metadata_filter = None
 
             embed_started = time.perf_counter()
-            emb = await self.embeddings.embed_text(query.strip())
+            emb = await self.embeddings.embed_text(
+                "Represent this sentence for searching relevant passages: " + query.strip()
+            )
             embedding_latency_ms = int((time.perf_counter() - embed_started) * 1000)
             if emb is None:
                 rag_metrics.record_embedding_failure()
@@ -124,6 +126,7 @@ class RagSearchTool(Tool):
                 else top_k
             )
 
+            current_model = settings.embedding_model_name
             query_started = time.perf_counter()
             async with AsyncSessionLocal() as session:
                 rows = await search_document_chunks(
@@ -132,6 +135,13 @@ class RagSearchTool(Tool):
                     query_text=query.strip() if is_hybrid else None,
                     top_k=fetch_k,
                     metadata_filter=metadata_filter,
+                    embedding_model=current_model,
+                )
+                user_id = metadata_filter.get("user_id") if isinstance(metadata_filter, dict) else None
+                stale_count = await count_stale_chunks(
+                    session,
+                    user_id=user_id,
+                    current_model=current_model,
                 )
             pgvector_query_ms = int((time.perf_counter() - query_started) * 1000)
 
@@ -142,7 +152,13 @@ class RagSearchTool(Tool):
                     pgvector_query_ms=pgvector_query_ms,
                     returned_chunks=0,
                 )
-                return ToolResult(ok=True, content="No relevant information found in knowledge base.")
+                msg = "No relevant information found in knowledge base."
+                if stale_count > 0:
+                    msg += (
+                        f" ({stale_count} chunk(s) were excluded because they were embedded "
+                        f"with a different model — reprocess those documents to include them.)"
+                    )
+                return ToolResult(ok=True, content=msg)
 
             # In hybrid mode the score is an RRF value (different scale from
             # cosine similarity), so the dense threshold is not meaningful.
@@ -222,7 +238,14 @@ class RagSearchTool(Tool):
                 returned_chunks=len(filtered_rows),
             )
 
-            return ToolResult(ok=True, content="\n---\n".join(blocks))
+            content = "\n---\n".join(blocks)
+            if stale_count > 0:
+                content += (
+                    f"\n\n⚠️ Note: {stale_count} chunk(s) in your knowledge base were embedded "
+                    f"with a different model and were excluded from this search. "
+                    f"Reprocess those documents to make them searchable again."
+                )
+            return ToolResult(ok=True, content=content)
         except Exception:
             logger.error("rag_search_failed_unexpectedly", exc_info=True)
             return ToolResult(ok=False, content="Retrieval failed unexpectedly.")

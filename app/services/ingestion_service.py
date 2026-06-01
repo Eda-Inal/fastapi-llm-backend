@@ -6,6 +6,7 @@ from dataclasses import replace
 import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.db.repositories.document import (
     create_document,
     create_document_chunk,
@@ -87,6 +88,7 @@ class IngestionService:
                 page_number=item.page_number,
                 section_heading=item.section_heading,
                 context_prefix=item.context_prefix,
+                embedding_model_name=settings.embedding_model_name,
             )
             tokens_processed += item.token_count
             chunks_created += 1
@@ -170,6 +172,7 @@ class IngestionService:
                 page_number=item.page_number,
                 section_heading=item.section_heading,
                 context_prefix=item.context_prefix,
+                embedding_model_name=settings.embedding_model_name,
             )
             tokens_processed += item.token_count
             chunks_created += 1
@@ -281,6 +284,7 @@ class IngestionService:
                 page_number=item.page_number,
                 section_heading=item.section_heading,
                 context_prefix=item.context_prefix,
+                embedding_model_name=settings.embedding_model_name,
             )
             chunks_created += 1
             tokens_processed += item.token_count

@@ -26,8 +26,12 @@ def test_rag_search_returns_no_results_message(monkeypatch) -> None:
     async def _fake_search(*args, **kwargs):
         return []
 
+    async def _fake_count_stale(*args, **kwargs):
+        return 0
+
     monkeypatch.setattr(tool.embeddings, "embed_text", _fake_embed_text)
     monkeypatch.setattr("app.mcp_server.tools.rag_search.search_document_chunks", _fake_search)
+    monkeypatch.setattr("app.mcp_server.tools.rag_search.count_stale_chunks", _fake_count_stale)
     monkeypatch.setattr("app.mcp_server.tools.rag_search.AsyncSessionLocal", lambda: _FakeSessionCtx())
 
     out = asyncio.run(tool.run({"query": "company policy"}))
@@ -54,8 +58,12 @@ def test_rag_search_formats_citations(monkeypatch) -> None:
     async def _fake_search(*args, **kwargs):
         return [(chunk, doc, 0.91)]
 
+    async def _fake_count_stale(*args, **kwargs):
+        return 0
+
     monkeypatch.setattr(tool.embeddings, "embed_text", _fake_embed_text)
     monkeypatch.setattr("app.mcp_server.tools.rag_search.search_document_chunks", _fake_search)
+    monkeypatch.setattr("app.mcp_server.tools.rag_search.count_stale_chunks", _fake_count_stale)
     monkeypatch.setattr("app.mcp_server.tools.rag_search.AsyncSessionLocal", lambda: _FakeSessionCtx())
 
     out = asyncio.run(tool.run({"query": "VPN policy", "top_k": 5}))
@@ -97,8 +105,12 @@ def test_rag_search_below_threshold_returns_no_results(monkeypatch) -> None:
     async def _fake_search(*args, **kwargs):
         return [(chunk, doc, 0.45)]
 
+    async def _fake_count_stale(*args, **kwargs):
+        return 0
+
     monkeypatch.setattr(tool.embeddings, "embed_text", _fake_embed_text)
     monkeypatch.setattr("app.mcp_server.tools.rag_search.search_document_chunks", _fake_search)
+    monkeypatch.setattr("app.mcp_server.tools.rag_search.count_stale_chunks", _fake_count_stale)
     monkeypatch.setattr("app.mcp_server.tools.rag_search.AsyncSessionLocal", lambda: _FakeSessionCtx())
 
     out = asyncio.run(tool.run({"query": "policy", "similarity_threshold": 0.7}))

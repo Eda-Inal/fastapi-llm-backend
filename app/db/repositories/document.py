@@ -45,6 +45,7 @@ async def create_document_chunk(
     page_number: int | None,
     section_heading: str | None,
     context_prefix: str | None = None,
+    embedding_model_name: str | None = None,
 ) -> DocumentChunk:
     chunk = DocumentChunk(
         document_id=document_id,
@@ -55,6 +56,7 @@ async def create_document_chunk(
         page_number=page_number,
         section_heading=section_heading,
         context_prefix=context_prefix,
+        embedding_model_name=embedding_model_name,
     )
     session.add(chunk)
     await session.flush()
@@ -118,6 +120,28 @@ async def delete_document_by_id(session: AsyncSession, *, document_id: int) -> b
     return True
 
 
+async def count_stale_chunks(
+    session: AsyncSession,
+    *,
+    user_id: str | None,
+    current_model: str,
+) -> int:
+    """Count chunks whose embedding model differs from current_model (includes NULL)."""
+    stmt = (
+        select(func.count())
+        .select_from(DocumentChunk)
+        .join(Document, Document.id == DocumentChunk.document_id)
+        .where(
+            (DocumentChunk.embedding_model_name == None)  # noqa: E711
+            | (DocumentChunk.embedding_model_name != current_model)
+        )
+    )
+    if user_id:
+        stmt = stmt.where(Document.user_id == user_id)
+    result = await session.execute(stmt)
+    return int(result.scalar_one() or 0)
+
+
 async def search_document_chunks(
     session: AsyncSession,
     *,
@@ -125,6 +149,7 @@ async def search_document_chunks(
     query_text: str | None = None,
     top_k: int,
     metadata_filter: dict | None = None,
+    embedding_model: str | None = None,
 ) -> list[tuple[DocumentChunk, Document, float]]:
     """
     Retrieve relevant chunks using dense vector search or hybrid search.
@@ -145,6 +170,7 @@ async def search_document_chunks(
             query_text=query_text.strip(),
             top_k=top_k,
             metadata_filter=metadata_filter,
+            embedding_model=embedding_model,
         )
 
     return await _dense_search(
@@ -152,6 +178,7 @@ async def search_document_chunks(
         query_vector=query_vector,
         top_k=top_k,
         metadata_filter=metadata_filter,
+        embedding_model=embedding_model,
     )
 
 
@@ -161,6 +188,7 @@ async def _dense_search(
     query_vector: list[float],
     top_k: int,
     metadata_filter: dict,
+    embedding_model: str | None = None,
 ) -> list[tuple[DocumentChunk, Document, float]]:
     """Pure cosine-similarity search (existing behaviour)."""
     similarity_expr = (1 - DocumentChunk.embedding.cosine_distance(query_vector)).label("similarity")
@@ -171,6 +199,8 @@ async def _dense_search(
         .limit(top_k)
     )
     stmt = _apply_metadata_filters(stmt, metadata_filter)
+    if embedding_model:
+        stmt = stmt.where(DocumentChunk.embedding_model_name == embedding_model)
     result = await session.execute(stmt)
     return [
         (chunk, doc, float(sim) if sim is not None else 0.0)
@@ -185,6 +215,7 @@ async def _hybrid_search(
     query_text: str,
     top_k: int,
     metadata_filter: dict,
+    embedding_model: str | None = None,
 ) -> list[tuple[DocumentChunk, Document, float]]:
     """
     Two-leg hybrid search with Reciprocal Rank Fusion.
@@ -210,6 +241,8 @@ async def _hybrid_search(
         .limit(fetch_k)
     )
     dense_stmt = _apply_metadata_filters(dense_stmt, metadata_filter)
+    if embedding_model:
+        dense_stmt = dense_stmt.where(DocumentChunk.embedding_model_name == embedding_model)
     dense_result = await session.execute(dense_stmt)
     dense_rows = dense_result.all()
     # {chunk_id: (dense_rank_1based, dense_similarity)}
@@ -221,6 +254,11 @@ async def _hybrid_search(
     # --- Sparse leg: ranked chunk IDs by ts_rank ---
     meta_clauses = _metadata_where_clauses(metadata_filter)
     all_where = meta_clauses + ["dc.text_search @@ plainto_tsquery('english', :q)"]
+    sparse_params: dict = {"q": query_text, "fetch_k": fetch_k}
+    sparse_params.update(_metadata_sql_params(metadata_filter))
+    if embedding_model:
+        all_where.append("dc.embedding_model_name = :embedding_model")
+        sparse_params["embedding_model"] = embedding_model
     sparse_sql = text(
         "SELECT dc.id, ts_rank(dc.text_search, plainto_tsquery('english', :q)) AS fts_score "
         "FROM document_chunks dc "
@@ -229,8 +267,6 @@ async def _hybrid_search(
         "ORDER BY fts_score DESC "
         "LIMIT :fetch_k"
     )
-    sparse_params = {"q": query_text, "fetch_k": fetch_k}
-    sparse_params.update(_metadata_sql_params(metadata_filter))
     sparse_result = await session.execute(sparse_sql, sparse_params)
     sparse_rows = sparse_result.all()
     # {chunk_id: sparse_rank_1based}
