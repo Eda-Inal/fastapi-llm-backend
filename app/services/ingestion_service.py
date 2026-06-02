@@ -69,6 +69,7 @@ class IngestionService:
             user_id=payload.user_id,
             embedding_model_name=embeddings[0].model_name,
             chunk_count=len(chunks),
+            conversation_id=payload.conversation_id,
         )
 
         total = len(chunks)
@@ -201,6 +202,7 @@ class IngestionService:
         filename: str,
         user_id: str | None,
         tags: list[str],
+        conversation_id: str | None = None,
     ) -> DocumentIngestResponse:
         from app.services.pdf_extractor import PDFExtractionError, extract_pages
 
@@ -221,6 +223,7 @@ class IngestionService:
             user_id=user_id,
             embedding_model_name=None,
             chunk_count=0,
+            conversation_id=conversation_id,
         )
 
         started = time.perf_counter()

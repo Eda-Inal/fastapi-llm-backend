@@ -14,6 +14,7 @@ class DocumentIngestRequest(BaseModel):
     tags: list[str] = Field(default_factory=list)
     user_id: str | None = None
     section_heading: str | None = None
+    conversation_id: str | None = None
 
 
 class DocumentReprocessRequest(BaseModel):

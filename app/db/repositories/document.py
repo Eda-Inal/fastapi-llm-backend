@@ -18,6 +18,7 @@ async def create_document(
     user_id: str | None,
     embedding_model_name: str | None,
     chunk_count: int | None,
+    conversation_id: str | None = None,
 ) -> Document:
     doc = Document(
         filename=filename,
@@ -27,6 +28,7 @@ async def create_document(
         user_id=user_id,
         embedding_model_name=embedding_model_name,
         chunk_count=chunk_count,
+        conversation_id=conversation_id,
     )
     session.add(doc)
     await session.flush()
@@ -311,7 +313,7 @@ async def _hybrid_search(
 
 
 def _apply_metadata_filters(stmt, metadata_filter: dict):
-    """Apply user_id / document_type / tags WHERE clauses to a SQLAlchemy stmt."""
+    """Apply user_id / document_type / tags / conversation_id WHERE clauses to a SQLAlchemy stmt."""
     user_id = metadata_filter.get("user_id")
     if isinstance(user_id, str) and user_id.strip():
         stmt = stmt.where(Document.user_id == user_id)
@@ -325,6 +327,10 @@ def _apply_metadata_filters(stmt, metadata_filter: dict):
         normalized = [str(t) for t in tags if isinstance(t, (str, int, float))]
         if normalized:
             stmt = stmt.where(Document.tags.contains(normalized))
+
+    conversation_id = metadata_filter.get("conversation_id")
+    if isinstance(conversation_id, str) and conversation_id.strip():
+        stmt = stmt.where(Document.conversation_id == conversation_id)
 
     return stmt
 
@@ -341,6 +347,9 @@ def _metadata_where_clauses(metadata_filter: dict) -> list[str]:
     tags = metadata_filter.get("tags")
     if isinstance(tags, list) and tags:
         clauses.append("d.tags @> :filter_tags::jsonb")
+    conversation_id = metadata_filter.get("conversation_id")
+    if isinstance(conversation_id, str) and conversation_id.strip():
+        clauses.append("d.conversation_id = :filter_conversation_id")
     return clauses
 
 
@@ -357,7 +366,23 @@ def _metadata_sql_params(metadata_filter: dict) -> dict:
     if isinstance(tags, list) and tags:
         import json as _json
         params["filter_tags"] = _json.dumps([str(t) for t in tags])
+    conversation_id = metadata_filter.get("conversation_id")
+    if isinstance(conversation_id, str) and conversation_id.strip():
+        params["filter_conversation_id"] = conversation_id
     return params
+
+
+async def has_documents_for_conversation(
+    session: AsyncSession,
+    *,
+    conversation_id: str,
+    user_id: str | None = None,
+) -> bool:
+    stmt = select(Document.id).where(Document.conversation_id == conversation_id).limit(1)
+    if user_id:
+        stmt = stmt.where(Document.user_id == user_id)
+    result = await session.execute(stmt)
+    return result.scalar_one_or_none() is not None
 
 
 async def count_documents(session: AsyncSession) -> int:

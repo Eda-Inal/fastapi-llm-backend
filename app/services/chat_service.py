@@ -8,6 +8,7 @@ import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repositories.chat_log import create_chat_log, list_chat_logs_by_conversation
+from app.db.repositories.document import has_documents_for_conversation
 from app.mcp_server.tools.base import ToolResult
 from app.schemas.chat_bulk import BulkChatItem
 from app.services.groq_client import LLMClient
@@ -349,6 +350,13 @@ class ChatService:
                 if history_messages:
                     effective_messages = history_messages + effective_messages
 
+            conv_has_docs = (
+                conversation_id is not None
+                and await has_documents_for_conversation(
+                    session, conversation_id=conversation_id, user_id=user_id
+                )
+            )
+
             tools_schema = await self.mcp.list_tools()
             # Filter tools based on feature flags so individual tools can be
             # disabled via .env without touching the MCP server registry.
@@ -382,7 +390,20 @@ class ChatService:
                     for m in effective_messages
                 )
                 if not already_guided:
-                    effective_messages = [ROUTING_SYSTEM_MESSAGE] + effective_messages
+                    if conv_has_docs:
+                        doc_hint = (
+                            "\n\nThis conversation has uploaded documents. "
+                            "If the question could relate to those documents "
+                            "(work content, reports, data, domain-specific facts), "
+                            "prefer rag_search even without explicit 'my documents' phrasing."
+                        )
+                        routing_msg = {
+                            "role": "system",
+                            "content": ROUTING_SYSTEM_MESSAGE["content"] + doc_hint,
+                        }
+                    else:
+                        routing_msg = ROUTING_SYSTEM_MESSAGE
+                    effective_messages = [routing_msg] + effective_messages
 
             def merge_tool_call_delta(state: dict, deltas: list[dict]) -> None:
                 for d in deltas:
@@ -734,13 +755,28 @@ class ChatService:
                     except json.JSONDecodeError:
                         args = {}
 
-                    # Inject caller's user_id into rag_search so retrieval is
-                    # scoped to that user's documents. The LLM never controls this.
-                    if name == "rag_search" and user_id:
+                    # Inject caller's user_id and conversation_id into rag_search
+                    # so retrieval is scoped to the correct documents.
+                    # The LLM never controls these values.
+                    # If no conversation_id is set, rag_search is blocked entirely —
+                    # documents are only accessible within the conversation they were uploaded to.
+                    if name == "rag_search":
+                        if not conversation_id:
+                            effective_messages.append({
+                                "role": "tool",
+                                "name": name,
+                                "tool_call_id": tool_call_id,
+                                "content": "rag_search is unavailable without a conversation_id.",
+                            })
+                            any_tool_executed = True
+                            total_tool_calls_executed += 1
+                            continue
                         metadata_filter = args.get("metadata_filter")
                         if not isinstance(metadata_filter, dict):
                             metadata_filter = {}
-                        metadata_filter["user_id"] = user_id
+                        if user_id:
+                            metadata_filter["user_id"] = user_id
+                        metadata_filter["conversation_id"] = conversation_id
                         args["metadata_filter"] = metadata_filter
 
                     # ── Tool call span ──────────────────────────────────────────

@@ -55,7 +55,8 @@ Client
    - **Round loop** (max 8 rounds, max 10 total tool calls):
      - **LLM call 1** (`_traced_llm_call`, name=`llm.{model}.tool_routing`): asks model to route
      - If model returns tool calls → execute each via `RemoteMCPClient.call_tool()`
-       - `rag_search` gets user_id injected into `metadata_filter` (model never controls this)
+       - `rag_search` gets `user_id` and `conversation_id` injected into `metadata_filter` (model never controls these)
+       - `rag_search` is blocked entirely if no `conversation_id` is present — returns "unavailable" tool result immediately
        - Re-injects last successful RAG result as a system message
        - Appends `FINALIZATION_SYSTEM_MESSAGE`
        - Applies `_apply_context_budget()` to stay under token limit
@@ -73,6 +74,7 @@ Client
    - `chunk_document()` → recursive split (paragraphs → lines → sentences → token windows), configurable size/overlap
    - `EmbeddingService.embed_batch()` → all-or-nothing batch embedding (retries with backoff)
    - `Document` + N `DocumentChunk` rows written atomically
+   - `conversation_id` stored on the `Document` row — scopes the document to that conversation
 3. `POST /api/v1/documents/{id}/reprocess` → `IngestionService.reprocess_document()`: delete existing chunks, re-chunk with new text/heading, re-embed, persist. Useful for correcting OCR errors without re-uploading.
 
 ### RAG Search (inside tool call)
@@ -163,10 +165,10 @@ Client
 | `app/db/base.py` | SQLAlchemy `Base` |
 | `app/db/session.py` | `AsyncSessionLocal`, `get_db` dependency |
 | `app/db/engine.py` | Engine creation |
-| `app/db/models/document.py` | `Document` — metadata (filename, user_id, tags, chunk_count, created_at) |
+| `app/db/models/document.py` | `Document` — metadata (filename, user_id, conversation_id, tags, chunk_count, created_at) |
 | `app/db/models/document_chunk.py` | `DocumentChunk` — text + `pgvector(1024)` embedding (mxbai-embed-large), page_number, section_heading |
 | `app/db/models/chat_log.py` | `ChatLog` — full messages payload (JSONB), response, model params, conversation_id, turn_index, user_id |
-| `app/db/repositories/document.py` | DB queries: `create_document`, `search_document_chunks` (hybrid search), `list_documents`, etc. |
+| `app/db/repositories/document.py` | DB queries: `create_document`, `search_document_chunks` (hybrid search), `list_documents`, `has_documents_for_conversation`, etc. |
 | `app/db/repositories/chat_log.py` | `create_chat_log`, `list_chat_logs_by_conversation` |
 
 ### Utilities
@@ -324,9 +326,11 @@ llama-3.3-70b-versatile → llama-3.3-70b-instruct:free → openai/gpt-oss-120b:
 
 **Reranker (default off):** Jina `jina-reranker-v2-base-multilingual`. Over-fetches `top_k × 3` candidates from pgvector, reranks, keeps top_k.
 
-**User scoping:** `metadata_filter={"user_id": user_id}` is always injected server-side — the model never controls which user's documents are queried.
+**Conversation scoping:** Documents are scoped to the conversation they were uploaded in. `rag_search` is only available when a `conversation_id` is present in the request. Both `user_id` and `conversation_id` are always injected server-side into `metadata_filter` — the model never controls which documents are queried. Without a `conversation_id`, `rag_search` returns an "unavailable" result immediately without hitting the DB.
 
-**metadata_filter supports 3 keys:** `user_id` (string), `document_type` (string: "pdf"/"text"/"json"/"code"), `tags` (list of strings — uses PostgreSQL JSONB `@>` containment).
+**Routing hint:** At request start, `has_documents_for_conversation()` checks if the conversation has any documents. If yes, `ROUTING_SYSTEM_MESSAGE` is enriched with a hint so the model considers `rag_search` even without explicit "my documents" phrasing.
+
+**metadata_filter supports 4 keys:** `user_id` (string), `document_type` (string: "pdf"/"text"/"json"/"code"), `tags` (list of strings — uses PostgreSQL JSONB `@>` containment), `conversation_id` (string).
 
 **Required DB column:** `document_chunks.text_search` — a PostgreSQL `tsvector` generated column used by the sparse leg of hybrid search (`dc.text_search @@ plainto_tsquery('english', :q)`). Must exist in the DB schema for hybrid search to work.
 
@@ -343,6 +347,7 @@ llama-3.3-70b-versatile → llama-3.3-70b-instruct:free → openai/gpt-oss-120b:
 - **Fail-all-or-nothing embedding:** `embed_batch()` returns `None` if any embedding fails; no partial ingestion.
 - **`<think>` tag filtering:** `groq_client.py` strips `<think>...</think>` blocks from streaming output so reasoning model internals never reach the client.
 - **Rate-limit fallback:** RPM 429 (retry-after ≤ 60s) → wait and retry same model. RPD 429 → walk `FALLBACK_CHAIN`. Disabled when client sends an explicit model field.
+- **Conversation-scoped RAG:** Documents are tied to the `conversation_id` they were uploaded with. `rag_search` requires a `conversation_id` — without one it is blocked immediately (no DB hit). This prevents cross-conversation document leakage. `user_id` + `conversation_id` are always server-injected into `metadata_filter`.
 
 ---
 
@@ -397,11 +402,11 @@ LANGSMITH_TRACING_ENABLED=true
 `messages`, `model?`, `user_id?`, `conversation_id?`, `temperature?`, `max_tokens?`, `top_p?`, `frequency_penalty?`, `presence_penalty?`, `stop?`, `seed?`
 
 **DocumentIngestRequest** (`app/schemas/document.py`):
-`filename`, `text`, `source?`, `document_type?`, `tags?`, `user_id?`, `section_heading?`
+`filename`, `text`, `source?`, `document_type?`, `tags?`, `user_id?`, `section_heading?`, `conversation_id?`
 
 **ToolResult** (`app/mcp_server/tools/base.py`):
 `ok: bool`, `content: str`
 
 ---
 
-*Last updated: 2026-05-25 — model list cleanup, fallback chain, think-tag filtering*
+*Last updated: 2026-06-02 — conversation-scoped RAG, conversation_id document isolation, rag_search blocked without conversation_id*

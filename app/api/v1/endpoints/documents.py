@@ -50,6 +50,7 @@ async def upload_document(
     file: UploadFile = File(...),
     user_id: str | None = Form(default=None),
     tags: str | None = Form(default=None),  # JSON string: '["tag1","tag2"]'
+    conversation_id: str | None = Form(default=None),
     db: AsyncSession = Depends(get_db),
 ) -> DocumentIngestResponse:
     filename = file.filename or "upload"
@@ -66,6 +67,7 @@ async def upload_document(
             filename=filename,
             user_id=user_id,
             tags=parsed_tags,
+            conversation_id=conversation_id,
         )
     except Exception as exc:
         await db.rollback()

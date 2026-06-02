@@ -33,6 +33,7 @@ class Document(Base):
     tags: Mapped[list | dict | None] = mapped_column(JSONB, nullable=True)
 
     user_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    conversation_id: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
 
     embedding_model_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
     chunk_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
