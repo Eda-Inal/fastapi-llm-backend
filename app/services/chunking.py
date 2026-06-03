@@ -82,6 +82,9 @@ def normalize_document_text(text: str) -> str:
     text = text.replace("\x00", "")
     text = text.encode("utf-8", errors="replace").decode("utf-8")
     text = text.replace("\r\n", "\n").replace("\r", "\n")
+    # Rejoin words broken across lines by a hyphen (PDF line-wrap artifact).
+    # "infor-\nmation" → "information". Only joins word chars, never paragraph breaks.
+    text = re.sub(r"(\w)-\n(\w)", r"\1\2", text)
     text = re.sub(r"(?m)^[ \t]*---[ \t]*$", "", text)
     # Collapse 3+ newlines to double newline (paragraph boundary)
     text = re.sub(r"\n{3,}", "\n\n", text)

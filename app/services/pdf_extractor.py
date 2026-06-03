@@ -127,6 +127,47 @@ def _page_to_text_with_headings(page, level_map: dict[float, str]) -> str:
     return "\n\n".join(output_blocks)
 
 
+def _remove_repeated_lines(pages: list[dict]) -> list[dict]:
+    """
+    Detect and remove header/footer lines that repeat across multiple pages.
+
+    A line is a candidate only if it appears in the first or last 3 lines of
+    a page (where headers and footers live). It is treated as a repeating
+    header/footer when it appears on at least 3 pages AND on at least 30% of
+    all pages. Short strings (≤ 3 chars) are ignored to avoid false positives.
+
+    Pages that would become empty after removal keep their original text.
+    """
+    total = len(pages)
+    if total < 3:
+        return pages
+
+    threshold = max(3, int(total * 0.3))
+    scan_lines = 3  # check this many lines at top and bottom of each page
+
+    from collections import Counter as _Counter
+    line_count: _Counter = _Counter()
+
+    for page in pages:
+        lines = [ln.strip() for ln in page["text"].split("\n") if ln.strip()]
+        candidates = set(lines[:scan_lines]) | set(lines[-scan_lines:])
+        for ln in candidates:
+            if len(ln) > 3:
+                line_count[ln] += 1
+
+    repeated = {ln for ln, cnt in line_count.items() if cnt >= threshold}
+    if not repeated:
+        return pages
+
+    cleaned = []
+    for page in pages:
+        lines = page["text"].split("\n")
+        filtered = [ln for ln in lines if ln.strip() not in repeated]
+        text = re.sub(r"\n{3,}", "\n\n", "\n".join(filtered)).strip()
+        cleaned.append({"page": page["page"], "text": text or page["text"]})
+    return cleaned
+
+
 def extract_pages(content: bytes) -> list[dict]:
     """
     Reads PDF bytes, returns list of {page: int, text: str} per page.
@@ -155,4 +196,5 @@ def extract_pages(content: bytes) -> list[dict]:
             "No extractable text found. PDF may be image-only (scanned). "
             "OCR is not supported yet."
         )
-    return pages
+
+    return _remove_repeated_lines(pages)
