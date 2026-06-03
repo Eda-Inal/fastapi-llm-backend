@@ -161,6 +161,8 @@ def _extract_list_segments(text: str) -> list[tuple[str, str]]:
         if _LIST_ITEM_RE.match(line) and line.strip():
             _flush_prose()
             list_buf.append(line.strip())
+        elif not line.strip() and list_buf:
+            pass  # blank line inside an active list — keep list open
         else:
             _flush_list()
             prose_buf.append(line)
