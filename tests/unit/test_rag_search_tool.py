@@ -5,7 +5,7 @@ from datetime import datetime
 from types import SimpleNamespace
 
 from app.core.config import settings
-from app.mcp_server.tools.rag_search import RagSearchTool
+from app.tool_server.tools.rag_search import RagSearchTool
 from app.services.embeddings import EmbeddingResult
 
 
@@ -30,9 +30,9 @@ def test_rag_search_returns_no_results_message(monkeypatch) -> None:
         return 0
 
     monkeypatch.setattr(tool.embeddings, "embed_text", _fake_embed_text)
-    monkeypatch.setattr("app.mcp_server.tools.rag_search.search_document_chunks", _fake_search)
-    monkeypatch.setattr("app.mcp_server.tools.rag_search.count_stale_chunks", _fake_count_stale)
-    monkeypatch.setattr("app.mcp_server.tools.rag_search.AsyncSessionLocal", lambda: _FakeSessionCtx())
+    monkeypatch.setattr("app.tool_server.tools.rag_search.search_document_chunks", _fake_search)
+    monkeypatch.setattr("app.tool_server.tools.rag_search.count_stale_chunks", _fake_count_stale)
+    monkeypatch.setattr("app.tool_server.tools.rag_search.AsyncSessionLocal", lambda: _FakeSessionCtx())
 
     out = asyncio.run(tool.run({"query": "company policy"}))
     assert out.ok is True
@@ -62,9 +62,9 @@ def test_rag_search_formats_citations(monkeypatch) -> None:
         return 0
 
     monkeypatch.setattr(tool.embeddings, "embed_text", _fake_embed_text)
-    monkeypatch.setattr("app.mcp_server.tools.rag_search.search_document_chunks", _fake_search)
-    monkeypatch.setattr("app.mcp_server.tools.rag_search.count_stale_chunks", _fake_count_stale)
-    monkeypatch.setattr("app.mcp_server.tools.rag_search.AsyncSessionLocal", lambda: _FakeSessionCtx())
+    monkeypatch.setattr("app.tool_server.tools.rag_search.search_document_chunks", _fake_search)
+    monkeypatch.setattr("app.tool_server.tools.rag_search.count_stale_chunks", _fake_count_stale)
+    monkeypatch.setattr("app.tool_server.tools.rag_search.AsyncSessionLocal", lambda: _FakeSessionCtx())
 
     out = asyncio.run(tool.run({"query": "VPN policy", "top_k": 5}))
     assert out.ok is True
@@ -109,9 +109,9 @@ def test_rag_search_below_threshold_returns_no_results(monkeypatch) -> None:
         return 0
 
     monkeypatch.setattr(tool.embeddings, "embed_text", _fake_embed_text)
-    monkeypatch.setattr("app.mcp_server.tools.rag_search.search_document_chunks", _fake_search)
-    monkeypatch.setattr("app.mcp_server.tools.rag_search.count_stale_chunks", _fake_count_stale)
-    monkeypatch.setattr("app.mcp_server.tools.rag_search.AsyncSessionLocal", lambda: _FakeSessionCtx())
+    monkeypatch.setattr("app.tool_server.tools.rag_search.search_document_chunks", _fake_search)
+    monkeypatch.setattr("app.tool_server.tools.rag_search.count_stale_chunks", _fake_count_stale)
+    monkeypatch.setattr("app.tool_server.tools.rag_search.AsyncSessionLocal", lambda: _FakeSessionCtx())
 
     out = asyncio.run(tool.run({"query": "policy", "similarity_threshold": 0.7}))
     assert out.ok is True

@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
-from app.mcp_server.routes import router
+from app.tool_server.routes import router
 
-app = FastAPI(title="MCP Server")
+app = FastAPI(title="Tool Server")
 
 app.include_router(router)
 

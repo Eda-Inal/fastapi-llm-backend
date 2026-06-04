@@ -9,10 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.repositories.chat_log import create_chat_log, list_chat_logs_by_conversation
 from app.db.repositories.document import has_documents_for_conversation, has_documents_for_user
-from app.mcp_server.tools.base import ToolResult
+from app.tool_server.tools.base import ToolResult
 from app.schemas.chat_bulk import BulkChatItem
 from app.services.groq_client import LLMClient
-from app.services.mcp.remote_client import RemoteMCPClient
+from app.services.tool_client.remote_client import RemoteToolClient
 from app.services import tracing as ls
 from app.core.config import settings, AVAILABLE_MODELS, FALLBACK_CHAIN
 from app.utils.token_counter import (
@@ -116,15 +116,15 @@ FINALIZATION_SYSTEM_MESSAGE = {
 class ChatService:
     def __init__(self) -> None:
         self.client = LLMClient()
-        self.mcp = RemoteMCPClient()
+        self.mcp = RemoteToolClient()
 
-        if not settings.mcp_server_url:
-            logger.error("mcp_server_url_missing")
+        if not settings.tool_server_url:
+            logger.error("tool_server_url_missing")
 
         logger.info(
-            "mcp_client_selected",
+            "tool_client_selected",
             mode="remote",
-            url=settings.mcp_server_url,
+            url=settings.tool_server_url,
         )
 
     @staticmethod

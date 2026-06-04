@@ -2,7 +2,7 @@ import ast
 import operator as op
 import re
 
-from app.mcp_server.tools.base import Tool, ToolResult
+from app.tool_server.tools.base import Tool, ToolResult
 
 
 _ALLOWED_OPERATORS = {

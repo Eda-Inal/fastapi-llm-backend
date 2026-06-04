@@ -1,6 +1,6 @@
-from app.mcp_server.tools.calculator import CalculatorTool
-from app.mcp_server.tools.rag_search import RagSearchTool
-from app.mcp_server.tools.web_search import WebSearchTool
+from app.tool_server.tools.calculator import CalculatorTool
+from app.tool_server.tools.rag_search import RagSearchTool
+from app.tool_server.tools.web_search import WebSearchTool
 
 
 class ToolRegistry:

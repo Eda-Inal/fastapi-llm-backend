@@ -13,18 +13,18 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2
     depends_on:
       - db
-      - mcp
+      - tool-server
 
-  mcp:
+  tool-server:
     build: .
-    container_name: groq_stream_mcp
+    container_name: groq_stream_tool_server
     ports:
       - "8001:8001"
     env_file:
       - .env
     volumes:
       - .:/app
-    command: uvicorn app.mcp_server.main:app --host 0.0.0.0 --port 8001
+    command: uvicorn app.tool_server.main:app --host 0.0.0.0 --port 8001
     depends_on:
       - db
 

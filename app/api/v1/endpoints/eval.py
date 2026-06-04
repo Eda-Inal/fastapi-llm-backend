@@ -14,12 +14,12 @@ from pydantic import BaseModel
 from app.core.config import AVAILABLE_MODELS, settings
 from app.services.chat_service import ROUTING_SYSTEM_MESSAGE
 from app.services.groq_client import LLMClient
-from app.services.mcp.remote_client import RemoteMCPClient
+from app.services.tool_client.remote_client import RemoteToolClient
 
 router = APIRouter(prefix="/eval", tags=["eval"])
 
 _llm = LLMClient()
-_mcp = RemoteMCPClient()
+_tool_client = RemoteToolClient()
 
 
 class RouteRequest(BaseModel):
@@ -42,7 +42,7 @@ async def route_question(payload: RouteRequest) -> RouteResponse:
     if model not in AVAILABLE_MODELS:
         raise HTTPException(status_code=400, detail=f"Unsupported model: {model}")
 
-    tools_schema = await _mcp.list_tools()
+    tools_schema = await _tool_client.list_tools()
     messages = [
         ROUTING_SYSTEM_MESSAGE,
         {"role": "user", "content": payload.question},

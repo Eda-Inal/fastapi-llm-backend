@@ -9,7 +9,7 @@ import structlog
 from app.core.config import settings
 from app.db.repositories.document import count_stale_chunks, search_document_chunks
 from app.db.session import AsyncSessionLocal
-from app.mcp_server.tools.base import Tool, ToolResult
+from app.tool_server.tools.base import Tool, ToolResult
 from app.services.embeddings import EmbeddingService
 from app.services.rag_metrics import rag_metrics
 from app.services.reranker import RerankerService

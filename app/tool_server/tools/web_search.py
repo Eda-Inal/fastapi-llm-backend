@@ -1,5 +1,5 @@
 import httpx
-from app.mcp_server.tools.base import Tool, ToolResult
+from app.tool_server.tools.base import Tool, ToolResult
 from app.core.config import settings
 
 

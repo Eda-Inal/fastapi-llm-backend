@@ -164,11 +164,11 @@ class Settings(BaseSettings):
     tavily_api_key: str | None = None
 
     # ------------------------------------------------------------------
-    # MCP
+    # Tool Server
     # ------------------------------------------------------------------
-    mcp_server_url: str | None = None
+    tool_server_url: str | None = None
     # Must exceed embedding_timeout * embedding_max_retries to avoid premature timeouts.
-    mcp_timeout: float = 120.0
+    tool_server_timeout: float = 120.0
 
     # ------------------------------------------------------------------
     # LLM-as-a-Judge (PAIRWISE)

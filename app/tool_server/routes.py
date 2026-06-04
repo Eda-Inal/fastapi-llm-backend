@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 import structlog
 
-from app.mcp_server.tools.registry import ToolRegistry
+from app.tool_server.tools.registry import ToolRegistry
 from app.services.rag_metrics import rag_metrics
 
 logger = structlog.get_logger()
