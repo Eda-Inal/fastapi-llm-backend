@@ -1,368 +1,603 @@
 # groq-stream-fastapi
 
-A learning-focused FastAPI project that demonstrates how to build a real-time streaming LLM API using Groq’s OpenAI-compatible API, with async PostgreSQL persistence managed by Alembic.
+A learning-focused FastAPI project that demonstrates how to build a production-grade streaming LLM backend with tool use, a private RAG knowledge base, multi-provider model support, and full observability.
 
-This project was originally built step by step to understand how streaming, async database access, and clean backend architecture work together. It has since evolved into a more advanced architecture that includes **remote tool execution via MCP (Model Context Protocol)**, while still keeping the code readable and educational.
-
-It remains intentionally simple, explicit, and structured, making it suitable as a first serious backend project — now extended to demonstrate **distributed agent patterns**.
+The project was built step by step to understand how streaming, async database access, tool-augmented generation, and retrieval-augmented generation work together in a real backend. The code is intentionally readable and explicit, making it suitable as a reference for anyone building their first serious LLM backend.
 
 ---
 
-## What this project demonstrates (in plain terms)
+## What this project demonstrates
 
-This project shows how to:
-
-* **Build async FastAPI endpoints**
-* **Stream LLM responses** token-by-token using `StreamingResponse`
-* **Integrate Groq’s OpenAI-compatible LLM API**
-* **Persist data** (prompt + response + metadata) into PostgreSQL
-* **Use async SQLAlchemy** correctly
-* **Manage database schema changes** with Alembic
-* **Separate responsibilities cleanly:**
-
-  * API layer
-  * Service / orchestration layer
-  * LLM client
-  * Database access
-* **Add remote tool orchestration**
-* **Use MCP-based architecture**
-* **Design distributed agent systems**
-* **Isolate tools into a separate service**
+- **Streaming LLM responses** token-by-token via Server-Sent Events (SSE)
+- **OpenAI-compatible chat API** (drop-in for any OpenAI client)
+- **Tool-augmented generation** — the model can call a calculator, search the web, or query uploaded documents
+- **Distributed tool execution** — tools live in a separate service; the chat API never owns or runs them
+- **Private RAG knowledge base** — upload PDFs, chunk and embed them, search with pgvector
+- **Hybrid search** — dense vector similarity + sparse BM25 full-text search merged with Reciprocal Rank Fusion
+- **Optional reranking** — cross-encoder rescoring via the Jina API
+- **Multi-provider LLM** — Groq, OpenRouter, and Google Gemini behind a single interface
+- **Automatic fallback chain** — switches models on rate limits without any client changes
+- **Conversation history** — persistent, multi-turn context stored in PostgreSQL
+- **LangSmith tracing** — every LLM call, tool call, and RAG result recorded as child spans
+- **Eval framework** — tool-routing accuracy measured against a 30-question LangSmith dataset
+- **Async-first design** — all I/O is non-blocking; no thread pools, no sync ORM calls
+- **Alembic migrations** — schema versioned and reproducible
 
 ---
 
-## New Architecture: MCP Integration
+## Architecture
 
-This project now includes an MCP-based architecture.
+Three Docker services:
 
-**MCP (Model Context Protocol)** is a simple abstraction layer that allows an LLM-driven service to discover and execute tools through a standard interface.
+| Service | Port | Responsibility |
+|---|---|---|
+| `api` | 8000 | FastAPI chat backend — handles requests, orchestrates LLM calls, persists history |
+| `tool-server` | 8001 | Tool execution service — calculator, web search, RAG search |
+| `db` | 5432 | PostgreSQL 15 with the pgvector extension |
 
-In this project:
-
-* The **Chat API no longer owns or runs tools**
-* Tools live inside a separate **MCP Server**
-* ChatService calls tools through a **Remote MCP Client**
-* Tool execution happens over HTTP
-
-### Why MCP was added
-
-To demonstrate:
-
-* Remote tool execution
-* Clean separation of responsibilities
-* Distributed agent design
-* Microservice-ready architecture
-
-### Tool ownership separation
-
-Before:
-
-* ChatService had direct access to tools.
-
-Now:
-
-* Tools belong to the MCP server.
-* ChatService only communicates via MCP.
-* ToolRegistry lives only in the MCP service.
-
-This makes the system:
-
-* Easier to scale
-* Easier to isolate
-* Safer to evolve
-* Suitable for multi-agent systems
+The chat API never executes tools locally. It discovers available tools and calls them over HTTP. This means tools can be updated, replaced, or scaled independently.
 
 ---
 
-## Updated High-level Request Flow (important)
+## Request flow
 
-Understanding this flow is the key to understanding the project:
+Understanding this flow is the key to understanding the project.
 
-```text
+```
 Client
   |
   | POST /api/v1/chat/stream
   |
   v
-FastAPI Endpoint
+FastAPI Endpoint (chat.py)
+  |  - validate model
+  |  - resolve or generate conversation_id
   |
   v
-ChatService
+ChatService.stream_chat()
   |
-  |----> Groq Streaming LLM
+  |-- 1. Load last 20 history turns from DB
+  |-- 2. Fetch tool schemas from tool-server (/tools)
+  |-- 3. Choose routing prompt
+  |       - conversation has uploaded docs → "always call rag_search for factual questions"
+  |       - no docs → standard tool-routing rules
   |
-  |----> MCP Client
-           |
-           v
-        MCP Server
-           |
-           v
-        Tools (Calculator, WebSearch)
+  |-- 4. LLM call 1 — ROUTING (temperature=0, max_tokens=256)
+  |       The model decides whether a tool is needed. It outputs no text — only tool calls.
+  |
+  |         ┌── tool call(s) returned ─────────────────────────────────────────────┐
+  |         │                                                                       │
+  |         │  Execute each tool via RemoteToolClient (HTTP POST /tools/call)       │
+  |         │    rag_search  → embed query → pgvector cosine + optional BM25 + rerank │
+  |         │    web_search  → Tavily API                                           │
+  |         │    calculator  → safe ast-based expression evaluator                 │
+  |         │                                                                       │
+  |         │  Inject tool results into message history                             │
+  |         │  Re-inject last RAG result as a system message (prevents model skipping it) │
+  |         │  Apply context budget (trim RAG payload → evict old history → truncate) │
+  |         │                                                                       │
+  |         │  LLM call 3 — FINALIZATION (no tools, user temperature)              │
+  |         │    Model synthesizes a final answer from tool results.               │
+  |         └───────────────────────────────────────────────────────────────────── │
+  |
+  |         ┌── no tool call ──────────────────────────────────────────────────────┐
+  |         │  LLM call 2 — DIRECT ANSWER (no tools, user temperature)            │
+  |         │    Model answers from its own knowledge. Routing output is discarded. │
+  |         └─────────────────────────────────────────────────────────────────────-│
+  |
+  |         ┌── Groq failed_generation or <|python_tag|> leak ─────────────────────┐
+  |         │  Manual tool call recovery — call the detected tool directly,        │
+  |         │  inject result as system message, then run LLM call 2 without tools. │
+  |         └──────────────────────────────────────────────────────────────────────│
+  |
+  |-- 5. Stream response to client (OpenAI-compatible SSE chunks)
+  |-- 6. Persist ChatLog to DB (full messages JSONB, model, params, user_id, turn_index)
   |
   v
-Async PostgreSQL (chat_logs)
+data: {"choices": [{"delta": {"content": "..."}}]}
+...
+data: [DONE]
 ```
 
-Streaming and database persistence still happen safely and asynchronously.
+Key design rules embedded in this flow:
 
-The only difference is that **tools are now executed remotely**.
+- The routing call always runs at `temperature=0` for determinism. User temperature only applies to the final answer.
+- `rag_search` arguments (`user_id`, `conversation_id`) are always injected server-side. The model never controls whose documents are queried.
+- `<think>...</think>` blocks are stripped before tokens reach the client (Qwen3 reasoning models).
+- The agentic loop runs for at most 8 rounds and 10 total tool calls.
 
 ---
 
-## Project Structure
+## Project structure
 
-```text
-app/
-├─ main.py
-├─ api/
-│  └─ v1/
-│     └─ endpoints/
-│        └─ chat.py
-├─ services/
-│  ├─ groq_client.py
-│  ├─ chat_service.py
-│  └─ mcp/
-│     ├─ client.py
-│     ├─ remote_client.py
-├─ mcp_server/
-│  ├─ main.py
-│  ├─ routes.py
-│  └─ tools/
-│     ├─ base.py
-│     ├─ calculator.py
-│     ├─ web_search.py
-│     └─ registry.py
-├─ db/
-│  ├─ base.py
-│  ├─ engine.py
-│  ├─ session.py
-│  ├─ models/
-│  │  └─ chat_log.py
-│  └─ repositories/
-│     └─ chat_log.py
-├─ schemas/
-│  └─ chat.py
-├─ core/
-│  └─ config.py
-alembic/
-docker-compose.yml
-Dockerfile
 ```
-
-Key change:
-
-* Tools now live under `app/mcp_server/tools/`
-* Chat API is **tool-agnostic**
-* ToolRegistry belongs to MCP server
+groq-stream-fastapi/
+│
+├── app/
+│   ├── main.py                          # FastAPI app, lifespan, CORS, health check
+│   │
+│   ├── api/v1/
+│   │   ├── router.py
+│   │   └── endpoints/
+│   │       ├── chat.py                  # POST /chat/stream, /chat/bulk, GET /chat/models
+│   │       ├── documents.py             # POST /documents/upload, CRUD
+│   │       ├── eval.py                  # POST /eval/route — lightweight routing test
+│   │       └── rag_metrics.py           # GET /rag/metrics
+│   │
+│   ├── services/
+│   │   ├── chat_service.py              # Main orchestrator — routing, tools, finalization
+│   │   ├── groq_client.py               # LLM streaming client (Groq, OpenRouter, Gemini)
+│   │   ├── ingestion_service.py         # PDF upload → chunk → embed → persist
+│   │   ├── embeddings.py                # Embedding service with SHA-256 LRU cache
+│   │   ├── chunking.py                  # Recursive token-aware text chunker
+│   │   ├── pdf_extractor.py             # PyMuPDF-based PDF parser with heading detection
+│   │   ├── reranker.py                  # Optional Jina cross-encoder reranker
+│   │   ├── rag_metrics.py               # In-memory retrieval health tracking
+│   │   ├── tracing.py                   # LangSmith span helpers
+│   │   └── tool_client/
+│   │       ├── client.py                # Abstract ToolClient interface
+│   │       └── remote_client.py         # HTTP-based tool discovery and execution
+│   │
+│   ├── tool_server/                     # Separate FastAPI service (port 8001)
+│   │   ├── main.py
+│   │   ├── routes.py                    # GET /tools, POST /tools/call, GET /metrics
+│   │   └── tools/
+│   │       ├── base.py                  # Abstract Tool + ToolResult
+│   │       ├── registry.py              # ToolRegistry
+│   │       ├── calculator.py            # Safe ast-based expression evaluator
+│   │       ├── web_search.py            # Tavily API integration
+│   │       └── rag_search.py            # pgvector + hybrid BM25 + optional reranking
+│   │
+│   ├── db/
+│   │   ├── engine.py                    # SQLAlchemy async engine
+│   │   ├── session.py                   # AsyncSessionLocal, get_db dependency
+│   │   ├── models/
+│   │   │   ├── chat_log.py              # ChatLog — prompt, response, messages JSONB, metadata
+│   │   │   ├── document.py              # Document — file metadata, tags, user_id
+│   │   │   └── document_chunk.py        # DocumentChunk — text, pgvector(768), page, heading
+│   │   └── repositories/
+│   │       ├── chat_log.py              # Chat history CRUD
+│   │       └── document.py              # Document CRUD + hybrid vector search
+│   │
+│   ├── schemas/
+│   │   ├── chat.py                      # ChatStreamRequest, ChatMessage
+│   │   ├── chat_bulk.py                 # BulkChatRequest
+│   │   └── document.py                  # DocumentIngestRequest/Response/Read
+│   │
+│   ├── core/
+│   │   ├── config.py                    # Settings (BaseSettings), AVAILABLE_MODELS, FALLBACK_CHAIN
+│   │   ├── logging.py                   # structlog setup
+│   │   └── chunking_config.py           # TIKTOKEN_ENCODING constant
+│   │
+│   └── utils/
+│       └── token_counter.py             # Token counting and text truncation (tiktoken cl100k_base)
+│
+├── alembic/
+│   └── versions/                        # 15 migration files
+│
+├── eval/
+│   ├── run_eval.py                      # Tool-routing accuracy evaluation
+│   ├── run_multidoc_source_test.py      # Multi-document RAG attribution test
+│   └── upload_dataset.py               # LangSmith dataset management
+│
+├── tests/
+│   ├── unit/                            # Chunking, embeddings, PDF, token counter
+│   ├── integration/                     # Embedding service, ingestion pipeline
+│   └── e2e/                             # Document upload + RAG metrics API
+│
+├── scripts/                             # Exploratory and debug scripts
+├── ui_gradio.py                         # Gradio chat UI (local development only)
+├── docker-compose.yml
+├── Dockerfile
+└── .env.example
+```
 
 ---
 
-## Setup (Docker-based, recommended)
+## Setup
 
-### 1. Environment variables
+### 1. Create a `.env` file
 
-Create a `.env` file in the project root:
+Copy `.env.example` and fill in the required values. The variables are grouped below by category.
+
+**Required:**
 
 ```env
-GROQ_API_KEY=your_groq_api_key_here
-GROQ_BASE_URL=https://api.groq.com/openai/v1
-GROQ_DEFAULT_MODEL=llama-3.3-70b-versatile
+# Primary LLM provider
+GROQ_API_KEY=your_groq_api_key
 
+# Database
 DATABASE_URL=postgresql+asyncpg://app:app@db:5432/app
 
-MCP_SERVER_URL=http://mcp:8001
+# Tool server (set to service name when running via Docker Compose)
+TOOL_SERVER_URL=http://tool-server:8001
+
+# Embeddings — point to an OpenAI-compatible embedding API
+EMBEDDING_BASE_URL=http://your-embedding-server/v1
+EMBEDDING_API_KEY=your_embedding_api_key
 ```
 
-### 2. Build and run with Docker
+**Optional providers (used in fallback chain):**
+
+```env
+OPENROUTER_API_KEY=your_openrouter_api_key
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+**Web search:**
+
+```env
+TAVILY_API_KEY=your_tavily_api_key
+```
+
+**RAG settings:**
+
+```env
+RAG_DEFAULT_TOP_K=5
+RAG_SIMILARITY_THRESHOLD=0.7
+HYBRID_SEARCH_ENABLED=true
+RERANKER_ENABLED=false
+RERANKER_API_KEY=your_jina_api_key      # only needed if reranker is enabled
+```
+
+**Feature flags:**
+
+```env
+WEB_SEARCH_ENABLED=true
+CALCULATOR_ENABLED=true
+RAG_SYSTEM_PROMPT_ENABLED=true
+```
+
+**LangSmith tracing (optional):**
+
+```env
+LANGSMITH_TRACING_ENABLED=false
+LANGSMITH_API_KEY=your_langsmith_api_key
+LANGSMITH_PROJECT=groq-stream-fastapi
+```
+
+### 2. Run with Docker Compose
 
 ```bash
 docker compose up --build
 ```
 
-This starts:
+This starts three containers:
 
-* **api** → FastAPI chat backend
-* **mcp** → MCP server (tool execution)
-* **db** → PostgreSQL database
+- **api** — FastAPI chat backend on `localhost:8000`
+- **tool-server** — tool execution service on `localhost:8001`
+- **db** — PostgreSQL + pgvector on `localhost:5432`
+
+### 3. Apply database migrations
+
+```bash
+docker compose exec api alembic upgrade head
+```
 
 ---
 
-## Streaming Chat Endpoint
+## API reference
 
-**Endpoint:** `POST /api/v1/chat/stream`
+### Chat
 
-### Request body
+#### `POST /api/v1/chat/stream`
+
+Streams a chat completion as OpenAI-compatible SSE chunks.
+
+Request body:
 
 ```json
 {
   "messages": [
-    {
-      "role": "user",
-      "content": "Explain async Python briefly"
-    }
-  ]
+    {"role": "user", "content": "What is the capital of France?"}
+  ],
+  "conversation_id": "abc123",
+  "user_id": "user-42",
+  "model": null,
+  "temperature": 0.3,
+  "max_tokens": null,
+  "top_p": 1.0,
+  "frequency_penalty": 0.0,
+  "presence_penalty": 0.0,
+  "seed": null,
+  "tags": []
 }
 ```
 
-* Uses OpenAI-compatible chat format
-* Additional parameters like model, temperature, etc. are optional
+All fields except `messages` are optional.
 
-### Important note
+- `conversation_id` — if provided, the last 20 turns of history are loaded and prepended. If omitted, a new UUID is generated server-side.
+- `user_id` — used to scope RAG search to the user's uploaded documents.
+- `model` — must be a key in `AVAILABLE_MODELS`. Defaults to `GROQ_DEFAULT_MODEL`. If explicitly set, automatic fallback is disabled.
+- `tags` — forwarded to LangSmith as trace tags.
 
-* The Chat API does **not** execute tools directly.
-* Tool calls are routed through the MCP server.
-* ChatService communicates with tools via RemoteMCPClient.
-
-### Test with curl (recommended)
-
-Swagger UI does not display streaming responses correctly. Use curl instead:
+Use `curl` to test (Swagger does not render SSE correctly):
 
 ```bash
 curl -N http://localhost:8000/api/v1/chat/stream \
   -H "Content-Type: application/json" \
-  --data-raw '{
-    "messages": [
-      {"role": "user", "content": "Hello, explain async Python briefly"}
-    ]
+  -d '{
+    "messages": [{"role": "user", "content": "What is 18% of 1250?"}],
+    "user_id": "user-42"
   }'
 ```
 
-**Expected behavior:**
+#### `POST /api/v1/chat/bulk`
 
-* Response arrives incrementally
-* Output appears chunk by chunk
-* Stream ends with: `data: [DONE]`
+Non-streaming batch completions. Each item is processed independently and sequentially. Returns all results when complete.
+
+#### `GET /api/v1/chat/models`
+
+Returns the list of available models in OpenAI-compatible format.
 
 ---
 
-## MCP Server Endpoints
+### Documents
 
-The MCP server exposes tools over HTTP.
+#### `POST /api/v1/documents/upload`
 
-### List available tools
+Uploads a PDF file, processes it through the ingestion pipeline, and makes it searchable via `rag_search`.
 
+```bash
+curl -X POST http://localhost:8000/api/v1/documents/upload \
+  -F "file=@report.pdf" \
+  -F "user_id=user-42" \
+  -F "conversation_id=abc123" \
+  -F 'tags=["finance","q3"]'
 ```
-GET /tools
-```
 
-Response:
+#### `GET /api/v1/documents`
+
+Lists all documents. Supports filtering by `user_id`, `tags`, and pagination via `limit` / `offset`.
+
+#### `GET /api/v1/documents/{id}`
+
+Returns metadata for a single document.
+
+#### `PUT /api/v1/documents/{id}`
+
+Updates document metadata (filename, tags, etc.).
+
+#### `DELETE /api/v1/documents/{id}`
+
+Deletes a document and all its chunks (cascade).
+
+#### `POST /api/v1/documents/{id}/reprocess`
+
+Re-embeds a document with updated text or section heading, replacing existing chunks.
+
+---
+
+### Other endpoints
+
+#### `GET /api/v1/rag/metrics`
+
+Returns RAG retrieval health metrics: average similarity score, average embedding and pgvector query latency, embedding API error rate, total retrieval call count, and document/chunk counts from the database.
+
+#### `POST /api/v1/eval/route`
+
+Lightweight routing test endpoint. Sends a message through the routing LLM call only and returns which tool (if any) was selected. Used by the eval framework.
+
+#### `GET /health`
+
+Basic liveness check. Returns `{"status": "ok"}`.
+
+---
+
+### Tool server
+
+#### `GET /tools`
+
+Returns all registered tools in OpenAI function-calling schema format.
+
+#### `POST /tools/call`
+
+Executes a single tool.
 
 ```json
-{
-  "tools": [...]
-}
+{"name": "calculator", "arguments": {"expression": "18 * 1250 / 100"}}
 ```
-
-### Call a tool
-
-```
-POST /tools/call
-```
-
-Example:
 
 ```json
-{
-  "name": "calculator",
-  "arguments": { "expression": "5*9" }
-}
+{"name": "web_search", "arguments": {"query": "current EUR/USD rate"}}
 ```
-
-Response:
 
 ```json
-{ "result": "5*9 = 45" }
+{"name": "rag_search", "arguments": {"query": "Q3 revenue", "metadata_filter": {"user_id": "user-42"}}}
 ```
 
+#### `GET /metrics`
+
+Returns the same RAG metrics as `/api/v1/rag/metrics` (the API proxies this endpoint).
+
 ---
 
-## Database Persistence
+## RAG pipeline
 
-Each completed chat interaction is saved in PostgreSQL:
+### Ingestion
 
-* Prompt (input)
-* Final response (output)
-* Model name
-* Timestamp
-
-**Example table query:**
-
-```sql
-SELECT id, prompt, model_name, created_at
-FROM chat_logs
-ORDER BY id DESC;
+```
+PDF upload
+  → PDFExtractor (PyMuPDF)
+      - heading levels detected from relative font sizes (H1/H2/H3)
+      - repeated header/footer lines removed across pages
+  → chunk_document()
+      - text normalized, metadata sections (FUNDING, COI etc.) extracted as
+        separate chunks, code blocks and tables kept intact
+      - heading-aware: heading text prepended to each section body
+      - oversized prose split: paragraph -> line -> sentence -> token window
+      - noise chunks (heading-only, page numbers) dropped
+      - configurable: chunk_size_tokens (default 300), overlap (default 75)
+      - PDF pages merged before chunking so overlap can span page boundaries
+  → EmbeddingService.embed_batch()
+      - each chunk embedded with context_prefix prepended
+      - nomic-embed-text 768-dim via OpenAI-compatible API
+      - in-memory LRU cache; all-or-nothing (fail = document not persisted)
+  → persist Document + N x DocumentChunk to PostgreSQL
 ```
 
----
+### Retrieval (rag_search tool)
 
-## Why this architecture?
-
-This project intentionally avoids shortcuts:
-
-* **LLM client** does not touch the database.
-* **Endpoint** does not contain business logic.
-* **Database writes** happen only after streaming completes to ensure data integrity.
-* **Async sessions** are passed explicitly.
-
-New architectural goals:
-
-* **Tool ownership separation**
-* **Microservice-friendly design**
-* **Fail-soft remote execution**
-* **Streaming-safe tool calls**
-* **Distributed agent readiness**
-
-By moving tools to a separate MCP service:
-
-* Chat API becomes lighter
-* Tools can scale independently
-* New tools can be added without touching ChatService
-* Multiple APIs can share the same MCP server
-
----
-
-## Recommended Models
-
-* **For development and debugging:** `llama-3.3-8b-instant`
-* **For higher-quality responses:** `llama-3.3-70b-versatile`
-
----
-
-## Optional: Gradio Demo UI (Development Only)
-
-For local development and experimentation, this project can be used with a simple **Gradio-based UI** that connects to the streaming chat endpoint.
-
-The Gradio UI is **not part of the backend architecture** and is intentionally kept separate:
-
-* It runs as a local Python process (outside Docker)
-* It does not add any backend state or persistence
-* It sends the full chat history with each request (client-managed context)
-* The FastAPI backend remains fully stateless
-
-Conceptual flow:
-
-```text
-Gradio UI (local)
-  |
-  | POST /api/v1/chat/stream
-  | (full messages array)
-  v
-FastAPI Streaming Endpoint
+```
+User question
+  → embed query
+  → dense search: pgvector cosine similarity (top_k, similarity_threshold)
+  → hybrid search (if HYBRID_SEARCH_ENABLED=true):
+      - sparse: PostgreSQL tsvector full-text search
+      - merge both result sets with Reciprocal Rank Fusion (RRF, k=60)
+      - note: similarity_threshold is not applied in hybrid mode (RRF scores are on a different scale)
+  → reranking (if RERANKER_ENABLED=true and RERANKER_API_KEY is set):
+      - overfetch_multiplier × top_k candidates fetched, then rescored
+        by a Jina/Cohere-compatible cross-encoder (/rerank API)
+      - default model: jina-reranker-v2-base-multilingual
+      - on reranker failure, falls back to original retrieval order silently
+  → format: chunk texts joined with "---" separators + source metadata
 ```
 
-Tool calls triggered during chat will be executed remotely via MCP.
+Retrieval is always scoped to the authenticated user via `user_id` injected server-side. The model has no way to change which user's documents are searched.
 
 ---
 
-## Who this project is for
+## Tools
 
-* Developers learning **async Python**
-* Developers learning **LLM streaming**
-* Developers learning **FastAPI + PostgreSQL**
-* Developers exploring **tool-augmented LLMs**
-* Developers interested in **distributed agent architectures**
+### `calculator`
 
-This repository is meant to be read, modified, and learned from.
+Evaluates arithmetic expressions safely using Python's `ast` module — no `eval()`. Supports standard operators and numeric literals.
+
+```
+Input:  "18 * 1250 / 100"
+Output: "18 * 1250 / 100 = 225.0"
+```
+
+### `web_search`
+
+Searches the web via the Tavily API and returns ranked results with titles, URLs, and content snippets.
+
+### `rag_search`
+
+Queries the user's uploaded documents using hybrid vector + full-text search. Returns the most relevant chunks with source filenames. Can be disabled per-conversation or at the service level.
+
+### Tool routing rules
+
+The routing system prompt instructs the model:
+
+1. **`rag_search`** — when the question refers to the user's private documents, or when the conversation has uploaded docs (in doc mode, called for every factual question).
+2. **`web_search`** — when the answer could have changed recently: prices, exchange rates, software versions, current events, role holders.
+3. **`calculator`** — for any arithmetic the user explicitly asks to compute. Never compute in the model's head.
+4. **No tool** — static general knowledge, geography, history, definitions, conversational messages.
+
+---
+
+## Multi-provider LLM and fallback chain
+
+The `LLMClient` resolves the provider from the `provider` field in `AVAILABLE_MODELS` (`app/core/config.py`) at request time. Provider is not inferred from the model name — it is explicitly configured per model.
+
+As a practical guide to what's in the registry:
+
+| Provider | Pattern | Notes |
+|---|---|---|
+| Groq | no suffix (e.g. `llama-3.3-70b-versatile`, `qwen/qwen3-32b`, `openai/gpt-oss-120b`) | Primary provider |
+| OpenRouter | `:free` suffix (e.g. `openai/gpt-oss-120b:free`) | Free-tier fallback models |
+| Google Gemini | `gemini-` prefix (e.g. `gemini-2.5-flash`) | Direct API; disabled on free tier from some regions |
+
+When a request hits a rate limit:
+
+- **RPM (per-minute)**: `retry_after ≤ 60s` → wait and retry the same model.
+- **RPD (daily)**: `retry_after > 60s` or missing → switch to the next model in the fallback chain.
+
+Default fallback chain:
+
+```
+llama-3.3-70b-versatile          (Groq)
+  → meta-llama/llama-3.3-70b-instruct:free   (OpenRouter)
+  → openai/gpt-oss-120b:free                 (OpenRouter)
+  → google/gemma-4-31b-it:free               (OpenRouter)
+  → google/gemma-4-26b-a4b-it:free           (OpenRouter)
+  → qwen/qwen3-32b                           (Groq)
+  → llama-3.1-8b-instant                     (Groq)
+```
+
+Automatic fallback is disabled when the client explicitly sets the `model` field.
+
+---
+
+## Conversation history
+
+Each completed turn is persisted to the `chat_logs` table with:
+
+- `messages` — full message array including system prompts, tool calls, and tool results (JSONB)
+- `conversation_id` — links turns into a conversation thread
+- `turn_index` — position within the conversation
+- `user_id` — used to scope history and document access
+- `prompt`, `response` — plain-text copies for quick querying
+- LLM parameters: `model_name`, `temperature`, `max_tokens`, `top_p`, `seed`
+
+When a request includes a `conversation_id`, the last 20 turns are loaded and prepended to the current messages before any LLM call is made.
+
+---
+
+## LangSmith tracing
+
+When `LANGSMITH_TRACING_ENABLED=true`, every `stream_chat` call creates a root trace with child spans for:
+
+- Each LLM call (routing, direct answer, finalization, fallback)
+- Each tool call
+- Token usage per call
+
+Spans include model name, round number, tool names, prompt/completion token counts, and total elapsed time.
+
+---
+
+## Evaluation framework
+
+```bash
+# Run tool-routing accuracy evaluation
+python eval/run_eval.py
+
+# Run multi-document RAG source attribution test
+python eval/run_multidoc_source_test.py
+```
+
+`run_eval.py` sends 30 questions from the `tool-routing-eval-v2` LangSmith dataset through `POST /eval/route` and measures what percentage of questions are routed to the correct tool. Results are logged back to LangSmith with per-example correctness scores.
+
+The eval model is set via the `MODEL` constant at the top of `eval/run_eval.py`. It is kept separate from the chat app's primary model to avoid consuming the same rate-limit quota during evaluation runs.
+
+---
+
+## Gradio UI (development only)
+
+A minimal Gradio chat interface is included for local testing:
+
+```bash
+pip install gradio
+python ui_gradio.py
+```
+
+The UI sends the full chat history with each request (client-managed context) and connects to the streaming endpoint at `http://localhost:8000/api/v1/chat/stream`. It is not part of the backend architecture and is not run inside Docker.
+
+---
+
+## Database migrations
+
+Migrations are managed with Alembic and must be applied manually:
+
+```bash
+alembic upgrade head     # apply all pending migrations
+alembic downgrade -1     # roll back the latest migration
+```
+
+There are 15 migrations covering: chat logs, documents and chunks, pgvector HNSW index, hybrid search tsvector column, embedding dimension changes, conversation tracking fields, and evaluation tables.
+
+---
+
+## Recommended models
+
+| Use case | Model |
+|---|---|
+| Default (quality) | `llama-3.3-70b-versatile` |
+| Balanced / general use | `openai/gpt-oss-120b` |
+| Fast / low latency | `llama-3.1-8b-instant` |
+| Long context | `gemini-2.5-flash` |
 
 ---
 
