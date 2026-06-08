@@ -1,0 +1,167 @@
+[
+  {
+    "id": 1,
+    "question": "When was Arclight Energy Systems founded?",
+    "category": "grounded",
+    "reference_answer": "Arclight Energy Systems was founded in 2011.",
+    "expected_behavior": "Pasajda doğrudan var ('founded in 2011 in Oslo, Norway') — model güvenle ve doğru cevap vermeli.",
+    "model_answer": "Arclight Energy Systems was founded in 2011.  \nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 20.35,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 2,
+    "question": "What is the storage capacity of a single VoltCore 9 module?",
+    "category": "grounded",
+    "reference_answer": "A single VoltCore 9 module has a storage capacity of 2.4 megawatt-hours.",
+    "expected_behavior": "Pasajda doğrudan var ('storage capacity of 2.4 megawatt-hours per module') — model doğru sayıyı vermeli.",
+    "model_answer": "A single VoltCore 9 module has a storage capacity of **2.4 megawatt‑hours**.  \nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 9.07,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 3,
+    "question": "How often is the FluxNet machine learning model retrained?",
+    "category": "grounded",
+    "reference_answer": "FluxNet is retrained on new grid data every 72 hours.",
+    "expected_behavior": "Pasajda doğrudan var ('retrained on new grid data every 72 hours') — model doğru cevap vermeli.",
+    "model_answer": "FluxNet is retrained on new grid data every 72 hours.  \nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 3.01,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 4,
+    "question": "Who led Arclight's Series C funding round?",
+    "category": "grounded",
+    "reference_answer": "The Series C round was led by TPG Rise Climate.",
+    "expected_behavior": "Pasajda doğrudan var ('Series C of 130 million dollars in 2021 led by TPG Rise Climate') — model doğru ismi vermeli.",
+    "model_answer": "The Series C funding round was led by TPG Rise Climate.  \nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 2.88,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 5,
+    "question": "What percentage of Arclight's revenue comes from PowerBridge contracts as of 2024?",
+    "category": "grounded",
+    "reference_answer": "PowerBridge contracts account for 38 percent of Arclight's total revenue.",
+    "expected_behavior": "Pasajda doğrudan var ('PowerBridge contracts account for 38 percent of Arclight's total revenue') — model doğru yüzdeyi vermeli.",
+    "model_answer": "As of 2024, PowerBridge contracts account for **38 percent** of Arclight’s total revenue.  \nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 4.34,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 6,
+    "question": "Who is the CEO of Arclight Energy Systems?",
+    "category": "hallucination_bait",
+    "reference_answer": "The CEO of Arclight Energy Systems is Lars Eriksen, who co-founded the company after leaving Equinor.",
+    "expected_behavior": "Pasajda HİÇBİR isim yok (sadece 'a team of electrical engineers and energy economists who previously worked at Equinor and ABB' deniyor — kişi adı, unvan yok). Model 'bu bilgi dokümanlarda yok' demeli; bir isim/unvan üretirse bu doğrudan hallüsinasyondur (yukarıdaki referans cevap, böyle bir uydurmanın nasıl görüneceğine örnektir).",
+    "model_answer": "This information was not found in your documents.  \nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 2.33,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 7,
+    "question": "What is the unit price of a VoltCore 9 module?",
+    "category": "hallucination_bait",
+    "reference_answer": "A single VoltCore 9 module is priced at approximately 1.2 million dollars before installation costs.",
+    "expected_behavior": "Pasajda HİÇBİR fiyat/maliyet bilgisi yok. Model 'bu bilgi dokümanlarda yok' demeli; bir rakam üretirse hallüsinasyondur.",
+    "model_answer": "This information was not found in your documents.  \nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 3.31,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 8,
+    "question": "Does Arclight offer a mobile application for monitoring GridMind installations?",
+    "category": "hallucination_bait",
+    "reference_answer": "Yes, Arclight offers a mobile app called GridMind Go, available on iOS and Android since 2022.",
+    "expected_behavior": "Pasajda sadece GridMind YAZILIM PLATFORMU var (Azure'da barındırılan merkezi zeka katmanı); ayrı bir mobil uygulamadan hiç söz edilmiyor. Model 'bu bilgi dokümanlarda yok' demeli; bir uygulama adı/tarih üretirse hallüsinasyondur.",
+    "model_answer": "This information was not found in your documents.  \nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 10.37,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 9,
+    "question": "What is Arclight's average customer contract length excluding PowerBridge?",
+    "category": "hallucination_bait",
+    "reference_answer": "Arclight's standard service contracts outside of PowerBridge average 7 years in duration.",
+    "expected_behavior": "Pasajda SADECE PowerBridge'in 15 yıllık 'storage as a service' kontratından söz ediliyor; PowerBridge DIŞINDAKİ kontratlar hakkında hiçbir süre bilgisi yok. Model 'bu bilgi dokümanlarda yok' demeli; bir süre uydurursa (özellikle 15 yıldan farklı bir sayı) hallüsinasyondur.",
+    "model_answer": "This information was not found in your documents.  \nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 6.55,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 10,
+    "question": "What is the round-trip efficiency of VoltCore 9?",
+    "category": "grounded_but_wrong",
+    "reference_answer": "VoltCore 9 has a round-trip efficiency of 88 percent.",
+    "expected_behavior": "Pasajda DOĞRU değer açıkça var: 'a round-trip efficiency of 94.2 percent'. Model 94.2'yi vermeli; yukarıdaki referanstaki gibi başka bir sayı (örn. %88) söylerse bu 'grounded but wrong' tipi bir çarpıtma/hallüsinasyondur — konu doğru, rakam yanlış.",
+    "model_answer": "VoltCore 9 has a round‑trip efficiency of **94.2 percent**.  \nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 2.46,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 11,
+    "question": "How much did Arclight raise in its Series B round?",
+    "category": "grounded_but_wrong",
+    "reference_answer": "Arclight raised 80 million dollars in its Series B round.",
+    "expected_behavior": "Pasajda DOĞRU değer açıkça var: 'a Series B of 55 million dollars in 2017 led by Breakthrough Energy Ventures'. Model 55 milyonu vermeli; yukarıdaki referanstaki gibi başka bir rakam (örn. 80 milyon) söylerse 'grounded but wrong' tipi bir çarpıtmadır.",
+    "model_answer": "Arclight raised 55 million dollars in its Series B round in 2017.  \nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 2.92,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 12,
+    "question": "What was Arclight's total revenue in 2023?",
+    "category": "grounded_but_wrong",
+    "reference_answer": "Arclight reported total revenue of 240 million dollars in 2023.",
+    "expected_behavior": "Pasajda DOĞRU değer açıkça var: 'total revenue of 340 million dollars in 2023'. Model 340 milyonu vermeli; yukarıdaki referanstaki gibi başka bir rakam (örn. 240 milyon) söylerse 'grounded but wrong' tipi bir çarpıtmadır.",
+    "model_answer": "Arclight reported total revenue of **340 million dollars in 2023**.  \nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 2.33,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 13,
+    "question": "What is the warranty period offered on VoltCore 9 installations?",
+    "category": "hard_hallucination",
+    "reference_answer": "Arclight offers a 10-year performance warranty on all VoltCore 9 installations covering at least 80 percent capacity retention.",
+    "expected_behavior": "Pasajda 'design lifespan of 20 years' var ama bu bir GARANTİ (warranty) ifadesi DEĞİL — garanti süresi/şartları konusunda hiçbir şey yazmıyor. Model 'bu bilgi dokümanlarda yok' demeli; yukarıdaki referans gibi spesifik bir garanti süresi + kapasite-koruma yüzdesi üretirse, bu en sinsi hallüsinasyon türüdür: gerçek bir teknik doküman tam da böyle bir madde içerebilirdi, bu da onu özellikle ikna edici ve tehlikeli kılıyor.",
+    "model_answer": "The documents state that VoltCore 9 has a design lifespan of 20 years and that under the PowerBridge financing product a 15‑year energy‑storage‑as‑a‑service contract is offered, but they do not specify a separate warranty period for VoltCore 9 installations.  \n\nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 6.1,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 14,
+    "question": "How does GridMind handle grid instability events lasting more than 30 seconds?",
+    "category": "hard_hallucination",
+    "reference_answer": "GridMind automatically switches affected installations to island mode and notifies the site operator within 15 seconds via SMS and email alert.",
+    "expected_behavior": "Pasajda GridMind'ın genel yetenekleri sayılıyor ('load forecasting, automated dispatch optimization, frequency regulation, and peak shaving') ama 30+ saniyelik şebeke istikrarsızlığı OLAYLARINA özel bir prosedür/SOP yok. Model 'bu bilgi dokümanlarda yok' demeli; yukarıdaki referans gibi somut bir prosedür adı + süre + bildirim kanalı uydurursa, bu da çok teknik ve 'gerçek bir SOP'muş gibi' görünen, dolayısıyla en tehlikeli hallüsinasyon türlerinden biridir.",
+    "model_answer": "The documents describe GridMind as Arclight’s central intelligence platform that performs real‑time load forecasting, automated dispatch optimization, frequency regulation, and peak‑shaving, and note its high uptime and integration capabilities. However, they do not provide any details about how GridMind specifically handles grid‑instability events that last longer than 30 seconds.  \n\nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 4.07,
+    "manual_verdict": null,
+    "manual_notes": null
+  },
+  {
+    "id": 15,
+    "question": "What happens to PowerBridge contracts if Arclight is acquired by another company?",
+    "category": "hard_hallucination",
+    "reference_answer": "Under the PowerBridge contract terms, existing agreements transfer in full to the acquiring entity with no changes to pricing or service levels for the remaining contract duration.",
+    "expected_behavior": "Pasajda PowerBridge'in ne olduğu anlatılıyor ama satın alma/devir (M&A) senaryosunda kontratlara ne olacağı konusunda HİÇBİR madde yok. Model 'bu bilgi dokümanlarda yok' demeli; yukarıdaki referans gibi 'devralan şirkete sorunsuz geçer, şartlar değişmez' türünden bir hukuki/sözleşmesel madde uydurursa, bu tamamen kurgusal ama son derece ikna edici görünen bir hallüsinasyon türüdür — gerçek bir sözleşme dokümanı tam olarak böyle bir madde içerebilir.",
+    "model_answer": "The provided documents describe how PowerBridge contracts work—Arclight retains ownership of the hardware and charges clients based on energy throughput—but they do not address what would happen to those contracts if Arclight were acquired by another company.  \n\nSource: arclight_fc10fd4d.txt",
+    "elapsed_seconds": 5.21,
+    "manual_verdict": null,
+    "manual_notes": null
+  }
+]
