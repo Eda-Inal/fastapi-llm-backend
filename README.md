@@ -86,8 +86,9 @@ ChatService.stream_chat()
   |         └─────────────────────────────────────────────────────────────────────-│
   |
   |         ┌── Groq failed_generation or <|python_tag|> leak ─────────────────────┐
-  |         │  Manual tool call recovery — call the detected tool directly,        │
-  |         │  inject result as system message, then run LLM call 2 without tools. │
+  |         │  Parse intended tool + args from the leak text (regex + JSON).        │
+  |         │    detected  → call that tool directly, inject result as system msg   │
+  |         │    not found → no automatic tool call; LLM call 2 runs without tools  │
   |         └──────────────────────────────────────────────────────────────────────│
   |
   |-- 5. Stream response to client (OpenAI-compatible SSE chunks)

@@ -115,11 +115,14 @@ class LLMClient:
             "stop": stop,
             "seed": seed,
         }
+        if use_stream:
+            payload["stream_options"] = {"include_usage": True}
+
         payload = {k: v for k, v in payload.items() if v is not None}
 
         # Gemini does not support these OpenAI-specific parameters.
         if provider == "gemini":
-            for key in ("frequency_penalty", "presence_penalty", "seed"):
+            for key in ("frequency_penalty", "presence_penalty", "seed", "stream_options"):
                 payload.pop(key, None)
 
         log.info("llm_request", provider=provider, base_url=base_url)
@@ -172,6 +175,14 @@ class LLMClient:
                         "status": response.status_code,
                         "message": body or f"HTTP error {response.status_code} from {provider}",
                     }
+                    try:
+                        body_err = json.loads(body).get("error") or {}
+                        if body_err.get("message"):
+                            err["message"] = body_err["message"]
+                        if body_err.get("failed_generation"):
+                            err["failed_generation"] = body_err["failed_generation"]
+                    except (json.JSONDecodeError, AttributeError):
+                        pass
                     if response.status_code == 429:
                         raw_ra = response.headers.get("retry-after") or response.headers.get("Retry-After")
                         if raw_ra and raw_ra.isdigit():
@@ -273,13 +284,33 @@ class LLMClient:
                     if isinstance(data, dict) and "error" in data:
                         err = data.get("error") or {}
                         msg = err.get("message") or str(err) or "Streaming error"
-                        log.error("llm_stream_error_payload", message=msg)
-                        yield {"type": "error", "status": None, "message": msg}
+                        log.error(
+                            "llm_stream_error_payload",
+                            message=msg,
+                            error_type=err.get("type"),
+                            error_code=err.get("code"),
+                            failed_generation=err.get("failed_generation"),
+                        )
+                        error_event: dict = {"type": "error", "status": None, "message": msg}
+                        if err.get("failed_generation"):
+                            error_event["failed_generation"] = err["failed_generation"]
+                        yield error_event
                         yield {"type": "done", "finish_reason": "error"}
                         return
 
                     choices = data.get("choices") if isinstance(data, dict) else None
+
+                    # Final usage-only chunk (stream_options.include_usage=true):
+                    # choices is an empty list and usage is populated here.
                     if not choices:
+                        if isinstance(data.get("usage"), dict):
+                            u = data["usage"]
+                            yield {
+                                "type": "usage",
+                                "prompt_tokens": u.get("prompt_tokens", 0),
+                                "completion_tokens": u.get("completion_tokens", 0),
+                                "total_tokens": u.get("total_tokens", 0),
+                            }
                         continue
 
                     choice0 = choices[0] if isinstance(choices, list) and choices else None

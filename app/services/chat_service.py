@@ -546,6 +546,30 @@ class ChatService:
                     )
                 return tool_calls
 
+            def parse_failed_tool_call(
+                failed_generation: str | None, buffered_text: str
+            ) -> tuple[str | None, dict | None]:
+                # Two known leak formats: error.failed_generation looks like
+                # '<function=NAME{...json args...}</function>'; a leaked
+                # '<|python_tag|>NAME...' in chunk text has no parseable args.
+                text = failed_generation or buffered_text or ""
+                if not text:
+                    return None, None
+
+                m = re.search(r"<function=(\w+)(\{.*\})", text, re.DOTALL)
+                if m:
+                    try:
+                        args = json.loads(m.group(2))
+                    except json.JSONDecodeError:
+                        args = None
+                    return m.group(1), args
+
+                m = re.search(r"<\|python_tag\|>(\w+)", text)
+                if m:
+                    return m.group(1), None
+
+                return None, None
+
             while True:
                 round_no += 1
                 if round_no > max_rounds:
@@ -558,6 +582,7 @@ class ChatService:
                 hit_rate_limit = False
                 rate_limit_retry_after: int | None = None
                 detected_tool: str | None = None
+                detected_args: dict | None = None
 
                 # ── LLM call 1: tool routing pass ──────────────────────────────
                 async for event in self._traced_llm_call(
@@ -594,12 +619,9 @@ class ChatService:
                         msg = str(event.get("message", "")).lower()
                         if "call a function" in msg or "failed_generation" in msg:
                             tool_call_generation_failed = True
-                            # Try to extract the intended tool name from the error message.
-                            # Groq sometimes includes it (e.g. "failed to call web_search").
-                            for _tool in ("web_search", "rag_search", "calculator"):
-                                if _tool in msg:
-                                    detected_tool = _tool
-                                    break
+                            detected_tool, detected_args = parse_failed_tool_call(
+                                event.get("failed_generation"), ""
+                            )
                         break
 
                     if etype == "done":
@@ -632,18 +654,14 @@ class ChatService:
                     if not tool_call_generation_failed and "<|python_tag|>" in buffered_text:
                         tool_call_generation_failed = True
 
-                    # Parse the intended tool name from the leaked tag so the fallback
-                    # can call the right tool rather than always defaulting to rag_search.
-                    detected_tool: str | None = None
-                    if tool_call_generation_failed:
-                        tag_match = re.search(r"<\|python_tag\|>(\w+)", buffered_text)
-                        if tag_match:
-                            detected_tool = tag_match.group(1)
+                    if tool_call_generation_failed and detected_tool is None:
+                        detected_tool, detected_args = parse_failed_tool_call(None, buffered_text)
 
                     if tool_call_generation_failed:
                         log.warning(
                             "tool_call_generation_failed_retrying_without_tools",
                             detected_tool=detected_tool,
+                            detected_args=detected_args,
                         )
 
                         last_user_msg = next(
@@ -658,20 +676,13 @@ class ChatService:
                         if last_user_msg:
                             query = last_user_msg["content"]
 
-                            if detected_tool in ("web_search", None):
-                                if conv_has_docs and detected_tool is None:
-                                    # The intended tool was likely rag_search but Groq couldn't
-                                    # serialize it. Silently falling back to web_search would return
-                                    # wrong-source answers without the user knowing. Tell them
-                                    # directly instead.
-                                    err = "I encountered an issue with the document search. Please try your question again."
-                                    full_response.append(err)
-                                    yield {"type": "chunk", "text": err}
-                                    yield {"type": "done", "finish_reason": "stop"}
-                                    break
-                                # detected_tool=None means Groq failed but we don't know which
-                                # tool was intended — try web_search first as the most common case.
-                                web_result = await self.mcp.call_tool("web_search", {"query": query})
+                            if detected_tool == "web_search" and "web_search" not in _disabled:
+                                web_args = (
+                                    detected_args
+                                    if isinstance(detected_args, dict) and detected_args.get("query")
+                                    else {"query": query}
+                                )
+                                web_result = await self.mcp.call_tool("web_search", web_args)
                                 if web_result.ok and web_result.content.strip():
                                     effective_messages = list(effective_messages) + [
                                         {
@@ -684,13 +695,14 @@ class ChatService:
                                             ),
                                         }
                                     ]
-                                    log.info(
-                                        "web_search_injected_after_tool_call_failure",
-                                        detected_tool=detected_tool,
-                                    )
+                                    log.info("web_search_injected_after_tool_call_failure")
 
-                            elif rag_available:
-                                rag_args: dict = {"query": query}
+                            elif detected_tool == "rag_search" and rag_available:
+                                rag_args: dict = (
+                                    dict(detected_args)
+                                    if isinstance(detected_args, dict) and detected_args.get("query")
+                                    else {"query": query}
+                                )
                                 if user_id:
                                     rag_args["metadata_filter"] = {"user_id": user_id}
                                 rag_result = await self.mcp.call_tool("rag_search", rag_args)
@@ -726,6 +738,38 @@ class ChatService:
                                         }
                                     ]
                                     log.info("rag_empty_asking_user_for_web_search")
+
+                            elif detected_tool == "calculator" and "calculator" not in _disabled:
+                                if isinstance(detected_args, dict) and detected_args.get("expression"):
+                                    calc_result = await self.mcp.call_tool(
+                                        "calculator", {"expression": detected_args["expression"]}
+                                    )
+                                    if calc_result.ok and calc_result.content.strip():
+                                        effective_messages = list(effective_messages) + [
+                                            {
+                                                "role": "system",
+                                                "content": (
+                                                    "Calculation result:\n"
+                                                    f"{calc_result.content}\n\n"
+                                                    "Use this result to answer the user's question."
+                                                ),
+                                            }
+                                        ]
+                                        log.info("calculator_injected_after_tool_call_failure")
+
+                            elif detected_tool is None and conv_has_docs:
+                                # Likely rag_search was intended but Groq gave no parseable
+                                # hint. Don't guess — silently falling back to web_search
+                                # could return wrong-source answers without the user knowing.
+                                err = "I encountered an issue with the document search. Please try your question again."
+                                full_response.append(err)
+                                yield {"type": "chunk", "text": err}
+                                yield {"type": "done", "finish_reason": "stop"}
+                                break
+
+                            # else: detected_tool is None (no docs) or an unsupported/
+                            # disabled tool — call nothing automatically and fall
+                            # through to the direct-answer retry below.
 
                         # Strip the routing prompt so the fallback LLM does not
                         # try to emit tool calls (which would produce <|python_tag|>
