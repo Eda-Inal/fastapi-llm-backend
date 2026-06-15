@@ -5,11 +5,34 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.db.repositories.chat_log import create_chat_log
+from app.db.repositories.document import has_documents_for_user
 from app.services.groq_client import LLMClient
 from app.services.react_agent_prompts import build_system_prompt, parse_react_response
 from app.services.tool_client.remote_client import RemoteToolClient
 
 logger = structlog.get_logger()
+
+# Phrases that indicate the user explicitly asked for a web search, in
+# addition to whatever tool context-based selection would otherwise pick.
+_WEB_SEARCH_TRIGGERS = (
+    "search the web",
+    "search online",
+    "look online",
+    "look it up online",
+    "web search",
+    "webde ara",
+    "web'de ara",
+    "internette ara",
+    "internet'te ara",
+)
+
+
+def _user_requested_web_search(messages: list[dict]) -> bool:
+    for m in reversed(messages):
+        if m.get("role") == "user":
+            content = (m.get("content") or "").lower()
+            return any(trigger in content for trigger in _WEB_SEARCH_TRIGGERS)
+    return False
 
 
 class ReActAgentService:
@@ -23,17 +46,34 @@ class ReActAgentService:
         self.client = LLMClient()
         self.mcp = RemoteToolClient()
 
-    async def _get_available_tools(self) -> list[dict]:
+    async def _get_available_tools(
+        self,
+        *,
+        session: AsyncSession,
+        user_id: str | None,
+        messages: list[dict],
+    ) -> list[dict]:
         """
-        Return the tool schemas the agent may use.
+        Decide which tools the agent may use, based on context rather than
+        leaving the choice to the model:
+          - the user has uploaded documents -> rag_search
+          - otherwise -> web_search
+          - if the user explicitly asks to search the web, web_search is
+            added regardless of the above
+        """
+        conv_has_docs = (
+            user_id is not None
+            and await has_documents_for_user(session, user_id=user_id)
+        )
 
-        Stage 2: only web_search is exposed. Returns an empty list (tool-less
-        prompt) if web_search is not registered on the tool server.
-        """
+        wanted_names = {"rag_search"} if conv_has_docs else {"web_search"}
+        if _user_requested_web_search(messages):
+            wanted_names.add("web_search")
+
         tools = await self.mcp.list_tools()
         return [
             t for t in tools
-            if isinstance(t, dict) and t.get("function", {}).get("name") == "web_search"
+            if isinstance(t, dict) and t.get("function", {}).get("name") in wanted_names
         ]
 
     async def stream_agent(
@@ -51,17 +91,18 @@ class ReActAgentService:
         """
         Run the ReAct loop and yield streaming events.
 
-        Single-tool variant: the model may call web_search at most once per
-        iteration, observe the result, and continue until it produces a
-        Final Answer or the iteration budget is exhausted.
+        The model may call one of the available tools per iteration, observe
+        the result, and continue until it produces a Final Answer or the
+        iteration budget is exhausted.
         """
         log = logger.bind(model=model, conversation_id=conversation_id, user_id=user_id)
 
-        available_tools = await self._get_available_tools()
-        web_search_name = (
-            available_tools[0].get("function", {}).get("name")
-            if available_tools else None
+        available_tools = await self._get_available_tools(
+            session=session, user_id=user_id, messages=messages
         )
+        available_names = {
+            t.get("function", {}).get("name") for t in available_tools
+        }
 
         system_prompt = build_system_prompt(available_tools)
         llm_messages = [{"role": "system", "content": system_prompt}, *messages]
@@ -116,11 +157,23 @@ class ReActAgentService:
             action = parsed["action"]
             action_input = parsed["action_input"]
 
-            if action == web_search_name and isinstance(action_input, dict):
+            if action in available_names and isinstance(action_input, dict):
+                if action == "rag_search":
+                    # Server-side injection -- the model never controls this.
+                    metadata_filter = action_input.get("metadata_filter")
+                    if not isinstance(metadata_filter, dict):
+                        metadata_filter = {}
+                    if user_id:
+                        metadata_filter["user_id"] = user_id
+                    action_input["metadata_filter"] = metadata_filter
+                    tool_timeout = settings.agent_rag_timeout
+                else:
+                    tool_timeout = settings.agent_web_search_timeout
+
                 yield {"type": "action", "tool": action, "args": action_input}
 
                 tool_result = await self.mcp.call_tool(
-                    action, action_input, timeout=settings.agent_web_search_timeout
+                    action, action_input, timeout=tool_timeout
                 )
 
                 yield {
