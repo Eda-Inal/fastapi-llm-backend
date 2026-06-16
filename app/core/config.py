@@ -266,7 +266,6 @@ class Settings(BaseSettings):
     agent_default_model: str = "llama-3.3-70b-versatile"
     agent_max_iterations: int = 5
     agent_rag_timeout: float = 10.0
-    agent_web_search_timeout: float = 15.0
 
     # ------------------------------------------------------------------
     # LangSmith tracing

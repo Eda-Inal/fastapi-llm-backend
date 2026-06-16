@@ -47,19 +47,32 @@ _ROLE_WITH_TOOLS = (
     "- Never write an \"Observation:\" section yourself — it will be provided to you.\n"
     "- If a tool returned a result, base your Final Answer on that result. "
     "Do not contradict it with your own knowledge.\n"
-    "- If no Action is needed, skip directly to \"Final Answer:\"."
+    "- If no Action is needed, skip directly to \"Final Answer:\".\n"
+    "- If rag_search returns no results or results that do not answer the "
+    "question, reformulate the query (different keywords, broader or more "
+    "specific phrasing) and try again with another Action.\n"
+    "- If rag_search still returns nothing useful after reformulating, do "
+    "not answer from your own knowledge. Say in the Final Answer that the "
+    "information was not found in the user's documents.\n"
+    "- When your Final Answer is based on retrieved passages, cite the "
+    "source filename(s) from the Observation, e.g. \"Source: <filename>\"."
 )
 
 
 _EXAMPLE_TEMPLATE = (
     "\n\nExample:\n\n"
-    "Question: What is the current EUR/USD exchange rate?\n"
-    "Thought: This requires up-to-date information, so I should search for it.\n"
+    "Question: What does the onboarding guide say about setting up a dev environment?\n"
+    "Thought: I should search the user's documents for this.\n"
     "Action: {tool_name}\n"
-    "Action Input: {{\"query\": \"EUR/USD exchange rate\"}}\n"
-    "Observation: 1 EUR = 1.0842 USD (2026-06-15)\n"
-    "Thought: I now have the exchange rate.\n"
-    "Final Answer: The current EUR/USD rate is 1.0842."
+    "Action Input: {{\"query\": \"dev environment setup onboarding guide\"}}\n"
+    "Observation: Source: onboarding.pdf (page 2, section Getting Started), uploaded 2026-05-01\n"
+    "Similarity: 0.842\n"
+    "Content: \"Clone the repository, then run scripts/setup.sh to install dependencies "
+    "and configure the local environment.\"\n"
+    "Thought: This passage answers the question.\n"
+    "Final Answer: According to the onboarding guide, clone the repository and run "
+    "scripts/setup.sh to install dependencies and configure the local environment. "
+    "Source: onboarding.pdf"
 )
 
 
