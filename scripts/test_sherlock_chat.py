@@ -20,8 +20,8 @@ from pathlib import Path
 API_URL = "http://localhost:8000/api/v1/chat/stream"
 TOOL_SERVER_URL = "http://localhost:8001/tools/call"
 USER_ID = "sherlock-rag-test"
-MODEL = "openai/gpt-oss-120b"
-RATE_LIMIT_S = 30  # 2 questions per minute
+MODEL = "llama-3.3-70b-versatile"
+RATE_LIMIT_S = 60  # 1 question per minute
 
 QUESTIONS = [
     # ── Category 1: Baseline ─────────────────────────────────────────────

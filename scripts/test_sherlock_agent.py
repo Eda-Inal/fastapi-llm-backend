@@ -21,7 +21,7 @@ from pathlib import Path
 API_URL = "http://localhost:8000/api/v1/agent/stream"
 USER_ID = "sherlock-rag-test"
 MODEL = "llama-3.3-70b-versatile"
-RATE_LIMIT_S = 30  # 2 questions per minute
+RATE_LIMIT_S = 60  # 1 question per minute
 
 
 def parse_chunks_from_observation(observation_text: str) -> list[dict]:

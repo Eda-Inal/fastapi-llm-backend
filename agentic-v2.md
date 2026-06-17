@@ -47,25 +47,68 @@ The key difference: the chat pipeline uses native function-calling and a fixed r
 
 > Single-chunk retrieval. Expected: 1 `rag_search` call, answer grounded in one passage.
 
-### Chat Stream (`/chat/stream`)
+### Chat Stream (`/chat/stream`) — openai/gpt-oss-120b
 
 | ID | Question (abbreviated) | Score | Notes |
 |---|---|---|---|
 | Q1 | How does Holmes deduce Watson returned to medical practice? | ✅ | Iodoform, nitrate of silver, stethoscope — all three correct |
-| Q2 | How does Holmes identify the note's author as German? | 🚫 | |
-| Q3 | What is Watson's exact role in the Briony Lodge plan? | 🚫 | |
-| Q4 | Holmes's disguise at Briony Lodge + what Watson says about the stage? | 🚫 | |
-| Q5 | Who founded the Red-Headed League, nationality, eligibility condition? | 🚫 | |
+| Q2 | How does Holmes identify the note's author as German? | ✅ | Sentence construction ("This account of you we have from all quarters received") correctly identified as German verb placement; Egria/Bohemia paper detail mentioned briefly but not emphasized — primary deduction correct |
+| Q3 | What is Watson's exact role in the Briony Lodge plan? | ⚠️ | "Station near window, watch Holmes, do not interfere" correct — but **smoke-rocket + "Fire!" shout completely missing**. Chunk 3 had the setup instructions but cut off before the hand-signal/rocket part; chunk 0 mentioned smoke-rocket in narration but model did not connect it to the explicit instruction |
+| Q4 | Holmes's disguise at Briony Lodge + what Watson says about the stage? | ❌ | **Empty answer** — `tool_use_failed` error during routing pass; see Open Problems §2 |
+| Q5 | Who founded the Red-Headed League, nationality, eligibility condition? | ✅ | Ezekiah Hopkins, American, red hair + 21+ age + sound body/mind — correct. Minor omissions: "bright, blazing, fiery red" specificity and London-only restriction not mentioned (both in chunk 3, model answered from chunks 0–1) |
 
-### Agent (`/agent/stream`)
+### Chat Stream (`/chat/stream`) — llama-3.3-70b-versatile
+
+| ID | Question (abbreviated) | Score | Notes |
+|---|---|---|---|
+| Q1 | How does Holmes deduce Watson returned to medical practice? | 🚫 | |
+| Q2 | How does Holmes identify the note's author as German? | ✅ | Sentence construction + **Bohemian paper** both identified — more complete than gpt-oss which omitted the paper detail |
+| Q3 | What is Watson's exact role in the Briony Lodge plan? | ⚠️ | Model honestly said "document does not explicitly state the exact role" — inferred window post + **found smoke-rocket** from narration chunk. Still missing hand-signal trigger and "Fire!" shout (chunk boundary). Better than gpt-oss which missed smoke-rocket entirely |
+| Q4 | Holmes's disguise at Briony Lodge + what Watson says about the stage? | ⚠️ | **"The stage lost a fine actor"** correctly extracted from chunk 5 (rerank 0.263). But "Nonconformist clergyman" disguise not found — that passage was not in any of the 8 retrieved chunks. No hallucination: model said "document does not specify the disguise." Retrieval gap, not model error |
+| Q5 | Who founded the Red-Headed League, nationality, eligibility condition? | ✅ | Full answer: Ezekiah Hopkins, American, **"bright, blazing, fiery red"** hair + **London-only** restriction + 21+ age + sound body/mind. Used chunks 0–3; more complete than gpt-oss which missed the fiery-red specificity and London restriction |
+
+### Chat Stream — model comparison
+
+| ID | gpt-oss-120b | llama-3.3-70b | Winner |
+|---|---|---|---|
+| Q2 | ✅ | ✅ | llama — included Bohemian paper detail |
+| Q3 | ⚠️ | ⚠️ | llama — found smoke-rocket, gpt-oss didn't |
+| Q4 | ❌ (tool_use_failed) | ⚠️ | llama — answered honestly; gpt-oss crashed |
+| Q5 | ✅ | ✅ | llama — "bright blazing fiery red" + London |
+
+**Conclusion:** `llama-3.3-70b-versatile` is more reliable on chat stream than `gpt-oss-120b` for this document. No `tool_use_failed` errors, more complete answers, and honest refusals when retrieval is incomplete (no hallucination). Q3 and Q4 partial scores are both retrieval gaps (chunk boundary / chunk not in top-8), not model errors.
+
+### Agent (`/agent/stream`) — llama-3.3-70b-versatile
 
 | ID | Question (abbreviated) | Score | RAG calls | Thoughts | Notes |
 |---|---|---|---|---|---|
-| Q1 | How does Holmes deduce Watson returned to medical practice? | ✅ | 1 | — | Iodoform, nitrate of silver, stethoscope — all three correct; chunk 7/8 (rerank 0.237) held the key passage; top_k=8 was required |
-| Q2 | How does Holmes identify the note's author as German? | 🚫 | — | — | |
-| Q3 | What is Watson's exact role in the Briony Lodge plan? | 🚫 | — | — | |
-| Q4 | Holmes's disguise at Briony Lodge + what Watson says about the stage? | 🚫 | — | — | |
-| Q5 | Who founded the Red-Headed League, nationality, eligibility condition? | 🚫 | — | — | |
+| Q1 | How does Holmes deduce Watson returned to medical practice? | ✅ | 1 | 2 | Iodoform, nitrate of silver, stethoscope — all three correct; chunk 7/8 (rerank 0.237) held the key passage; top_k=8 was required |
+| Q2 | How does Holmes identify the note's author as German? | ✅ | 1 | 2 | Sentence construction + Bohemian paper + **Egria watermark + Gesellschaft/Papier abbreviations** — most detailed answer across all endpoints/models. Checklist: 2 items, both `[x]` after single search. More complete than both chat stream runs |
+| Q3 | What is Watson's exact role in the Briony Lodge plan? | ⚠️ | 1 | 2 | Same chunk boundary issue as chat stream: "remain neutral, station near window, watch Holmes" correct but **smoke-rocket + hand signal + "Fire!" missing**. Chunk 7 (rerank 0.308) has instructions up to "watch me" but cuts off; chunk 2 (rerank 0.508) has smoke-rocket narration but model didn't connect. Did not attempt 2nd search — checklist self-certified `[x]` |
+| Q4 | Holmes's disguise at Briony Lodge + what Watson says about the stage? | ✅ | 2 | 3 | **Agent advantage demonstrated.** 1st search ("Holmes disguise Briony Lodge") found "changed his costume" + "stage lost a fine actor" but NOT the clergyman name → `[x] 1, [ ] 2`. 2nd search ("Watson comment stage loss") retrieved the **Nonconformist clergyman chunk** (rerank 0.206). Full answer: "amiable and simple-minded Nonconformist clergyman" + "The stage lost a fine actor" + John Hare comparison. Chat stream (both models) failed this — gpt-oss crashed (tool_use_failed), llama got only half |
+| Q5 | Who founded the Red-Headed League, nationality, eligibility condition? | ✅ | 1 | 2 | Ezekiah Hopkins, American, "bright, blazing, fiery red" hair + 21+ age + sound body/mind. Checklist: 3 items, all `[x]` after single search. Minor omission: London-only restriction (chunk 4, rerank 0.196 — retrieved but not used in answer) |
+
+### Agent (`/agent/stream`) — openai/gpt-oss-120b
+
+> All 4 questions hit `tool_use_failed` (native tool-call with `tools=None`). The `failed_generation` recovery in `react_agent_service.py` successfully converted each to a ReAct-format `Action:` block, so RAG calls executed normally. The issues below are model-level, not infrastructure.
+
+| ID | Question (abbreviated) | Score | RAG calls | Thoughts | Notes |
+|---|---|---|---|---|---|
+| Q2 | How does Holmes identify the note's author as German? | ✅ | 1 | 1 | Sentence construction + Gesellschaft/Papier + Egria — detailed and correct. But **no checklist**: thought was just "I need to search the documents." No `[ ]` items, no `[x]` tracking |
+| Q3 | What is Watson's exact role in the Briony Lodge plan? | ❌ | 1 | 1 | **Wrong passage selected.** Retrieved chunks included the correct instructions (window, watch, smoke-rocket narration) but model picked the wrong scene — answered "Watson is asked to call Holmes the next afternoon at three o'clock." This is from a completely different part of the story. Model comprehension failure, not retrieval failure |
+| Q4 | Holmes's disguise at Briony Lodge + what Watson says about the stage? | ❌ | 1 | 1 | **Hallucination.** Model described the **King of Bohemia's** costume (astrakhan coat, vizard mask, flame-coloured silk) as Holmes's disguise. Clergyman chunk was not retrieved (same gap as other runs), but model confabulated the King's appearance as Holmes's instead of saying "not found." Got "stage lost a fine actor" correct. Thought was malformed: "Searching for item 1.Action: rag_search" — Action tag leaked into thought text |
+| Q5 | Who founded the Red-Headed League, nationality, eligibility condition? | ✅ | 1 | 2 | Ezekiah Hopkins, American, red-headed + 21+ + sound body/mind. Correct but missing "bright, blazing, fiery red" and London restriction. Recovered from `native_tool_call_converted_to_react` |
+
+### Agent — model comparison
+
+| ID | llama-3.3-70b | gpt-oss-120b | Winner |
+|---|---|---|---|
+| Q2 | ✅ (checklist ✓) | ✅ (no checklist) | Tie — both detailed |
+| Q3 | ⚠️ (correct partial, chunk boundary) | ❌ (wrong passage selected) | llama — at least got the right scene |
+| Q4 | ✅ (2 RAG, checklist triggered 2nd search) | ❌ (hallucinated King's costume as Holmes's) | **llama — decisive win** |
+| Q5 | ✅ (fiery red + London) | ✅ (missing details) | llama — more complete |
+
+**Conclusion:** `gpt-oss-120b` is unreliable on the agent endpoint. Three structural problems: (1) never produces checklist format — thoughts are single-line "I need to search", (2) never triggers a 2nd RAG call because there's no checklist to track incomplete items, (3) prone to wrong-passage selection (Q3) and hallucination (Q4 — attributed the King's costume to Holmes). The `failed_generation` recovery code works correctly for native tool-call errors, but the model's text-based reasoning quality is too low for the ReAct format. `llama-3.3-70b-versatile` remains the recommended agent model.
 
 ---
 
@@ -93,7 +136,11 @@ The key difference: the chat pipeline uses native function-calling and a fixed r
 
 | ID | Sections spanned | Score | RAG calls | Both chunks retrieved? | Notes |
 |---|---|---|---|---|---|
-| Q6 | Watson stethoscope ↔ Wilson tattoo + coin | ❌ | 1 | No — neither chunk retrieved | Watson-focused query; Wilson "China" mention found but not the HOW (fish tattoo + coin chunk never retrieved); model self-certified [x] both items without specific objects; did not hallucinate but gave empty/vague answer |
+| Q6 (pre-fix) | Watson stethoscope ↔ Wilson tattoo + coin | ⚠️ | 2 | Wilson ✅, Watson ❌ | **Before checklist-validation prompt fix.** 1st search missed Watson stethoscope chunk — model self-certified `[x]` despite saying "not explicitly found." 2nd search targeted Wilson → fish tattoo (0.595) + Chinese coin (0.622) fully correct. Watson vague ("can be inferred... military doctor") |
+| Q6 (post-fix v1) | Watson stethoscope ↔ Wilson tattoo + coin | ⚠️ | 2 | Watson ✅, Wilson ⚠️ | **After checklist-validation prompt fix (citable-fact rule only).** Model retried Watson search → **stethoscope chunk found** (rerank 0.252). But both searches spent on Watson, Wilson degraded to "right hand + seal" (wrong). Shows retry works but iteration budget is zero-sum |
+| Q6 (post-fix v2) | Watson stethoscope ↔ Wilson tattoo + coin | ⚠️ | 2 | Watson ❌, Wilson ✅ | **After keyword-targeting rule added.** 1st search Watson → not found. Model correctly moved to `[ ] 2` and targeted Wilson keywords: "Jabez Wilson object on body and watch chain reveals China" → **fish tattoo (0.677) + Chinese coin (0.635) fully correct.** Watson still vague — the iodoform/stethoscope chunk doesn't mention Watson by name ("if a gentleman walks into my rooms smelling of iodoform..."), so Watson-focused queries can't surface it. This is a retrieval gap, not a prompt gap. The keyword-targeting rule correctly distributed searches across both items instead of doubling up on one |
+| Q6 (post-fix v3) | Watson stethoscope ↔ Wilson tattoo + coin | ⚠️ | 2 | Watson ❌, Wilson ✅ | **After exact-phrase citation rule added (3 separate rules).** Same search distribution as v2 — Wilson fully correct with **direct quote**: *"The fish that you have tattooed immediately above your right wrist could only have been done in China... When, in addition, I see a Chinese coin hanging from your watch-chain, the matter becomes even more simple."* Watson: "not explicitly stated" — no hallucination. Citation rule working: model quoted passage for Wilson, admitted gap for Watson |
+| Q6 (consolidated) | Watson stethoscope ↔ Wilson tattoo + coin | — | — | — | **3 rules consolidated into 1 line** and added to prompt. Not yet tested (rate limit exhausted). Prompt: "Only mark [x] when you can quote the exact supporting phrase from the Observation; in the Final Answer, cite that phrase for each item. When reformulating, target only the unfound item's keywords." |
 | Q7 | King's mask ↔ Holmes clergyman disguise | 🚫 | — | — | |
 | Q8 | "cocaine & ambition" ↔ "three pipe problem" | 🚫 | — | — | |
 | Q9 | Observation lecture ↔ Spaulding's ears | 🚫 | — | — | |
@@ -131,23 +178,41 @@ The key difference: the chat pipeline uses native function-calling and a fixed r
 
 ## Summary
 
-### Chat Stream
+### Chat Stream — openai/gpt-oss-120b
 
 | Category | Tested | Pass | Partial | Fail |
 |---|---|---|---|---|
-| Baseline | 1 | 1 | 0 | 0 |
-| Multi-Retrieval | 1 | 0 | 0 | 1 |
+| Baseline | 5 | 3 | 1 | 1 |
+| Multi-Retrieval | 2 | 0 | 0 | 2 |
 | Hallucination | — | — | — | — |
-| **Total** | 2 | 1 | 0 | 1 |
+| **Total** | 7 | 3 | 1 | 3 |
 
-### Agent
+### Chat Stream — llama-3.3-70b-versatile
+
+| Category | Tested | Pass | Partial | Fail |
+|---|---|---|---|---|
+| Baseline | 4 | 2 | 2 | 0 |
+| Multi-Retrieval | — | — | — | — |
+| Hallucination | — | — | — | — |
+| **Total** | 4 | 2 | 2 | 0 |
+
+### Agent — llama-3.3-70b-versatile
 
 | Category | Tested | Pass | Partial | Fail | Avg RAG calls |
 |---|---|---|---|---|---|
-| Baseline | 1 | 1 | 0 | 0 | 1.0 |
+| Baseline | 5 | 4 | 1 | 0 | 1.2 |
 | Multi-Retrieval | 1 | 0 | 0 | 1 | 1.0 |
 | Hallucination | — | — | — | — | — |
-| **Total** | 2 | 1 | 0 | 1 | 1.0 |
+| **Total** | 6 | 4 | 1 | 1 | 1.2 |
+
+### Agent — openai/gpt-oss-120b
+
+| Category | Tested | Pass | Partial | Fail | Avg RAG calls |
+|---|---|---|---|---|---|
+| Baseline | 4 | 2 | 0 | 2 | 1.0 |
+| Multi-Retrieval | — | — | — | — | — |
+| Hallucination | — | — | — | — | — |
+| **Total** | 4 | 2 | 0 | 2 | 1.0 |
 
 ---
 
@@ -169,9 +234,22 @@ The key difference: the chat pipeline uses native function-calling and a fixed r
 
 *Chat pipeline:* The model independently recognized its first retrieval was incomplete and attempted a second `rag_search` (`"Watson arc-and-compass breastpin doctor Holmes deduces Watson profession"`). The pipeline blocked it (finalization runs with `tools=None`; Groq returned HTTP 400). The model's intent was correct — the limitation was architectural.
 
-*Agent pipeline:* Made only 1 `rag_search` call. The retrieved chunks contained neither the Watson/stethoscope passage nor the Wilson/tattoo+coin passage. Despite this, the model marked both checklist items `[x]` as "found" and generated answers entirely from training knowledge — hallucinating "medical bag" for Watson (correct: stethoscope bulge in top hat) and "brass Chinese seal" for Wilson (correct: fish tattoo above right wrist). It even cited the wrong story ("A Study in Scarlet" instead of "A Scandal in Bohemia" / "The Red-Headed League").
+*Agent pipeline (gpt-oss-120b, original run):* Made only 1 `rag_search` call. The retrieved chunks contained neither the Watson/stethoscope passage nor the Wilson/tattoo+coin passage. Despite this, the model marked both checklist items `[x]` as "found" and generated answers entirely from training knowledge — hallucinating "medical bag" for Watson (correct: stethoscope bulge in top hat) and "brass Chinese seal" for Wilson (correct: fish tattoo above right wrist). It even cited the wrong story ("A Study in Scarlet" instead of "A Scandal in Bohemia" / "The Red-Headed League").
 
-**The contrast:** In the chat pipeline the model *knew* it needed more and tried to act on it. In the agent pipeline the checklist prompt caused it to *claim* completion rather than admit failure and retry — a prompt-following failure, not an architectural one. The `rag_search` returned plausible-looking chunks (Watson mentioned as "Dr. Watson", practice mentioned), and the model pattern-matched "close enough" instead of reformulating.
+*Agent pipeline (llama-3.3-70b, after prompt fixes):* The checklist-validation prompt fix addressed this failure. Across 4 iterations of Q6:
+
+| Iteration | Prompt change | Watson | Wilson | Key behavior |
+|---|---|---|---|---|
+| pre-fix | — | ❌ | ✅ | 2 RAG calls, each item got its own search |
+| post-fix v1 | +citable fact | ✅ | ❌ | Model retried Watson (good), but both searches consumed by Watson |
+| post-fix v2 | +keyword targeting | ❌ | ✅ | Model correctly moved to unfound Wilson item after Watson miss |
+| post-fix v3 | +exact phrase cite | ❌ | ✅ + quote | Wilson answer now includes direct quote from text; Watson says "not found" |
+
+The prompt fixes progressively improved agent behavior: v1 proved retry works, v2 fixed search targeting, v3 added grounding. The three rules were then consolidated into a single line to reduce prompt clutter.
+
+**The remaining gap:** Watson's stethoscope chunk is unreachable via Watson-focused queries because the passage doesn't mention Watson by name — it says "if a gentleman walks into my rooms smelling of iodoform..." This is a fundamental retrieval challenge that prompt engineering cannot solve; it requires either a 3rd search attempt or a different query strategy (e.g. searching for the medical-practice deduction scene rather than Watson specifically).
+
+**The contrast:** In the chat pipeline the model *knew* it needed more and tried to act on it. In the agent pipeline, the original checklist prompt caused it to *claim* completion rather than admit failure and retry — but this was fixable via prompt engineering. The keyword-targeting rule was the most impactful single change.
 
 ### Multi-retrieval behavior
 
@@ -234,4 +312,82 @@ Three separate blockers were hit before stable agent runs:
 
 ### 6. Hallucination pattern: confident confabulation over honest refusal
 
-In every failure case the model produced a specific, plausible-sounding answer rather than saying "I couldn't find this." Q6 (agent) cited a non-existent "brass Chinese seal" and the wrong story title. Q8 (chat) produced a real-sounding but wrong Holmes quote. Q1 (agent) reported adjacent deductions from the correct scene as if they were the target answer. The model never said "I didn't find it" — it always filled the gap from training knowledge.
+In every failure case the model produced a specific, plausible-sounding answer rather than saying "I couldn't find this." Q6 (agent, gpt-oss-120b) cited a non-existent "brass Chinese seal" and the wrong story title. Q8 (chat) produced a real-sounding but wrong Holmes quote. Q1 (agent, gpt-oss-120b) reported adjacent deductions from the correct scene as if they were the target answer. The model never said "I didn't find it" — it always filled the gap from training knowledge.
+
+---
+
+## Roadmap — What to Do Next
+
+The goal is to understand where each pipeline actually breaks, not to fix things before seeing the full picture. Run in order; don't skip ahead.
+
+### Step 1 — Complete baseline (Q2–Q5), both endpoints
+
+Run `test_sherlock_chat.py` and `test_sherlock_agent.py` with `--questions Q2,Q3,Q4,Q5`.
+
+Purpose: confirm that single-chunk retrieval is reliable across both pipelines before drawing conclusions about multi-retrieval. If baseline is shaky, multi-retrieval results are uninterpretable.
+
+### Step 2 — Run all multi-retrieval questions as-is (Q6–Q15), both endpoints
+
+No prompt changes, no fixes. Run as-is and record:
+- How many RAG calls does the agent make per question? Does it ever reach 2?
+- Does the chat pipeline always fail at the architectural ceiling (1 call)?
+- What does the agent do when the first retrieval is insufficient — does it retry or self-certify?
+
+This step answers whether the checklist prompt is the problem, or whether the loop mechanics themselves are broken.
+
+### Step 3 — Diagnose the agent loop based on Step 2 results
+
+Two possible findings:
+
+**Finding A — agent never makes a 2nd RAG call:** The checklist self-certification is the problem. The model marks [x] without a direct quote. Try prompt alternatives one at a time, each tested against Q6:
+- Add "do not mark [x] unless you can quote the exact phrase from the retrieved text"
+- Replace checklist with explicit sub-question decomposition ("search separately for each item")
+- Remove the checklist entirely and rely on the model's own judgment
+
+**Finding B — agent sometimes makes a 2nd RAG call but still fails:** The loop works, but query reformulation is poor. The model issues the same or similar query twice instead of targeting the missing piece.
+
+### Step 4 — Hallucination traps (H1–H3), both endpoints
+
+Independent of multi-retrieval. Can be done any time between steps.
+Run `--questions H1,H2,H3` on both scripts and record whether the model refuses or confabulates.
+
+---
+
+## ⭐ Open Problems
+
+### 1. Chat pipeline single-retrieval ceiling
+
+Q6 and Q8 confirm that the finalization LLM runs with `tools=None`. Even when the model recognises its first retrieval was incomplete (Q6: it produced a second `rag_search` call that Groq rejected with HTTP 400), the architecture blocks it. This is the fundamental constraint for multi-part questions on `/chat/stream`.
+
+### 2. `tool_use_failed` not detected by chat_service — Q4 empty answer (gpt-oss-120b)
+
+**Symptom:** Q4 returned an empty answer. Groq returned HTTP 400 during the routing pass:
+
+```
+Failed to parse tool call arguments as JSON
+code: tool_use_failed
+failed_generation: {"name": "rag_search", "arguments": {"query": "Hol"}}
+```
+
+The model tried to generate a native tool call but the JSON was truncated (`"query": "Hol"` — only 3 characters). Groq rejected it.
+
+**Root cause:** `chat_service.py:621` detects `tool_call_generation_failed` by checking the error **message text** for `"call a function"` or `"failed_generation"`. But Groq's error message here is `"Failed to parse tool call arguments as JSON"` — neither pattern matches.
+
+```python
+# Current detection (chat_service.py:621)
+msg = str(event.get("message", "")).lower()
+if "call a function" in msg or "failed_generation" in msg:
+    tool_call_generation_failed = True
+```
+
+Because the error is not recognised, the code falls through to the direct-answer path. But the routing system prompt (`"You are a routing agent"`) is still in `effective_messages` alongside the appended `DIRECT_ANSWER_SYSTEM_MESSAGE` — two conflicting instructions. The model produces empty output.
+
+**Fix:** Add `"tool_use_failed"` or `"failed to parse tool"` to the detection pattern. The `failed_generation` field IS present on the error event (Groq returns it, and `groq_client.py` extracts it at line 304) — the only gap is the message-text pattern match.
+
+```python
+# Proposed fix
+if "call a function" in msg or "failed_generation" in msg or "tool_use_failed" in msg:
+    tool_call_generation_failed = True
+```
+
+Alternatively, check `event.get("failed_generation")` directly instead of relying on the message string — this covers any future Groq error format changes.
