@@ -50,6 +50,16 @@ AVAILABLE_MODELS: Dict[str, Any] = {
     },
 
     # ──────────────────────────────────────────────────────────────────
+    # SambaNova
+    # ──────────────────────────────────────────────────────────────────
+    "Meta-Llama-3.3-70B-Instruct": {
+        "provider": "sambanova",
+        "tier": "fast",
+        "stream": False,
+        "context_window": 131072,
+    },
+
+    # ──────────────────────────────────────────────────────────────────
     # OpenRouter
     # ──────────────────────────────────────────────────────────────────
     "openai/gpt-oss-120b:free": {
@@ -160,6 +170,12 @@ class Settings(BaseSettings):
     # ------------------------------------------------------------------
     gemini_api_key: str | None = None
     gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai"
+
+    # ------------------------------------------------------------------
+    # SambaNova API (optional)
+    # ------------------------------------------------------------------
+    sambanova_api_key: str | None = None
+    sambanova_base_url: str = "https://api.sambanova.ai/v1"
 
     tavily_api_key: str | None = None
 

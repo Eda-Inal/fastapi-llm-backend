@@ -20,7 +20,7 @@ from pathlib import Path
 
 API_URL = "http://localhost:8000/api/v1/agent/stream"
 USER_ID = "sherlock-rag-test"
-MODEL = "llama-3.3-70b-versatile"
+MODEL = "Meta-Llama-3.3-70B-Instruct"
 RATE_LIMIT_S = 60  # 1 question per minute
 
 
@@ -139,6 +139,12 @@ QUESTIONS = [
             "that reveals his ambivalence about transparency, and how does Watson's earlier reaction to Holmes's "
             "explanations foreshadow this?"
         ),
+    },
+
+    # ── Category 2b: Isolated retrieval probes ─────────────────────────
+    {
+        "id": "Q8B", "category": "multi_retrieval",
+        "text": "What specific phrase does Holmes use after Jabez Wilson leaves to signal he is now fully engaged in thinking about the Red-Headed League problem?",
     },
 
     # ── Category 3: Hallucination Traps ─────────────────────────────────

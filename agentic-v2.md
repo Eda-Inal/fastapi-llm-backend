@@ -14,7 +14,8 @@
 | Hybrid search | enabled (dense pgvector + BM25) |
 | Reranker | enabled (Jina) |
 | Chat model | `openai/gpt-oss-120b` (Groq) |
-| Agent model | `llama-3.3-70b-versatile` (Groq) — switched from gpt-oss-120b; see Analysis §4 |
+| Agent model (baseline Q1–Q5) | `llama-3.3-70b-versatile` (Groq) — switched from gpt-oss-120b; see Analysis §4 |
+| Agent model (multi-retrieval Q8–Q15) | `Meta-Llama-3.3-70B-Instruct` (SambaNova) — faster token throughput |
 | Test scripts | `scripts/test_sherlock_chat.py` · `scripts/test_sherlock_agent.py` |
 
 ---
@@ -123,7 +124,7 @@ The key difference: the chat pipeline uses native function-calling and a fixed r
 |---|---|---|---|
 | Q6 | Watson stethoscope ↔ Wilson tattoo + coin (~31 chunks apart) | ❌ | 1 RAG call (not 2); model marked checklist [x] complete without finding either fact; hallucinated "medical bag" (Watson) and "brass Chinese seal" (Wilson) from training knowledge |
 | Q7 | King's mask purpose ↔ Holmes's clergyman disguise (~11 chunks) | 🚫 | |
-| Q8 | Holmes "cocaine & ambition" ↔ "three pipe problem" (~45 chunks) | ❌ | Neither passage retrieved; model admitted first was missing but hallucinated "So I am. Very much so." for the engagement phrase (correct: "three pipe problem") |
+| Q8 | Holmes "cocaine & ambition" ↔ "three pipe problem" (~45 chunks) | ❌ | Neither passage retrieved; model admitted first was missing but hallucinated "So I am. Very much so." for the engagement phrase (correct: "three pipe problem"). See Agent Q8 results below for extended analysis |
 | Q9 | Observation lecture ↔ Spaulding's pierced ears (~41 chunks) | 🚫 | |
 | Q10 | "Capital mistake to theorise" ↔ "bizarre = less mysterious" (~40 chunks) | 🚫 | |
 | Q11 | Count Von Kramm alias ↔ William Morris alias (~37 chunks) | 🚫 | |
@@ -142,14 +143,15 @@ The key difference: the chat pipeline uses native function-calling and a fixed r
 | Q6 (post-fix v3) | Watson stethoscope ↔ Wilson tattoo + coin | ⚠️ | 2 | Watson ❌, Wilson ✅ | **After exact-phrase citation rule added (3 separate rules).** Same search distribution as v2 — Wilson fully correct with **direct quote**: *"The fish that you have tattooed immediately above your right wrist could only have been done in China... When, in addition, I see a Chinese coin hanging from your watch-chain, the matter becomes even more simple."* Watson: "not explicitly stated" — no hallucination. Citation rule working: model quoted passage for Wilson, admitted gap for Watson |
 | Q6 (consolidated) | Watson stethoscope ↔ Wilson tattoo + coin | — | — | — | **3 rules consolidated into 1 line** and added to prompt. Not yet tested (rate limit exhausted). Prompt: "Only mark [x] when you can quote the exact supporting phrase from the Observation; in the Final Answer, cite that phrase for each item. When reformulating, target only the unfound item's keywords." |
 | Q7 | King's mask ↔ Holmes clergyman disguise | 🚫 | — | — | |
-| Q8 | "cocaine & ambition" ↔ "three pipe problem" | 🚫 | — | — | |
-| Q9 | Observation lecture ↔ Spaulding's ears | 🚫 | — | — | |
-| Q10 | "Capital mistake" ↔ "bizarre = less mysterious" | 🚫 | — | — | |
-| Q11 | Count Von Kramm ↔ William Morris | 🚫 | — | — | |
-| Q12 | "I know where it is" ↔ "graver issues" | 🚫 | — | — | |
-| Q13 | Weight correction ↔ King's unmasking | 🚫 | — | — | |
-| Q14 | Watson reads note ↔ Watson reads Wilson | 🚫 | — | — | |
-| Q15 | "ridiculously simple" ↔ "Omne ignotum" | 🚫 | — | — | |
+| Q8 (SambaNova, overfetch=3) | "cocaine & ambition" ↔ "three pipe problem" | ⚠️ | 3 | cocaine ✅, three-pipe ❌ | **Model: `Meta-Llama-3.3-70B-Instruct` (SambaNova).** 1st RAG call failed (embedding error). 2nd call ("Sherlock Holmes personality traits between cases") retrieved "cocaine and ambition" chunk (rerank 0.339) — model correctly identified the two states. 3rd call ("Red-Headed League engagement phrase") returned "You could not possibly have come at a better time" chunk (rerank 0.676) — model used this as the engagement phrase. Plausible but **not the expected answer** ("It is quite a three pipe problem"). Chunk 588 containing "three pipe problem" was never retrieved. No hallucination: model answered from retrieved text only. Duration: 34.65s |
+| Q8 (SambaNova, overfetch=10) | "cocaine & ambition" ↔ "three pipe problem" | ❌ | 5 | cocaine ❌, three-pipe ❌ | **Same model, `reranker_overfetch_multiplier` raised to 10 (80 candidates per search).** Model made 5 RAG calls (max iterations exhausted), none retrieved the "cocaine and ambition" chunk or the "three pipe problem" chunk. Every thought remained `[ ]` — model never self-certified any item. 1st query ("Scandal in Bohemia opening Holmes states") returned Bohemia dialogue scenes, not the opening narration. Subsequent queries reformulated but kept returning the same Red-Headed League plot chunks. **Final output was raw Thought/Action text** — agent hit max iterations without producing a Final Answer. The wider overfetch pool (80 vs 24 chunks) introduced more noise and the reranker scored topically related but non-target chunks higher, pushing the critical passages further down. Duration: 29.76s |
+| Q9 (SambaNova) | Observation lecture ↔ Spaulding's ears (~41 chunks) | ✅ | 4 | Both ✅ | **Model: `Meta-Llama-3.3-70B-Instruct` (SambaNova).** Checklist split into 4 items: (1) observe-vs-see lecture, (2) Holmes questioning Wilson, (3) Wilson's physical detail admission, (4) Holmes's reaction. Each item got its own RAG call. "You see, but you do not observe" chunk retrieved at rerank 0.456. Spaulding interrogation chunk at rerank 0.752 (strongest score in all Q8–Q11 runs). Answer: Wilson noticed "white splash of acid" + "ears pierced for earrings"; Holmes "sat up in considerable excitement" + "I thought as much" + "sinking back in deep thought." All correct. Minor gap: answer doesn't explicitly connect the observe-vs-see principle to the Spaulding scene — lists both but leaves the parallel implicit. Duration: 24.07s |
+| Q10 (SambaNova) | "Capital mistake to theorise" ↔ "bizarre = less mysterious" (~40 chunks) | ✅ | 2 | Both ✅ | **Model: `Meta-Llama-3.3-70B-Instruct` (SambaNova).** Both target passages retrieved and **quoted verbatim**: *"It is a capital mistake to theorise before one has data"* and *"the more bizarre a thing is the less mysterious it proves to be."* Notably, the "bizarre" quote lives in chunk 588 — the same chunk that contains "three pipe problem" (Q8's target). The chunk was retrievable here because the query targeted "bizarre cases" directly, not an abstract paraphrase like "engagement phrase." Confirms Q8 failure was query-formulation, not embedding gap. "Omne ignotum" chunk also retrieved (rerank 0.537). Duration: 8.88s |
+| Q11 (SambaNova) | Count Von Kramm ↔ William Morris (~37 chunks) | ✅ | 2 | Both ✅ | **Model: `Meta-Llama-3.3-70B-Instruct` (SambaNova).** Both false identities retrieved and correctly reported: "Count Von Kramm, a Bohemian nobleman" (King of Bohemia) and "William Morris" (Duncan Ross / Red-Headed League office manager, given to landlord). Clean 2-search checklist execution — 1st search for Von Kramm, 2nd for the League office alias. Duration: 9.65s |
+| Q12 (SambaNova) | "I know where it is" ↔ "graver issues" (~11 chunks) | ✅ | 2 | Both ✅ | Clean 2-item checklist. Wilson: "lost four pound a week." Holmes: "graver issues hang from it." Both retrieved, correctly contrasted. Duration: 9.0s |
+| Q13 (SambaNova) | Weight correction ↔ King's unmasking (~7 chunks) | ⚠️ | 2 | Both ✅ | **Retrieval correct, comprehension/reasoning issue.** Both chunks retrieved. Model got the direction right but did not quote the text — missed "Indeed, I should have thought a little more" and "I was also aware of that." Interpreted rather than cited. Duration: 13.17s |
+| Q14 (SambaNova) | Watson reads note ↔ Watson reads Wilson (~24 chunks) | ⚠️ | 3 | Both ⚠️ | **Retrieval correct, comprehension/reasoning issue.** Relevant chunks retrieved (including Omne ignotum at rerank 0.093) but model failed to extract Watson's specific conclusions from them. Vague summary instead of textual grounding. Duration: 13.17s |
+| Q15 (SambaNova) | "ridiculously simple" ↔ "Omne ignotum" (~33 chunks) | ✅ | 1 | Both ✅ | Single RAG call retrieved both targets. "Omne ignotum pro magnifico" quoted verbatim. Watson's "ridiculously simple" correctly connected as foreshadowing. Duration: 8.25s |
 
 ---
 
@@ -205,6 +207,18 @@ The key difference: the chat pipeline uses native function-calling and a fixed r
 | Hallucination | — | — | — | — | — |
 | **Total** | 6 | 4 | 1 | 1 | 1.2 |
 
+### Agent — Meta-Llama-3.3-70B-Instruct (SambaNova)
+
+| Category | Tested | Pass | Partial | Fail | Avg RAG calls |
+|---|---|---|---|---|---|
+| Baseline | — | — | — | — | — |
+| Multi-Retrieval | 8 | 5 | 2 | 1 | 2.4 |
+| Hallucination | — | — | — | — | — |
+| **Total** | 8 | 5 | 2 | 1 | 2.4 |
+
+> 8 unique questions (Q8–Q15). Q8 overfetch=10 counted as a parameter variant, not a separate test.
+> ✅ Q9, Q10, Q11, Q12, Q15. ⚠️ Q13, Q14 (retrieval correct, comprehension issue). ❌ Q8 (query generation failure — three-pipe never retrieved; overfetch=10 variant further degraded results).
+
 ### Agent — openai/gpt-oss-120b
 
 | Category | Tested | Pass | Partial | Fail | Avg RAG calls |
@@ -257,6 +271,49 @@ The prompt fixes progressively improved agent behavior: v1 proved retry works, v
 >
 > Q6 shows the model *can* self-diagnose the gap — it just cannot act on that diagnosis within the chat pipeline. The agent's iterative loop removes this constraint.
 
+### Q8 deep-dive — two-layer failure: query quality + chunk comprehension
+
+**Setup:** Chunk 588 (document_id 103) contains the target passage: *"It is quite a three pipe problem, and I beg that you won't speak to me for fifty minutes."* Verified present in pgvector via `SELECT ... WHERE text ILIKE '%three pipe problem%'`. The chunk is 1,256 characters and also contains *"the more bizarre a thing is the less mysterious it proves to be"* — both key phrases for Q8 and Q10.
+
+#### Layer 1 — Agent query quality: chunk never retrieved
+
+| Run | Model | Overfetch | Total chunks examined | Chunk 588 retrieved? | "cocaine & ambition" found? |
+|---|---|---|---|---|---|
+| 142638 | Meta-Llama-3.3-70B (SambaNova) | 3 (24 candidates) | 3 RAG calls × 8 = 24 chunks | ❌ | ✅ (rerank 0.339) |
+| 143632 | Meta-Llama-3.3-70B (SambaNova) | 10 (80 candidates) | 5 RAG calls × 8 = 40 chunks | ❌ | ❌ |
+| 142303 | llama-4-scout-17b (Groq) | 3 (24 candidates) | 2 RAG calls × 8 = 16 chunks | ❌ | ✅ (rerank 0.339) |
+
+Across 10 RAG calls with 5 different query formulations, the agent never generated a query that retrieved chunk 588. The queries used abstract paraphrases ("Red-Headed League engagement phrase", "Holmes fully engaged phrase", "Holmes energy levels between cases") that have no semantic overlap with the literary idiom "three pipe problem."
+
+**Overfetch=10 made things worse:** The wider candidate pool (80 chunks) introduced more noise. The reranker scored topically related but non-target chunks higher, and even the "cocaine and ambition" chunk (found at rerank 0.339 with overfetch=3) was pushed out of the top 8.
+
+#### Layer 2 — Chunk comprehension: model ignores retrieved passage
+
+**Q8B probe test** (run 144827, chat stream, `Meta-Llama-3.3-70B-Instruct` via SambaNova): a simplified, single-part question was used:
+
+> *"What specific phrase does Holmes use after Jabez Wilson leaves to signal he is now fully engaged in thinking about the Red-Headed League problem?"*
+
+**Result:** Chunk 588 was retrieved at **index 5, rerank score 0.456**. The chunk contains the exact target phrase in full:
+
+> *"To smoke," he answered. "It is quite a three pipe problem, and I beg that you won't speak to me for fifty minutes."*
+
+Despite having this chunk in the context, the model responded: *"It seems that the specific phrase used by Holmes after Jabez Wilson leaves to signal he is now fully engaged in thinking about the Red-Headed League problem is not explicitly stated in the provided passages."*
+
+This is the same "chunk in context but not read" failure observed previously — the model does not parse all 8 chunks carefully during finalization; it skims and declares "not found" even when the answer is present.
+
+#### Revised root cause
+
+The failure is **not** an embedding/BM25 problem. With the right query, hybrid search retrieves chunk 588 reliably (rerank 0.456, well within top 8). The two actual problems are:
+
+1. **Agent query generation** — the agent generates abstract paraphrases instead of content-specific keywords. It never formulates a query close enough to "Holmes smoke three pipe problem Wilson leaves" for the retrieval system to surface the chunk.
+2. **Finalization comprehension** — even when the chunk is retrieved (Q8B chat stream), the model fails to extract the answer from it. This is a known pattern: the model skims retrieved passages rather than reading each one completely.
+
+#### Resolved questions
+
+1. **Is this a SambaNova-specific comprehension issue?** No — Q13 and Q14 (also SambaNova) showed the same pattern: retrieval correct, but model failed to extract or quote details from retrieved chunks. This is a model-level comprehension weakness (Llama-3.3-70B skimming rather than reading), not a provider issue.
+2. **Does the agent perform better with Q8B?** Not tested separately, but Q10 confirmed that chunk 588 is retrievable with the right query ("bizarre cases") and the model correctly quoted from it. The failure is query-formulation (Q8 agent never generates a query that surfaces chunk 588) combined with comprehension (Q8B chat stream retrieved the chunk but model said "not found").
+3. **Can the finalization prompt be improved?** The FINALIZATION_SYSTEM_MESSAGE already says "Read every tool message carefully before answering" — the model ignores this instruction. Further prompt changes are unlikely to fix a comprehension gap that spans both pipeline types.
+
 ---
 
 ## Full Analysis — What This Test Run Revealed
@@ -301,7 +358,7 @@ Despite the iterative design, the agent made only 1 `rag_search` call for Q6 —
 
 This model (GPT-4o on Groq) is trained for native function-calling. Across 5 runs of Q1 it exhibited four distinct failure modes: native tool call → Groq 400 (recovered via `failed_generation`), inline `Action:` without a preceding newline (parser missed it), hallucinated observation loop, and TPM/timeout failures. Only one of the five runs completed the ReAct loop — and that run returned the wrong answer due to `top_k=5`.
 
-**Switched to `llama-3.3-70b-versatile`.** This model is instruction-tuned for text generation tasks and follows the Thought/Action/Action Input/Final Answer format consistently. On the first attempt it produced a clean 2-thought ReAct trace, retrieved 8 chunks (top_k=8 system default, model sent no top_k override), and the iodoform/stethoscope chunk appeared at position 7/8 — delivering a correct answer. All subsequent agent results in this document use `llama-3.3-70b-versatile`.
+**Switched to `llama-3.3-70b-versatile`.** This model is instruction-tuned for text generation tasks and follows the Thought/Action/Action Input/Final Answer format consistently. On the first attempt it produced a clean 2-thought ReAct trace, retrieved 8 chunks (top_k=8 system default, model sent no top_k override), and the iodoform/stethoscope chunk appeared at position 7/8 — delivering a correct answer. Baseline results (Q1–Q5) in this document use `llama-3.3-70b-versatile` on Groq. Multi-retrieval results (Q8–Q15) use `Meta-Llama-3.3-70B-Instruct` on SambaNova — same model weights, different provider for faster token throughput.
 
 ### 5. Infrastructure issues during agent testing
 

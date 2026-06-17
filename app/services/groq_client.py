@@ -13,6 +13,7 @@ _PROVIDER_CONFIGS = {
     "groq": lambda: (settings.groq_base_url, settings.groq_api_key),
     "openrouter": lambda: (settings.openrouter_base_url, settings.openrouter_api_key),
     "gemini": lambda: (settings.gemini_base_url, settings.gemini_api_key),
+    "sambanova": lambda: (settings.sambanova_base_url, settings.sambanova_api_key),
 }
 
 
