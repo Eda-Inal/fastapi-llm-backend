@@ -1,4 +1,5 @@
 from collections.abc import AsyncIterator
+import asyncio
 
 import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -65,12 +66,16 @@ class ReActAgentService:
         final_answer: str | None = None
         last_raw_response = ""
 
-        for iteration in range(settings.agent_max_iterations):
+        iteration = 0
+        rate_limit_retries = 0
+        max_rate_limit_retries = 3
+        while iteration < settings.agent_max_iterations:
             iter_log = log.bind(iteration=iteration + 1)
 
             buffer: list[str] = []
             native_tool_call: dict | None = None
             failed_generation: str | None = None
+            hit_rate_limit = False
             async for event in self.client.stream_chat_completion(
                 messages=llm_messages,
                 model=model,
@@ -88,13 +93,28 @@ class ReActAgentService:
                     if calls and native_tool_call is None:
                         native_tool_call = calls[0]
                 elif event["type"] == "error":
-                    # Groq returns 400 when the model generates a native tool call
-                    # but no tools were declared (tool_choice=none). The actual tool
-                    # call is recoverable from failed_generation in the error body.
                     fg = event.get("failed_generation")
                     if event.get("status") == 400 and fg:
                         failed_generation = fg
                         iter_log.info("native_tool_call_via_failed_generation", raw=fg[:120])
+                    elif event.get("status") == 429:
+                        retry_after = event.get("retry_after")
+                        if retry_after is not None and retry_after > 60:
+                            iter_log.error("agent_daily_limit_reached", retry_after=retry_after)
+                            yield {"type": "error", "message": event.get("message", "Daily rate limit reached")}
+                            yield {"type": "done", "finish_reason": "error"}
+                            return
+                        wait = (retry_after + 1) if retry_after and retry_after <= 60 else 5
+                        rate_limit_retries += 1
+                        if rate_limit_retries > max_rate_limit_retries:
+                            iter_log.error("agent_rate_limit_exhausted", retries=rate_limit_retries)
+                            yield {"type": "error", "message": "Rate limit retries exhausted"}
+                            yield {"type": "done", "finish_reason": "error"}
+                            return
+                        iter_log.warning("agent_rate_limit_waiting", retry_after=retry_after, wait=wait, attempt=rate_limit_retries)
+                        await asyncio.sleep(wait)
+                        hit_rate_limit = True
+                        break
                     else:
                         iter_log.error("agent_llm_error", message=event.get("message"))
                         yield {"type": "error", "message": event.get("message", "LLM error")}
@@ -102,6 +122,9 @@ class ReActAgentService:
                         return
                 elif event["type"] == "done":
                     break
+
+            if hit_rate_limit:
+                continue
 
             raw_response = "".join(buffer)
 
@@ -206,6 +229,7 @@ class ReActAgentService:
 
                 llm_messages.append({"role": "assistant", "content": raw_response})
                 llm_messages.append({"role": "user", "content": f"Observation: {tool_result.content}"})
+                iteration += 1
                 continue
 
             # Unrecognized action or malformed Action Input -- stop the loop
