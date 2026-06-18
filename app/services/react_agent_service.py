@@ -65,6 +65,7 @@ class ReActAgentService:
 
         final_answer: str | None = None
         last_raw_response = ""
+        seen_queries: set[str] = set()
 
         iteration = 0
         rate_limit_retries = 0
@@ -214,6 +215,21 @@ class ReActAgentService:
                 if user_id:
                     metadata_filter["user_id"] = user_id
                 action_input["metadata_filter"] = metadata_filter
+
+                query_key = (action_input.get("query") or "").strip().lower()
+                if query_key in seen_queries:
+                    iter_log.info("agent_duplicate_query_skipped", query=query_key[:80])
+                    dup_msg = (
+                        "Observation: This exact query was already searched and returned the same results. "
+                        "Reformulate with different keywords to find new information."
+                    )
+                    llm_messages.append({"role": "assistant", "content": raw_response})
+                    llm_messages.append({"role": "user", "content": dup_msg})
+                    yield {"type": "action", "tool": action, "args": action_input}
+                    yield {"type": "observation", "tool": action, "result": dup_msg}
+                    iteration += 1
+                    continue
+                seen_queries.add(query_key)
 
                 yield {"type": "action", "tool": action, "args": action_input}
 
