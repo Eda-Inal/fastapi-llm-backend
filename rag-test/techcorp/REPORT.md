@@ -166,4 +166,54 @@ OR-based matching is broader — a typical query matches ~20 of 24 chunks (vs 0-
 
 Run_005 is successful. The pipeline handles paraphrase and distractor categories without any failures. No code changes required.
 
+## 6. Results (run_006 — multi_chunk + inference + negation + ambiguous, Q21-Q30)
 
+### Question categories
+
+- **multi_chunk (3):** Answer requires information from two separate chunks in different subsections. Tests whether both relevant chunks land in top-5.
+- **inference (3):** Answer is not stated verbatim — requires semantic reasoning from chunk content (e.g. "co-working space" → "any location of their choosing").
+- **negation (2):** Questions contain negation ("not required", "never ask") — tests whether the embedding model correctly associates negated statements.
+- **ambiguous (2):** Questions use vague phrasing that could match multiple chunks with similar dollar amounts or review cycles.
+
+### Overall metrics
+
+| Metric | run_004 (easy) | run_005 (medium) | run_006 (medium) |
+|---|---|---|---|
+| recall@5 | 1.000 | 1.000 | **1.000** |
+| MRR (pre-rerank) | 1.000 | 0.950 | **0.817** |
+| MRR (post-rerank) | 1.000 | 1.000 | **1.000** |
+| avg correct cosine | 0.748 | 0.697 | **0.764** |
+| dense_recall | 10/10 | 10/10 | **10/10** |
+| sparse_recall | 10/10 | 10/10 | **10/10** |
+| grep_recall | 8/10 | 4/10 | **3/10** |
+| rerank_improved | 0 | 1 | **3** |
+
+### Per-question breakdown
+
+| Q | Category | Chunk(s) | Cosine | Rank (pre→post) | Dense | Sparse | Grep | Rerank |
+|---|---|---|---|---|---|---|---|---|
+| Q21 | multi_chunk | [13,23] | 0.853 | 1→1 | Y | Y | Y(13) | = |
+| Q22 | multi_chunk | [6,18] | 0.749 | 1→1 | Y | Y | - | = |
+| Q23 | multi_chunk | [9,10] | 0.685 | 2→1 | Y | Y | - | **improved** |
+| Q24 | inference | 6 | 0.812 | 3→1 | Y | Y | - | **improved** |
+| Q25 | inference | 8 | 0.862 | 1→1 | Y | Y | Y | = |
+| Q26 | inference | 3 | 0.728 | 1→1 | Y | Y | - | = |
+| Q27 | negation | 9 | 0.752 | 1→1 | Y | Y | - | = |
+| Q28 | negation | 18 | 0.610 | 3→1 | Y | Y | - | **improved** |
+| Q29 | ambiguous | 15 | 0.791 | 1→1 | Y | Y | - | = |
+| Q30 | ambiguous | 12 | 0.796 | 1→1 | Y | Y | Y | = |
+
+### Key findings
+
+- **All 10 questions found the correct chunk.** Recall@5 remains 1.000 across all 30 questions tested so far.
+- **Reranker became critical.** MRR dropped from 1.000 (easy) to 0.817 (pre-rerank) — dense alone placed 3 questions at rank 2-3 instead of rank 1. The Jina reranker corrected all three to rank 1, bringing MRR back to 1.000. Without the reranker, these would have been retrieval misses at rank 1.
+  - **Q23** (multi_chunk): dense confused "leave entitlements" with chunk 11 (Other Types of Leave) over chunk 10 (Parental Leave).
+  - **Q24** (inference): "co-working space" has no keyword match — dense ranked Code of Conduct (chunk 2) and Offboarding (chunk 23) above Remote Work (chunk 6). Reranker fixed rank 3→1.
+  - **Q28** (negation): "IT team never ask" — dense ranked Data Classification (chunk 19) above Device Security (chunk 18). Reranker fixed rank 3→1.
+- **Multi-chunk recall is perfect.** All 3 multi_chunk questions retrieved both expected chunks in top-5 (chunk_recall 1.0). This is partly due to the small corpus size (24 chunks, top_k=5 = 20% coverage).
+- **Sparse OR fix continues to hold at 10/10.** Even for inference and negation queries with low keyword overlap.
+- **Grep recall dropped further to 3/10.** Expected — inference, negation, and multi_chunk queries have minimal substring overlap with chunk text.
+
+### Assessment
+
+Run_006 is successful. No pipeline changes required. The reranker proved its value for the first time in a meaningful way — without it, 3 out of 10 questions would have had the correct chunk at rank 2 or 3 instead of rank 1.
