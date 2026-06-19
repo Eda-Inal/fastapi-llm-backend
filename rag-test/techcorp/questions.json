@@ -1,6 +1,7 @@
 [
   {
     "q_id": "Q01",
+    "difficulty": "easy",
     "category": "exact_match",
     "question": "What must all remote work be conducted over when accessing internal systems?",
     "expected_keywords": ["VPN", "internal systems", "remote work"],
@@ -12,6 +13,7 @@
   },
   {
     "q_id": "Q02",
+    "difficulty": "easy",
     "category": "exact_match",
     "question": "Within how many days must business expenses be submitted through the expense management system?",
     "expected_keywords": ["30 days", "expense", "submitted"],
@@ -22,6 +24,7 @@
   },
   {
     "q_id": "Q03",
+    "difficulty": "easy",
     "category": "exact_match",
     "question": "How much notice must an employee provide in writing before resigning?",
     "expected_keywords": ["two weeks", "written notice", "manager"],
@@ -33,6 +36,7 @@
   },
   {
     "q_id": "Q04",
+    "difficulty": "easy",
     "category": "named_entity",
     "question": "What is the email address employees should contact if their device is lost or stolen?",
     "expected_keywords": ["security@techcorp.com", "IT Security", "lost", "stolen"],
@@ -44,6 +48,7 @@
   },
   {
     "q_id": "Q05",
+    "difficulty": "easy",
     "category": "named_entity",
     "question": "What is the home office stipend amount provided to new employees?",
     "expected_keywords": ["$1,500", "home office stipend", "90 days"],
@@ -55,6 +60,7 @@
   },
   {
     "q_id": "Q06",
+    "difficulty": "easy",
     "category": "direct_fact",
     "question": "How long is the vesting period for stock options at TechCorp?",
     "expected_keywords": ["four-year", "vesting", "one-year cliff", "25%"],
@@ -66,6 +72,7 @@
   },
   {
     "q_id": "Q07",
+    "difficulty": "easy",
     "category": "direct_fact",
     "question": "How many days of paid bereavement leave does TechCorp provide?",
     "expected_keywords": ["three days", "bereavement leave", "immediate family member"],
@@ -77,6 +84,7 @@
   },
   {
     "q_id": "Q08",
+    "difficulty": "easy",
     "category": "direct_fact",
     "question": "What is the annual professional development budget per employee?",
     "expected_keywords": ["$2,000", "professional development", "per year"],
@@ -88,6 +96,7 @@
   },
   {
     "q_id": "Q09",
+    "difficulty": "easy",
     "category": "dense_primary",
     "question": "When can an employee begin taking parental leave after a child is born?",
     "expected_keywords": ["12 months", "parental leave", "birth"],
@@ -99,6 +108,7 @@
   },
   {
     "q_id": "Q10",
+    "difficulty": "easy",
     "category": "dense_primary",
     "question": "What happens to unexercised stock options after an employee leaves TechCorp?",
     "expected_keywords": ["90 days", "expire", "vested options"],
@@ -107,5 +117,124 @@
     "subsection": "5.2 Equity",
     "chunk_index": 13,
     "chunk_text": "You will have 90 days following your last day of employment to exercise any vested options. After 90 days, unexercised options expire."
+  },
+  {
+    "q_id": "Q11",
+    "difficulty": "medium",
+    "category": "paraphrase",
+    "question": "How long do employees have to use the new hire workspace setup allowance?",
+    "expected_keywords": ["90 days", "$1,500", "home office stipend"],
+    "expected_answer": "The home office stipend of $1,500 USD must be used within the first 90 days of employment.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.4 Additional Benefits",
+    "chunk_index": 15,
+    "chunk_text": "TechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment."
+  },
+  {
+    "q_id": "Q12",
+    "difficulty": "medium",
+    "category": "paraphrase",
+    "question": "What is the minimum recommended amount of time off employees should take each year?",
+    "expected_keywords": ["20 days", "per year", "encouraged"],
+    "expected_answer": "Employees are encouraged to take at least 20 days off per year.",
+    "section": "Time Off and Leave",
+    "subsection": "4.1 Paid Time Off",
+    "chunk_index": 8,
+    "chunk_text": "Employees are encouraged to take at least 20 days off per year. Taking time off is not optional — rest is considered essential to sustainable performance."
+  },
+  {
+    "q_id": "Q13",
+    "difficulty": "medium",
+    "category": "paraphrase",
+    "question": "How long after leaving the company can employees act on their vested equity?",
+    "expected_keywords": ["90 days", "vested options", "expire"],
+    "expected_answer": "Employees have 90 days following their last day of employment to exercise any vested options. After 90 days, unexercised options expire.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.2 Equity",
+    "chunk_index": 13,
+    "chunk_text": "You will have 90 days following your last day of employment to exercise any vested options. After 90 days, unexercised options expire."
+  },
+  {
+    "q_id": "Q14",
+    "difficulty": "medium",
+    "category": "paraphrase",
+    "question": "What connectivity requirement must remote employees meet to work from home?",
+    "expected_keywords": ["reliable internet connection", "video calls", "large file transfers"],
+    "expected_answer": "Remote employees must have a reliable internet connection capable of supporting video calls and large file transfers.",
+    "section": "Work Hours and Remote Work",
+    "subsection": "3.2 Remote Work Policy",
+    "chunk_index": 6,
+    "chunk_text": "You must have a reliable internet connection capable of supporting video calls and large file transfers."
+  },
+  {
+    "q_id": "Q15",
+    "difficulty": "medium",
+    "category": "paraphrase",
+    "question": "What must employees do before spending from their learning and growth budget?",
+    "expected_keywords": ["manager", "approval", "professional development budget"],
+    "expected_answer": "Employees must obtain approval from their manager before spending from the professional development budget.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.4 Additional Benefits",
+    "chunk_index": 15,
+    "chunk_text": "Approval from your manager is required before spending from this budget."
+  },
+  {
+    "q_id": "Q16",
+    "difficulty": "medium",
+    "category": "distractor",
+    "question": "What is the minimum expense amount that requires a receipt for reimbursement?",
+    "expected_keywords": ["$25", "receipts", "expenses"],
+    "expected_answer": "Receipts are required for all expenses above $25.",
+    "section": "Expenses and Reimbursement",
+    "chunk_index": 21,
+    "chunk_text": "Receipts are required for all expenses above $25. Expenses submitted without receipts will not be reimbursed."
+  },
+  {
+    "q_id": "Q17",
+    "difficulty": "medium",
+    "category": "distractor",
+    "question": "Which teams may have different in-office expectations compared to most employees?",
+    "expected_keywords": ["Sales", "Customer Success", "Executive Leadership", "in-office"],
+    "expected_answer": "Certain roles — primarily those in Sales, Customer Success, and Executive Leadership — may have different in-office expectations defined in their employment contracts.",
+    "section": "Work Hours and Remote Work",
+    "subsection": "3.3 In-Office Expectations",
+    "chunk_index": 7,
+    "chunk_text": "Certain roles — primarily those in Sales, Customer Success, and Executive Leadership — may have different in-office expectations defined in their employment contracts."
+  },
+  {
+    "q_id": "Q18",
+    "difficulty": "medium",
+    "category": "distractor",
+    "question": "What is the health benefit provided to TechCorp employees based outside the United States?",
+    "expected_keywords": ["$300", "monthly", "health stipend", "outside the United States"],
+    "expected_answer": "Employees outside the United States receive a monthly health stipend of $300 USD to be used toward private health insurance or other health-related expenses.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.3 Health Benefits",
+    "chunk_index": 14,
+    "chunk_text": "For employees outside the United States, TechCorp provides a monthly health stipend of $300 USD to be used toward private health insurance or other health-related expenses."
+  },
+  {
+    "q_id": "Q19",
+    "difficulty": "medium",
+    "category": "distractor",
+    "question": "How frequently must managers and employees meet one-on-one at a minimum?",
+    "expected_keywords": ["twice per month", "one-on-one", "manager"],
+    "expected_answer": "Employees and managers are expected to meet one-on-one at least twice per month.",
+    "section": "Performance and Growth",
+    "subsection": "6.1 Performance Reviews",
+    "chunk_index": 16,
+    "chunk_text": "Employees and managers are expected to meet one-on-one at least twice per month."
+  },
+  {
+    "q_id": "Q20",
+    "difficulty": "medium",
+    "category": "distractor",
+    "question": "When do salary adjustments from the annual review take effect?",
+    "expected_keywords": ["February 1st", "salary adjustments", "annual review"],
+    "expected_answer": "Salary adjustments resulting from the annual review take effect on February 1st of each year.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.1 Salary",
+    "chunk_index": 12,
+    "chunk_text": "Salary adjustments resulting from reviews take effect on February 1st of each year."
   }
 ]

@@ -111,15 +111,59 @@ OR-based matching is broader — a typical query matches ~20 of 24 chunks (vs 0-
   - `websearch_to_tsquery` was also evaluated but produces the same AND query for plain sentences — it only uses OR when the literal word "or" appears in the input.
   - The OR-based `_build_or_tsquery` fix resolved this completely.
 
-### Limitations of this test
+### Limitations of this test (run_003 / run_004)
 
 - **Easy difficulty only.** All questions target a single chunk with clear factual answers. The document is well-structured with distinct sections — there is minimal topic overlap between chunks.
 - **No multi-hop or cross-section questions.** A harder test would ask questions requiring information from two or more sections (e.g. "Can an employee on parental leave submit expenses after the 30-day window?").
 - **No trap questions.** All questions have answers in the document. A real eval should include questions about topics NOT in the handbook to test retrieval precision.
 - **Small corpus.** 24 chunks from a single document. Retrieval difficulty scales with corpus size — these results may not hold when the knowledge base contains hundreds of documents.
 
-## 5. Next steps
+## 5. Results (run_005 — paraphrase + distractor, Q11-Q20)
 
-1. **Re-run Sherlock test** with the OR-based sparse fix to compare improvement on a harder dataset (run_003 baseline sparse: 1/15).
-2. **Add harder questions** — multi-hop, cross-section, and trap categories.
-3. **Evaluate on larger corpus** — multiple documents with overlapping topics to stress-test RRF fusion precision.
+### Question categories
+
+- **paraphrase (5):** Questions deliberately use different wording than the chunk text. "workspace setup allowance" instead of "home office stipend", "learning and growth budget" instead of "professional development budget". Tests dense search's semantic matching.
+- **distractor (5):** Questions target specific details in sections that contain multiple similar facts. Same-section chunks with overlapping vocabulary compete for retrieval (e.g. US vs non-US health benefits, salary review timing vs performance review timing).
+
+### Overall metrics
+
+| Metric | run_004 (easy) | run_005 (medium) |
+|---|---|---|
+| recall@5 | 1.000 | **1.000** |
+| MRR (pre-rerank) | 1.000 | **0.950** |
+| MRR (post-rerank) | 1.000 | **1.000** |
+| avg correct cosine | 0.748 | **0.697** |
+| dense_recall | 10/10 | **10/10** |
+| sparse_recall | 10/10 | **10/10** |
+| grep_recall | 8/10 | **4/10** |
+| rerank_improved | 0 | **1** |
+
+### Per-question breakdown
+
+| Q | Category | Chunk | Cosine | Rank (pre) | Rank (post) | Dense | Sparse | Grep | Rerank |
+|---|---|---|---|---|---|---|---|---|---|
+| Q11 | paraphrase | 15 | 0.660 | 1 | 1 | Y | Y | - | = |
+| Q12 | paraphrase | 8 | 0.729 | 1 | 1 | Y | Y | Y | = |
+| Q13 | paraphrase | 13 | 0.769 | 2 | 1 | Y | Y | - | **improved** |
+| Q14 | paraphrase | 6 | 0.739 | 1 | 1 | Y | Y | - | = |
+| Q15 | paraphrase | 15 | 0.612 | 1 | 1 | Y | Y | - | = |
+| Q16 | distractor | 21 | 0.784 | 1 | 1 | Y | Y | - | = |
+| Q17 | distractor | 7 | 0.598 | 1 | 1 | Y | Y | Y | = |
+| Q18 | distractor | 14 | 0.838 | 1 | 1 | Y | Y | Y | = |
+| Q19 | distractor | 16 | 0.549 | 1 | 1 | Y | Y | - | = |
+| Q20 | distractor | 12 | 0.695 | 1 | 1 | Y | Y | Y | = |
+
+### Key findings
+
+- **All 10 questions found the correct chunk.** Recall@5 remains 1.000. No pipeline changes needed.
+- **First reranker improvement observed (Q13).** Dense ranked the Offboarding chunk (23) above Equity (13) because "leaving the company" matched offboarding language. The Jina reranker correctly promoted the Equity chunk to rank 1. This is the first evidence of reranker value in the TechCorp test.
+- **Grep recall dropped to 4/10 — expected.** Paraphrase questions use deliberately different wording ("workspace setup allowance" vs "home office stipend"), so ILIKE substring matching cannot find them. Grep is keyword-dependent, not semantic.
+- **Sparse OR fix held at 10/10.** Even with paraphrased queries, enough content words overlap for the OR-based sparse leg to find and rank the correct chunk.
+- **Distractor chunks did not mislead the pipeline.** All 5 distractor questions retrieved the correct chunk at rank 1, despite same-section competing chunks (e.g. US vs non-US health benefits in Q18, performance reviews vs one-on-one meetings in Q19).
+- **Cosine scores are lower but sufficient.** Average dropped from 0.748 (easy) to 0.697 (medium). Q19 scored 0.549 — the lowest so far — because "one-on-one meeting frequency" is a minor detail inside a chunk primarily about performance reviews. In a larger corpus this could become a risk, but at 24 chunks it holds.
+
+### Assessment
+
+Run_005 is successful. The pipeline handles paraphrase and distractor categories without any failures. No code changes required.
+
+
