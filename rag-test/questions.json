@@ -1,0 +1,162 @@
+[
+  {
+    "q_id": "Q01",
+    "category": "easy",
+    "question": "Who is referred to as 'the woman' by Sherlock Holmes?",
+    "expected_keywords": ["Irene", "Adler"],
+    "expected_answer": "Irene Adler is always referred to as 'the woman' by Sherlock Holmes.",
+    "section": "A Scandal in Bohemia",
+    "chunk_index": 2,
+    "chunk_text": "To Sherlock Holmes she is always _the_ woman... yet there was but one woman to him, and that woman was the late Irene Adler, of dubious and questionable memory."
+  },
+  {
+    "q_id": "Q02",
+    "category": "easy",
+    "question": "How many steps lead up from the hall to Holmes's room at Baker Street?",
+    "expected_keywords": ["seventeen", "steps"],
+    "expected_answer": "There are seventeen steps leading from the hall to Holmes's room.",
+    "section": "A Scandal in Bohemia",
+    "chunk_index": 8,
+    "chunk_text": "\"You see, but you do not observe...\" \"Now, I know that there are seventeen steps, because I have both seen and observed.\""
+  },
+  {
+    "q_id": "Q03",
+    "category": "easy",
+    "question": "What is the address of Irene Adler's residence?",
+    "expected_keywords": ["Briony Lodge", "Serpentine Avenue", "St. John's Wood"],
+    "expected_answer": "Irene Adler lives at Briony Lodge, Serpentine Avenue, St. John's Wood.",
+    "section": "A Scandal in Bohemia",
+    "chunk_index": 23,
+    "chunk_text": "\"And Mademoiselle's address?\" he asked. \"Is Briony Lodge, Serpentine Avenue, St. John's Wood.\""
+  },
+  {
+    "q_id": "Q04",
+    "category": "easy",
+    "question": "Where was Irene Adler born and in what year?",
+    "expected_keywords": ["New Jersey", "1858"],
+    "expected_answer": "Irene Adler was born in New Jersey in the year 1858.",
+    "section": "A Scandal in Bohemia",
+    "chunk_index": 19,
+    "chunk_text": "\"Born in New Jersey in the year 1858. Contralto—hum! La Scala, hum! Prima donna Imperial Opera of Warsaw—yes! Retired from operatic stage—ha! Living in London—quite so!\""
+  },
+  {
+    "q_id": "Q05",
+    "category": "medium",
+    "question": "What did Holmes deduce about Jabez Wilson upon first meeting him, and how?",
+    "expected_keywords": ["manual labour", "snuff", "Freemason", "China", "writing", "right hand", "tattoo", "arc-and-compass"],
+    "expected_answer": "Holmes deduced that Wilson had done manual labour (his right hand was larger), took snuff, was a Freemason (arc-and-compass breastpin), had been in China (fish tattoo and Chinese coin), and had done considerable writing lately (shiny right cuff).",
+    "section": "The Red-Headed League",
+    "chunk_index": [63, 64],
+    "chunk_text": ["Chunk 63: \"Beyond the obvious facts that he has at some time done manual labour, that he takes snuff, that he is a Freemason, that he has been in China, and that he has done a considerable amount of writing lately, I can deduce nothing else.\"", "Chunk 64: \"Your hands, my dear sir. Your right hand is quite a size larger than your left...\" \"...arc-and-compass breastpin.\" \"...right cuff so very shiny for five inches...\" \"The fish that you have tattooed immediately above your right wrist could only have been done in China.\""]
+  },
+  {
+    "q_id": "Q06",
+    "category": "medium",
+    "question": "What was the King of Bohemia's problem and why did he need Holmes's help?",
+    "expected_keywords": ["photograph", "Irene Adler", "compromising", "marriage", "Clotilde Lothman von Saxe-Meningen", "blackmail"],
+    "expected_answer": "The King had a compromising photograph taken with Irene Adler. He was about to marry Clotilde Lothman von Saxe-Meningen, and Adler threatened to send the photograph to ruin the engagement. Five attempts to recover it had already failed.",
+    "section": "A Scandal in Bohemia",
+    "chunk_index": [19, 20, 21],
+    "chunk_text": ["Chunk 19: \"...became entangled with this young person, wrote her some compromising letters, and is now desirous of getting those letters back.\"", "Chunk 20: \"We were both in the photograph.\" \"Oh, dear! That is very bad!\"", "Chunk 21: \"To Clotilde Lothman von Saxe-Meningen, second daughter of the King of Scandinavia...\" \"Threatens to send them the photograph.\" \"Five attempts have been made.\""]
+  },
+  {
+    "q_id": "Q07",
+    "category": "medium",
+    "question": "How did Holmes use the smoke-rocket trick to discover where Irene Adler hid the photograph?",
+    "expected_keywords": ["smoke-rocket", "fire", "window", "sliding panel", "bell-pull", "recess"],
+    "expected_answer": "Holmes had Watson throw a smoke-rocket into the room and shout 'Fire!' When Adler believed her house was on fire, her instinct drove her to rush to the thing she valued most — the photograph, hidden in a recess behind a sliding panel just above the right bell-pull.",
+    "section": "A Scandal in Bohemia",
+    "chunk_index": [37, 47, 50],
+    "chunk_text": ["Chunk 37: \"It is an ordinary plumber's smoke-rocket, fitted with a cap at either end to make it self-lighting. Your task is confined to that. When you raise your cry of fire, it will be taken up by quite a number of people.\"", "Chunk 47: \"I tossed my rocket into the room with a cry of 'Fire!'\"", "Chunk 50: \"When a woman thinks that her house is on fire, her instinct is at once to rush to the thing which she values most... The photograph is in a recess behind a sliding panel just above the right bell-pull.\""]
+  },
+  {
+    "q_id": "Q08",
+    "category": "medium",
+    "question": "What were the terms of the Red-Headed League vacancy and who supposedly founded the League?",
+    "expected_keywords": ["Ezekiah Hopkins", "four pounds a week", "red-headed", "nominal services", "American millionaire", "Lebanon Pennsylvania"],
+    "expected_answer": "The League was supposedly founded by Ezekiah Hopkins, an American millionaire from Lebanon, Pennsylvania, who was himself red-headed. The vacancy offered £4 a week for purely nominal services, open to red-headed men above twenty-one who are sound in body and mind.",
+    "section": "The Red-Headed League",
+    "chunk_index": [66, 71],
+    "chunk_text": ["Chunk 66: \"TO THE RED-HEADED LEAGUE: On account of the bequest of the late Ezekiah Hopkins, of Lebanon, Pennsylvania, U.S.A., there is now another vacancy open which entitles a member of the League to a salary of £ 4 a week for purely nominal services.\"", "Chunk 71: \"the League was founded by an American millionaire, Ezekiah Hopkins, who was very peculiar in his ways. He was himself red-headed... he had left his enormous fortune in the hands of trustees, with instructions to apply the interest to the providing of easy berths to men whose hair is of that colour.\""]
+  },
+  {
+    "q_id": "Q09",
+    "category": "hard",
+    "question": "How is Holmes's personality and temperament described across both stories, and what habits reveal his dual nature?",
+    "expected_keywords": ["cocaine", "ambition", "three pipe problem", "dual nature", "music", "reasoning machine", "energy", "languor"],
+    "expected_answer": "In 'A Scandal in Bohemia', Holmes is described as alternating between cocaine and ambition, a perfect reasoning and observing machine who loathes society. In 'The Red-Headed League', Watson describes his dual nature more explicitly — extreme languor alternating with devouring energy, a music lover who calls a case a 'three pipe problem' and sits thinking with eyes closed before springing into action.",
+    "section": ["A Scandal in Bohemia", "The Red-Headed League"],
+    "chunk_index": [3, 88, 94],
+    "chunk_text": ["Chunk 3 (Scandal): \"Holmes, who loathed every form of society with his whole Bohemian soul, remained in our lodgings in Baker Street, buried among his old books, and alternating from week to week between cocaine and ambition, the drowsiness of the drug, and the fierce energy of his own keen nature.\"", "Chunk 88 (RHL): \"'To smoke,' he answered. 'It is quite a three pipe problem, and I beg that you won't speak to me for fifty minutes.'\"", "Chunk 94 (RHL): \"In his singular character the dual nature alternately asserted itself... The swing of his nature took him from extreme languor to devouring energy; and, as I knew well, he was never so truly formidable as when, for days on end, he had been lounging in his armchair amid his improvisations and his black-letter editions.\""]
+  },
+  {
+    "q_id": "Q10",
+    "category": "hard",
+    "question": "In both stories, Holmes uses deception to gather critical information. What tricks does he employ in each case?",
+    "expected_keywords": ["smoke-rocket", "fire alarm", "photograph", "sliding panel", "trouser knees", "Spaulding", "directions to the Strand"],
+    "expected_answer": "In 'A Scandal in Bohemia', Holmes stages a fake street fight, gets carried into Adler's house as an injured clergyman, then has Watson throw a smoke-rocket and shout 'Fire!' — causing Adler to instinctively rush to the photograph hidden behind a sliding panel. In 'The Red-Headed League', Holmes knocks on Wilson's door and asks Spaulding for directions to the Strand — not to get directions, but to see the knees of his trousers, which confirmed he had been digging a tunnel.",
+    "section": ["A Scandal in Bohemia", "The Red-Headed League"],
+    "chunk_index": [47, 50, 91],
+    "chunk_text": ["Chunk 47 (Scandal): \"I tossed my rocket into the room with a cry of 'Fire!'\"", "Chunk 50 (Scandal): \"When a woman thinks that her house is on fire, her instinct is at once to rush to the thing which she values most... The photograph is in a recess behind a sliding panel just above the right bell-pull.\"", "Chunk 91 (RHL): \"'Thank you,' said Holmes, 'I only wished to ask you how you would go from here to the Strand.' ... 'Not him.' 'What then?' 'The knees of his trousers.'\""]
+  },
+  {
+    "q_id": "Q11",
+    "category": "hard",
+    "question": "What active roles does Watson play in assisting Holmes in both 'A Scandal in Bohemia' and 'The Red-Headed League'?",
+    "expected_keywords": ["smoke-rocket", "fire", "window", "army revolver", "danger", "Baker Street"],
+    "expected_answer": "In 'A Scandal in Bohemia', Watson's role is to station himself near the window of Briony Lodge and, at Holmes's signal, throw a smoke-rocket into the room and raise the cry of fire. In 'The Red-Headed League', Holmes asks Watson to come armed — 'kindly put your army revolver in your pocket' — as there may be danger when they confront John Clay in the bank cellar.",
+    "section": ["A Scandal in Bohemia", "The Red-Headed League"],
+    "chunk_index": [37, 47, 95],
+    "chunk_text": ["Chunk 37 (Scandal): \"And when I raise my hand—so—you will throw into the room what I give you to throw, and will, at the same time, raise the cry of fire.\"", "Chunk 47 (Scandal): \"At the same instant I saw him raise his hand and at the signal I tossed my rocket into the room with a cry of 'Fire!'\"", "Chunk 95 (RHL): \"'And, I say, Doctor, there may be some little danger, so kindly put your army revolver in your pocket.'\""]
+  },
+  {
+    "q_id": "Q12",
+    "category": "hard",
+    "question": "How are the main antagonists characterized in each story, and how do their outcomes differ?",
+    "expected_keywords": ["Irene Adler", "soul of steel", "actress", "John Clay", "murderer", "forger", "Eton", "Oxford", "outsmarted Holmes", "royal duke"],
+    "expected_answer": "Irene Adler is described as having 'a soul of steel', 'the face of the most beautiful of women, and the mind of the most resolute of men.' A trained actress, she outsmarts Holmes by disguising herself in male costume and fleeing with the photograph. John Clay is a murderer, thief, smasher, and forger whose grandfather was a royal duke and who attended Eton and Oxford — 'his brain is as cunning as his fingers.' Unlike Adler, Clay is caught by Holmes in the bank cellar.",
+    "section": ["A Scandal in Bohemia", "The Red-Headed League"],
+    "chunk_index": [21, 55, 99],
+    "chunk_text": ["Chunk 21 (Scandal): \"She has a soul of steel. She has the face of the most beautiful of women, and the mind of the most resolute of men.\"", "Chunk 55 (Scandal): \"I have been trained as an actress myself. Male costume is nothing new to me. I often take advantage of the freedom which it gives.\"", "Chunk 99 (RHL): \"John Clay, the murderer, thief, smasher, and forger. He's a young man, Mr. Merryweather, but he is at the head of his profession... His grandfather was a royal duke, and he himself has been to Eton and Oxford. His brain is as cunning as his fingers.\""]
+  },
+  {
+    "q_id": "Q13",
+    "category": "trap",
+    "question": "How does 'The Red-Headed League' end — is John Clay captured in the bank cellar?",
+    "expected_keywords": [],
+    "expected_answer": "The uploaded text cuts off mid-scene in the bank cellar before the resolution. The answer is not available in the document.",
+    "section": "The Red-Headed League",
+    "chunk_index": 103,
+    "chunk_text": "The text ends at chunk 103 mid-sentence: \"We had occasion some months ago to strengthen our resources and borrowed for that purpose 30,000 napoleons from the Bank of France. It has become\" — the capture scene is not in the database."
+  },
+  {
+    "q_id": "Q14",
+    "category": "trap",
+    "question": "What was the murder weapon in 'The Adventure of the Speckled Band'?",
+    "expected_keywords": [],
+    "expected_answer": "The Adventure of the Speckled Band is only listed in the table of contents. Its full text was not uploaded to the database, so no details about the story are available.",
+    "section": "The Adventure of the Speckled Band",
+    "chunk_index": [1, 2],
+    "chunk_text": ["Chunk 1-2 only contain the table of contents listing: \"VIII. The Adventure of the Speckled Band\" — no story content exists in the database for this story."]
+  },
+  {
+    "q_id": "Q15",
+    "category": "trap",
+    "question": "What role does Professor Moriarty play in the events described in these stories?",
+    "expected_keywords": [],
+    "expected_answer": "Professor Moriarty does not appear in either 'A Scandal in Bohemia' or 'The Red-Headed League'. He is not mentioned anywhere in the uploaded document.",
+    "section": null,
+    "chunk_index": null,
+    "chunk_text": "Moriarty is not mentioned in any of the 104 chunks in the database. A correct RAG response should state that this information is not available in the document."
+  },
+  {
+    "q_id": "Q16",
+    "category": "trap",
+    "question": "What disguise does Holmes adopt in 'The Red-Headed League' to investigate the case?",
+    "expected_keywords": [],
+    "expected_answer": "Holmes does not use any disguise in 'The Red-Headed League'. He investigates as himself — visiting Saxe-Coburg Square openly and attending a concert. The clergyman disguise belongs to 'A Scandal in Bohemia', not this story.",
+    "section": "The Red-Headed League",
+    "chunk_index": [38, 89, 90, 91],
+    "chunk_text": ["Chunk 38 (Scandal — NOT Red-Headed League): \"He disappeared into his bedroom and returned in a few minutes in the character of an amiable and simple-minded Nonconformist clergyman.\"", "Chunks 89-91 (RHL): Holmes investigates as himself — goes to Saxe-Coburg Square, knocks on the pawnbroker's door, asks for directions. No disguise is used."]
+  }
+]

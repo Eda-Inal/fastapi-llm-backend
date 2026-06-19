@@ -444,6 +444,165 @@ async def _hybrid_search(
     return rows
 
 
+# --- RAG test endpoint (used by rag-test/run_all.py via /tools/rag_debug) ---
+# Returns per-leg retrieval breakdown (dense, sparse, grep, RRF fusion)
+# with chunk metadata and scores for evaluating retrieval quality.
+async def debug_search(
+    session: AsyncSession,
+    *,
+    query_vector: list[float],
+    query_text: str | None = None,
+    top_k: int,
+    metadata_filter: dict | None = None,
+    embedding_model: str | None = None,
+) -> dict:
+    """Like search_document_chunks but returns per-leg breakdown for debugging."""
+    metadata_filter = metadata_filter or {}
+    rrf_k = settings.hybrid_rrf_k
+    fetch_k = max(top_k, top_k * settings.hybrid_fetch_multiplier)
+
+    # --- Dense leg ---
+    dense_sim_expr = (
+        1 - DocumentChunk.embedding.cosine_distance(query_vector)
+    ).label("sim")
+    dense_stmt = (
+        select(DocumentChunk.id, DocumentChunk.chunk_index, DocumentChunk.document_id, dense_sim_expr)
+        .join(Document, Document.id == DocumentChunk.document_id)
+        .order_by(dense_sim_expr.desc())
+        .limit(fetch_k)
+    )
+    dense_stmt = _apply_metadata_filters(dense_stmt, metadata_filter)
+    if embedding_model:
+        dense_stmt = dense_stmt.where(DocumentChunk.embedding_model_name == embedding_model)
+    dense_result = await session.execute(dense_stmt)
+    dense_rows = dense_result.all()
+
+    dense_leg = []
+    dense_rank: dict[int, tuple[int, float]] = {}
+    for i, row in enumerate(dense_rows):
+        dense_rank[row.id] = (i + 1, float(row.sim))
+        dense_leg.append({
+            "rank": i + 1,
+            "chunk_db_id": row.id,
+            "chunk_index": row.chunk_index,
+            "document_id": row.document_id,
+            "cosine_similarity": round(float(row.sim), 5),
+        })
+
+    # --- Sparse leg ---
+    sparse_leg = []
+    sparse_rank: dict[int, int] = {}
+    if settings.hybrid_search_enabled and query_text and query_text.strip():
+        meta_clauses = _metadata_where_clauses(metadata_filter)
+        all_where = meta_clauses + ["dc.text_search @@ plainto_tsquery('english', :q)"]
+        sparse_params: dict = {"q": query_text, "fetch_k": fetch_k}
+        sparse_params.update(_metadata_sql_params(metadata_filter))
+        if embedding_model:
+            all_where.append("dc.embedding_model_name = :embedding_model")
+            sparse_params["embedding_model"] = embedding_model
+        sparse_sql = text(
+            "SELECT dc.id, dc.chunk_index, dc.document_id, "
+            "ts_rank(dc.text_search, plainto_tsquery('english', :q)) AS fts_score "
+            "FROM document_chunks dc "
+            "JOIN documents d ON d.id = dc.document_id "
+            "WHERE " + " AND ".join(all_where) + " "
+            "ORDER BY fts_score DESC "
+            "LIMIT :fetch_k"
+        )
+        sparse_result = await session.execute(sparse_sql, sparse_params)
+        for i, row in enumerate(sparse_result.all()):
+            sparse_rank[row.id] = i + 1
+            sparse_leg.append({
+                "rank": i + 1,
+                "chunk_db_id": row.id,
+                "chunk_index": row.chunk_index,
+                "document_id": row.document_id,
+                "fts_score": round(float(row.fts_score), 5),
+            })
+
+    # --- Grep leg ---
+    grep_leg = []
+    grep_rank: dict[int, int] = {}
+    if settings.grep_search_enabled and query_text:
+        grep_rows = await _grep_search(
+            session,
+            query_text=query_text,
+            top_k=fetch_k,
+            metadata_filter=metadata_filter,
+            embedding_model=embedding_model,
+        )
+        grep_rank = {chunk_id: rank for chunk_id, rank in grep_rows}
+        for chunk_id, rank in grep_rows:
+            grep_leg.append({"rank": rank, "chunk_db_id": chunk_id})
+
+    # --- RRF fusion ---
+    all_ids = set(dense_rank) | set(sparse_rank) | set(grep_rank)
+    rrf_scores: list[tuple[int, float, float, float, float]] = []
+    for chunk_id in all_ids:
+        d = dense_rank.get(chunk_id)
+        s = sparse_rank.get(chunk_id)
+        g = grep_rank.get(chunk_id)
+        d_contrib = 1.0 / (rrf_k + d[0]) if d else 0.0
+        s_contrib = 1.0 / (rrf_k + s) if s else 0.0
+        g_contrib = 1.0 / (rrf_k + g) if g else 0.0
+        total = d_contrib + s_contrib + g_contrib
+        rrf_scores.append((chunk_id, total, d_contrib, s_contrib, g_contrib))
+
+    rrf_scores.sort(key=lambda x: x[1], reverse=True)
+    top_ids = [cid for cid, _, _, _, _ in rrf_scores[:top_k]]
+
+    # --- Load full chunk objects ---
+    if top_ids:
+        load_stmt = (
+            select(DocumentChunk, Document)
+            .join(Document, Document.id == DocumentChunk.document_id)
+            .where(DocumentChunk.id.in_(top_ids))
+        )
+        load_result = await session.execute(load_stmt)
+        id_to_obj = {chunk.id: (chunk, doc) for chunk, doc in load_result.all()}
+    else:
+        id_to_obj = {}
+
+    pre_rerank = []
+    for rank, (cid, total, d_c, s_c, g_c) in enumerate(rrf_scores[:top_k], 1):
+        entry = {
+            "rank": rank,
+            "chunk_db_id": cid,
+            "rrf_score": round(total, 6),
+            "dense_contrib": round(d_c, 6),
+            "sparse_contrib": round(s_c, 6),
+            "grep_contrib": round(g_c, 6),
+        }
+        if cid in dense_rank:
+            entry["cosine_similarity"] = round(dense_rank[cid][1], 5)
+        obj = id_to_obj.get(cid)
+        if obj:
+            chunk, doc = obj
+            entry["chunk_index"] = chunk.chunk_index
+            entry["document_id"] = chunk.document_id
+            entry["filename"] = doc.filename
+            entry["section_heading"] = chunk.section_heading
+            entry["page_number"] = chunk.page_number
+            entry["chunk_token_count"] = chunk.chunk_token_count
+            entry["text_preview"] = chunk.text[:200].strip()
+            entry["text_full"] = chunk.text.strip()
+        pre_rerank.append(entry)
+
+    return {
+        "search_mode": "hybrid" if (settings.hybrid_search_enabled and query_text) else "dense",
+        "rrf_k": rrf_k,
+        "fetch_k": fetch_k,
+        "requested_top_k": top_k,
+        "dense_candidates": len(dense_leg),
+        "sparse_candidates": len(sparse_leg),
+        "grep_candidates": len(grep_leg),
+        "dense_leg": dense_leg[:20],
+        "sparse_leg": sparse_leg[:20],
+        "grep_leg": grep_leg[:20],
+        "pre_rerank": pre_rerank,
+    }
+
+
 def _apply_metadata_filters(stmt, metadata_filter: dict):
     """Apply user_id / document_type / tags / conversation_id WHERE clauses to a SQLAlchemy stmt."""
     user_id = metadata_filter.get("user_id")

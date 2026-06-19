@@ -1,0 +1,41 @@
+{
+  "run_id": "run_001",
+  "timestamp": "2026-06-19T09:40:09.918430",
+  "config": {
+    "embedding_model": "mxbai-embed-large",
+    "hybrid_search": true,
+    "grep_search": true,
+    "reranker_enabled": true,
+    "rrf_k": 60,
+    "requested_top_k": 5,
+    "fetch_k": 15
+  },
+  "results": [
+    {
+      "q_id": "Q01",
+      "category": "easy",
+      "correct_chunk_found": true,
+      "rank_before_rerank": 3,
+      "rank_after_rerank": 1,
+      "rerank_improved": true,
+      "correct_chunk_score_dense": 0.7546,
+      "correct_chunk_score_rerank": 0.64512,
+      "top1_score_dense": 0.75756,
+      "top1_score_rerank": 0.64512,
+      "pre_rerank_top5": [
+        59,
+        58,
+        2,
+        53,
+        56
+      ],
+      "post_rerank_top5": [
+        2,
+        59,
+        58,
+        57,
+        52
+      ]
+    }
+  ]
+}
