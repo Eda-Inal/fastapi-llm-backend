@@ -1,0 +1,660 @@
+{
+  "run_id": "run_004",
+  "timestamp": "2026-06-19T12:19:06.990865",
+  "config": {
+    "embedding_model": "mxbai-embed-large",
+    "hybrid_search": true,
+    "grep_search": true,
+    "reranker_enabled": true,
+    "rrf_k": 60,
+    "requested_top_k": 5,
+    "fetch_k": 15
+  },
+  "results": [
+    {
+      "q_id": "Q01",
+      "category": "easy",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        2
+      ],
+      "found_chunks": [
+        2
+      ],
+      "dense_found": [
+        2
+      ],
+      "sparse_found": [],
+      "grep_found": [
+        2
+      ],
+      "chunk_recall": 1.0,
+      "rank_before_rerank": 3,
+      "rank_after_rerank": 1,
+      "rerank_improved": true,
+      "correct_chunk_score_dense": 0.7546,
+      "correct_chunk_score_rerank": 0.64512,
+      "top1_score_dense": 0.75756,
+      "top1_score_rerank": 0.64512,
+      "pre_rerank_top5": [
+        59,
+        58,
+        2,
+        53,
+        56
+      ],
+      "post_rerank_top5": [
+        2,
+        59,
+        58,
+        57,
+        52
+      ]
+    },
+    {
+      "q_id": "Q02",
+      "category": "easy",
+      "correct_chunk_found": false,
+      "expected_chunks": [
+        8
+      ],
+      "found_chunks": [],
+      "dense_found": [],
+      "sparse_found": [],
+      "grep_found": [],
+      "chunk_recall": 0.0,
+      "rank_before_rerank": null,
+      "rank_after_rerank": null,
+      "rerank_improved": null,
+      "correct_chunk_score_dense": null,
+      "correct_chunk_score_rerank": null,
+      "top1_score_dense": 0.71478,
+      "top1_score_rerank": 0.22406,
+      "pre_rerank_top5": [
+        0,
+        14,
+        44,
+        101,
+        4
+      ],
+      "post_rerank_top5": [
+        39,
+        14,
+        13,
+        101,
+        4
+      ]
+    },
+    {
+      "q_id": "Q03",
+      "category": "easy",
+      "correct_chunk_found": false,
+      "expected_chunks": [
+        23
+      ],
+      "found_chunks": [],
+      "dense_found": [],
+      "sparse_found": [],
+      "grep_found": [],
+      "chunk_recall": 0.0,
+      "rank_before_rerank": null,
+      "rank_after_rerank": null,
+      "rerank_improved": null,
+      "correct_chunk_score_dense": null,
+      "correct_chunk_score_rerank": null,
+      "top1_score_dense": 0.64281,
+      "top1_score_rerank": 0.38491,
+      "pre_rerank_top5": [
+        19,
+        27,
+        26,
+        18,
+        2
+      ],
+      "post_rerank_top5": [
+        55,
+        19,
+        27,
+        26,
+        3
+      ]
+    },
+    {
+      "q_id": "Q04",
+      "category": "easy",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        19
+      ],
+      "found_chunks": [
+        19
+      ],
+      "dense_found": [
+        19
+      ],
+      "sparse_found": [
+        19
+      ],
+      "grep_found": [
+        19
+      ],
+      "chunk_recall": 1.0,
+      "rank_before_rerank": 1,
+      "rank_after_rerank": 1,
+      "rerank_improved": false,
+      "correct_chunk_score_dense": 0.63488,
+      "correct_chunk_score_rerank": 0.62016,
+      "top1_score_dense": 0.63488,
+      "top1_score_rerank": 0.62016,
+      "pre_rerank_top5": [
+        19,
+        2,
+        27,
+        18,
+        55
+      ],
+      "post_rerank_top5": [
+        19,
+        27,
+        56,
+        18,
+        21
+      ]
+    },
+    {
+      "q_id": "Q05",
+      "category": "medium",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        63,
+        64
+      ],
+      "found_chunks": [
+        63,
+        64
+      ],
+      "dense_found": [
+        63
+      ],
+      "sparse_found": [],
+      "grep_found": [
+        63,
+        64
+      ],
+      "chunk_recall": 1.0,
+      "rank_before_rerank": 1,
+      "rank_after_rerank": 3,
+      "rerank_improved": false,
+      "correct_chunk_score_dense": 0.69676,
+      "correct_chunk_score_rerank": 0.64869,
+      "top1_score_dense": 0.69676,
+      "top1_score_rerank": 0.76629,
+      "pre_rerank_top5": [
+        63,
+        61,
+        75,
+        74,
+        67
+      ],
+      "post_rerank_top5": [
+        65,
+        86,
+        63,
+        74,
+        87
+      ]
+    },
+    {
+      "q_id": "Q06",
+      "category": "medium",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        19,
+        20,
+        21
+      ],
+      "found_chunks": [
+        21
+      ],
+      "dense_found": [
+        19,
+        21
+      ],
+      "sparse_found": [],
+      "grep_found": [],
+      "chunk_recall": 0.3333333333333333,
+      "rank_before_rerank": 8,
+      "rank_after_rerank": null,
+      "rerank_improved": null,
+      "correct_chunk_score_dense": 0.69115,
+      "correct_chunk_score_rerank": null,
+      "top1_score_dense": 0.83222,
+      "top1_score_rerank": 0.42203,
+      "pre_rerank_top5": [
+        17,
+        18,
+        1,
+        12,
+        15
+      ],
+      "post_rerank_top5": [
+        17,
+        18,
+        52,
+        58,
+        16
+      ]
+    },
+    {
+      "q_id": "Q07",
+      "category": "medium",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        37,
+        47,
+        50
+      ],
+      "found_chunks": [
+        47,
+        50
+      ],
+      "dense_found": [
+        37,
+        47,
+        50
+      ],
+      "sparse_found": [],
+      "grep_found": [],
+      "chunk_recall": 0.6666666666666666,
+      "rank_before_rerank": 12,
+      "rank_after_rerank": 3,
+      "rerank_improved": true,
+      "correct_chunk_score_dense": 0.7272,
+      "correct_chunk_score_rerank": 0.4598,
+      "top1_score_dense": 0.68402,
+      "top1_score_rerank": 0.55399,
+      "pre_rerank_top5": [
+        19,
+        27,
+        2,
+        58,
+        55
+      ],
+      "post_rerank_top5": [
+        54,
+        58,
+        47,
+        18,
+        50
+      ]
+    },
+    {
+      "q_id": "Q08",
+      "category": "medium",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        66,
+        71
+      ],
+      "found_chunks": [
+        66,
+        71
+      ],
+      "dense_found": [
+        66,
+        71
+      ],
+      "sparse_found": [],
+      "grep_found": [
+        66
+      ],
+      "chunk_recall": 1.0,
+      "rank_before_rerank": 3,
+      "rank_after_rerank": 1,
+      "rerank_improved": true,
+      "correct_chunk_score_dense": 0.62664,
+      "correct_chunk_score_rerank": 0.57607,
+      "top1_score_dense": 0.65739,
+      "top1_score_rerank": 0.57607,
+      "pre_rerank_top5": [
+        83,
+        82,
+        66,
+        84,
+        1
+      ],
+      "post_rerank_top5": [
+        71,
+        66,
+        83,
+        69,
+        84
+      ]
+    },
+    {
+      "q_id": "Q09",
+      "category": "hard",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        3,
+        88,
+        94
+      ],
+      "found_chunks": [
+        3,
+        94
+      ],
+      "dense_found": [
+        3,
+        88,
+        94
+      ],
+      "sparse_found": [],
+      "grep_found": [],
+      "chunk_recall": 0.6666666666666666,
+      "rank_before_rerank": 1,
+      "rank_after_rerank": 1,
+      "rerank_improved": false,
+      "correct_chunk_score_dense": 0.74057,
+      "correct_chunk_score_rerank": 0.49715,
+      "top1_score_dense": 0.74057,
+      "top1_score_rerank": 0.49715,
+      "pre_rerank_top5": [
+        3,
+        5,
+        2,
+        100,
+        4
+      ],
+      "post_rerank_top5": [
+        94,
+        2,
+        100,
+        3,
+        60
+      ]
+    },
+    {
+      "q_id": "Q10",
+      "category": "hard",
+      "correct_chunk_found": false,
+      "expected_chunks": [
+        47,
+        50,
+        91
+      ],
+      "found_chunks": [],
+      "dense_found": [],
+      "sparse_found": [],
+      "grep_found": [],
+      "chunk_recall": 0.0,
+      "rank_before_rerank": null,
+      "rank_after_rerank": null,
+      "rerank_improved": null,
+      "correct_chunk_score_dense": null,
+      "correct_chunk_score_rerank": null,
+      "top1_score_dense": 0.70071,
+      "top1_score_rerank": 0.36387,
+      "pre_rerank_top5": [
+        1,
+        61,
+        29,
+        3,
+        8
+      ],
+      "post_rerank_top5": [
+        17,
+        49,
+        8,
+        16,
+        102
+      ]
+    },
+    {
+      "q_id": "Q11",
+      "category": "hard",
+      "correct_chunk_found": false,
+      "expected_chunks": [
+        37,
+        47,
+        95
+      ],
+      "found_chunks": [],
+      "dense_found": [],
+      "sparse_found": [],
+      "grep_found": [],
+      "chunk_recall": 0.0,
+      "rank_before_rerank": null,
+      "rank_after_rerank": null,
+      "rerank_improved": null,
+      "correct_chunk_score_dense": null,
+      "correct_chunk_score_rerank": null,
+      "top1_score_dense": 0.74889,
+      "top1_score_rerank": 0.39887,
+      "pre_rerank_top5": [
+        1,
+        83,
+        59,
+        17,
+        82
+      ],
+      "post_rerank_top5": [
+        1,
+        59,
+        58,
+        83,
+        84
+      ]
+    },
+    {
+      "q_id": "Q12",
+      "category": "hard",
+      "correct_chunk_found": false,
+      "expected_chunks": [
+        21,
+        55,
+        99
+      ],
+      "found_chunks": [],
+      "dense_found": [
+        99
+      ],
+      "sparse_found": [],
+      "grep_found": [],
+      "chunk_recall": 0.0,
+      "rank_before_rerank": null,
+      "rank_after_rerank": null,
+      "rerank_improved": null,
+      "correct_chunk_score_dense": null,
+      "correct_chunk_score_rerank": null,
+      "top1_score_dense": 0.50876,
+      "top1_score_rerank": 0.07921,
+      "pre_rerank_top5": [
+        49,
+        2,
+        29,
+        1,
+        61
+      ],
+      "post_rerank_top5": [
+        43,
+        42,
+        1,
+        101,
+        61
+      ]
+    },
+    {
+      "q_id": "Q13",
+      "category": "trap",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        103
+      ],
+      "found_chunks": [
+        103
+      ],
+      "dense_found": [
+        103
+      ],
+      "sparse_found": [],
+      "grep_found": [],
+      "chunk_recall": 1.0,
+      "rank_before_rerank": 12,
+      "rank_after_rerank": null,
+      "rerank_improved": null,
+      "correct_chunk_score_dense": 0.58662,
+      "correct_chunk_score_rerank": null,
+      "top1_score_dense": 0.62034,
+      "top1_score_rerank": 0.43686,
+      "pre_rerank_top5": [
+        83,
+        82,
+        66,
+        1,
+        59
+      ],
+      "post_rerank_top5": [
+        82,
+        83,
+        99,
+        100,
+        69
+      ]
+    },
+    {
+      "q_id": "Q14",
+      "category": "trap",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        1,
+        2
+      ],
+      "found_chunks": [
+        1,
+        2
+      ],
+      "dense_found": [
+        1,
+        2
+      ],
+      "sparse_found": [],
+      "grep_found": [
+        1,
+        2
+      ],
+      "chunk_recall": 1.0,
+      "rank_before_rerank": 1,
+      "rank_after_rerank": 1,
+      "rerank_improved": false,
+      "correct_chunk_score_dense": 0.58827,
+      "correct_chunk_score_rerank": 0.31405,
+      "top1_score_dense": 0.58827,
+      "top1_score_rerank": 0.31405,
+      "pre_rerank_top5": [
+        1,
+        2,
+        40,
+        95,
+        94
+      ],
+      "post_rerank_top5": [
+        2,
+        1,
+        42,
+        40,
+        47
+      ]
+    },
+    {
+      "q_id": "Q15",
+      "category": "trap",
+      "correct_chunk_found": false,
+      "expected_chunks": [],
+      "found_chunks": [],
+      "dense_found": [],
+      "sparse_found": [],
+      "grep_found": [],
+      "chunk_recall": null,
+      "rank_before_rerank": null,
+      "rank_after_rerank": null,
+      "rerank_improved": null,
+      "correct_chunk_score_dense": null,
+      "correct_chunk_score_rerank": null,
+      "top1_score_dense": 0.65346,
+      "top1_score_rerank": 0.12765,
+      "pre_rerank_top5": [
+        1,
+        29,
+        61,
+        2,
+        96
+      ],
+      "post_rerank_top5": [
+        1,
+        3,
+        96,
+        2,
+        95
+      ]
+    },
+    {
+      "q_id": "Q16",
+      "category": "trap",
+      "correct_chunk_found": true,
+      "expected_chunks": [
+        38,
+        89,
+        90,
+        91
+      ],
+      "found_chunks": [
+        91
+      ],
+      "dense_found": [
+        38
+      ],
+      "sparse_found": [],
+      "grep_found": [
+        91
+      ],
+      "chunk_recall": 0.25,
+      "rank_before_rerank": 8,
+      "rank_after_rerank": 1,
+      "rerank_improved": true,
+      "correct_chunk_score_dense": 0.64046,
+      "correct_chunk_score_rerank": 0.5465,
+      "top1_score_dense": 0.74305,
+      "top1_score_rerank": 0.5465,
+      "pre_rerank_top5": [
+        59,
+        1,
+        83,
+        66,
+        84
+      ],
+      "post_rerank_top5": [
+        91,
+        17,
+        66,
+        58,
+        14
+      ]
+    }
+  ],
+  "summary": {
+    "total_questions": 16,
+    "total_with_expected": 15,
+    "total_found": 10,
+    "recall_at_5": 0.667,
+    "mrr_pre_rerank": 0.339,
+    "mrr_post_rerank": 0.444,
+    "avg_correct_cosine": 0.6687,
+    "avg_chunk_recall": 0.528,
+    "dense_recall": "11/15",
+    "sparse_recall": "1/15",
+    "grep_recall": "6/15",
+    "rerank_improved_count": 4,
+    "rerank_same_or_worse_count": 4
+  }
+}

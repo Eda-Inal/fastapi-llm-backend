@@ -1,0 +1,547 @@
+{
+  "question": {
+    "q_id": "Q11",
+    "category": "hard",
+    "question": "What active roles does Watson play in assisting Holmes in both 'A Scandal in Bohemia' and 'The Red-Headed League'?",
+    "expected_keywords": [
+      "smoke-rocket",
+      "fire",
+      "window",
+      "army revolver",
+      "danger",
+      "Baker Street"
+    ],
+    "expected_answer": "In 'A Scandal in Bohemia', Watson's role is to station himself near the window of Briony Lodge and, at Holmes's signal, throw a smoke-rocket into the room and raise the cry of fire. In 'The Red-Headed League', Holmes asks Watson to come armed — 'kindly put your army revolver in your pocket' — as there may be danger when they confront John Clay in the bank cellar.",
+    "section": [
+      "A Scandal in Bohemia",
+      "The Red-Headed League"
+    ],
+    "chunk_index": [
+      37,
+      47,
+      95
+    ],
+    "chunk_text": [
+      "Chunk 37 (Scandal): \"And when I raise my hand—so—you will throw into the room what I give you to throw, and will, at the same time, raise the cry of fire.\"",
+      "Chunk 47 (Scandal): \"At the same instant I saw him raise his hand and at the signal I tossed my rocket into the room with a cry of 'Fire!'\"",
+      "Chunk 95 (RHL): \"'And, I say, Doctor, there may be some little danger, so kindly put your army revolver in your pocket.'\""
+    ]
+  },
+  "debug_response": {
+    "query": "What active roles does Watson play in assisting Holmes in both 'A Scandal in Bohemia' and 'The Red-Headed League'?",
+    "user_id": "sherlock-rag-test",
+    "config": {
+      "embedding_model": "mxbai-embed-large",
+      "hybrid_search": true,
+      "grep_search": true,
+      "reranker_enabled": true,
+      "rrf_k": 60,
+      "requested_top_k": 5,
+      "fetch_k": 15
+    },
+    "latency": {
+      "embedding_ms": 533.2,
+      "search_ms": 76.8,
+      "rerank_ms": 592.7,
+      "total_ms": 1202.8
+    },
+    "search_breakdown": {
+      "search_mode": "hybrid",
+      "rrf_k": 60,
+      "fetch_k": 45,
+      "requested_top_k": 15,
+      "dense_candidates": 45,
+      "sparse_candidates": 0,
+      "grep_candidates": 0,
+      "dense_leg": [
+        {
+          "rank": 1,
+          "chunk_db_id": 501,
+          "chunk_index": 1,
+          "document_id": 103,
+          "cosine_similarity": 0.74889
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 583,
+          "chunk_index": 83,
+          "document_id": 103,
+          "cosine_similarity": 0.71108
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 559,
+          "chunk_index": 59,
+          "document_id": 103,
+          "cosine_similarity": 0.70317
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 517,
+          "chunk_index": 17,
+          "document_id": 103,
+          "cosine_similarity": 0.6817
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 582,
+          "chunk_index": 82,
+          "document_id": 103,
+          "cosine_similarity": 0.68065
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 566,
+          "chunk_index": 66,
+          "document_id": 103,
+          "cosine_similarity": 0.67937
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 571,
+          "chunk_index": 71,
+          "document_id": 103,
+          "cosine_similarity": 0.66486
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 518,
+          "chunk_index": 18,
+          "document_id": 103,
+          "cosine_similarity": 0.65716
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 584,
+          "chunk_index": 84,
+          "document_id": 103,
+          "cosine_similarity": 0.65488
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 558,
+          "chunk_index": 58,
+          "document_id": 103,
+          "cosine_similarity": 0.64907
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 502,
+          "chunk_index": 2,
+          "document_id": 103,
+          "cosine_similarity": 0.64261
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 515,
+          "chunk_index": 15,
+          "document_id": 103,
+          "cosine_similarity": 0.62823
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 570,
+          "chunk_index": 70,
+          "document_id": 103,
+          "cosine_similarity": 0.62762
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 512,
+          "chunk_index": 12,
+          "document_id": 103,
+          "cosine_similarity": 0.62351
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 574,
+          "chunk_index": 74,
+          "document_id": 103,
+          "cosine_similarity": 0.61921
+        },
+        {
+          "rank": 16,
+          "chunk_db_id": 516,
+          "chunk_index": 16,
+          "document_id": 103,
+          "cosine_similarity": 0.61377
+        },
+        {
+          "rank": 17,
+          "chunk_db_id": 563,
+          "chunk_index": 63,
+          "document_id": 103,
+          "cosine_similarity": 0.61189
+        },
+        {
+          "rank": 18,
+          "chunk_db_id": 560,
+          "chunk_index": 60,
+          "document_id": 103,
+          "cosine_similarity": 0.61085
+        },
+        {
+          "rank": 19,
+          "chunk_db_id": 569,
+          "chunk_index": 69,
+          "document_id": 103,
+          "cosine_similarity": 0.6097
+        },
+        {
+          "rank": 20,
+          "chunk_db_id": 524,
+          "chunk_index": 24,
+          "document_id": 103,
+          "cosine_similarity": 0.60727
+        }
+      ],
+      "sparse_leg": [],
+      "grep_leg": [],
+      "pre_rerank": [
+        {
+          "rank": 1,
+          "chunk_db_id": 501,
+          "rrf_score": 0.016393,
+          "dense_contrib": 0.016393,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.74889,
+          "chunk_index": 1,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 150,
+          "text_preview": "I.     A Scandal in Bohemia\n   II.    The Red-Headed League\n   III.   A Case of Identity\n   IV.    The Boscombe Valley Mystery\n   V.     The Five Orange Pips\n   VI.    The Man with the Twisted Lip"
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 583,
+          "rrf_score": 0.016129,
+          "dense_contrib": 0.016129,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.71108,
+          "chunk_index": 83,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 308,
+          "text_preview": "It read in this fashion:\n\n“THE RED-HEADED LEAGUE IS DISSOLVED. October 9, 1890.”\n\nSherlock Holmes and I surveyed this curt announcement and the rueful\nface behind it, until the comical side of the aff"
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 559,
+          "rrf_score": 0.015873,
+          "dense_contrib": 0.015873,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.70317,
+          "chunk_index": 59,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 280,
+          "text_preview": "Sherlock Holmes were beaten by a\nwoman’s wit. He used to make merry over the cleverness of women, but I\nhave not heard him do it of late. And when he speaks of Irene Adler, or\nwhen he refers to her ph"
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 517,
+          "rrf_score": 0.015625,
+          "dense_contrib": 0.015625,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.6817,
+          "chunk_index": 17,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 260,
+          "text_preview": "To speak\nplainly, the matter implicates the great House of Ormstein, hereditary\nkings of Bohemia.”\n\n“I was also aware of that,” murmured Holmes, settling himself down in\nhis armchair and closing his e"
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 582,
+          "rrf_score": 0.015385,
+          "dense_contrib": 0.015385,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.68065,
+          "chunk_index": 82,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 300,
+          "text_preview": "Still, of course, I never dared to\nleave the room for an instant, for I was not sure when he might come,\nand the billet was such a good one, and suited me so well, that I would\nnot risk the loss of it"
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 566,
+          "rrf_score": 0.015152,
+          "dense_contrib": 0.015152,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.67937,
+          "chunk_index": 66,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 303,
+          "text_preview": "Can you not find the advertisement, Mr. Wilson?”\n\n“Yes, I have got it now,” he answered with his thick red finger planted\nhalfway down the column. “Here it is. This is what began it all. You\njust read"
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 571,
+          "rrf_score": 0.014925,
+          "dense_contrib": 0.014925,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.66486,
+          "chunk_index": 71,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 187,
+          "text_preview": "“‘Tell me all about it,’ said I.\n\n“‘Well,’ said he, showing me the advertisement, ‘you can see for\nyourself that the League has a vacancy, and there is the address where\nyou should apply for particula"
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 518,
+          "rrf_score": 0.014706,
+          "dense_contrib": 0.014706,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.65716,
+          "chunk_index": 18,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 222,
+          "text_preview": "“You are right,”\nhe cried; “I am the King. Why should I attempt to conceal it?”\n\n“Why, indeed?” murmured Holmes. “Your Majesty had not spoken before I\nwas aware that I was addressing Wilhelm Gottsreic"
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 584,
+          "rrf_score": 0.014493,
+          "dense_contrib": 0.014493,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.65488,
+          "chunk_index": 84,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 244,
+          "text_preview": "Finally, I went to the landlord, who is an accountant living on the\nground floor, and I asked him if he could tell me what had become of\nthe Red-headed League. He said that he had never heard of any s"
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 558,
+          "rrf_score": 0.014286,
+          "dense_contrib": 0.014286,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.64907,
+          "chunk_index": 58,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 288,
+          "text_preview": "The photograph is now as\nsafe as if it were in the fire.”\n\n“I am glad to hear your Majesty say so.”\n\n“I am immensely indebted to you. Pray tell me in what way I can reward\nyou. This ring—” He slipped"
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 502,
+          "rrf_score": 0.014085,
+          "dense_contrib": 0.014085,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.64261,
+          "chunk_index": 2,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 341,
+          "text_preview": "The Adventure of the Blue Carbuncle\n   VIII. The Adventure of the Speckled Band\n   IX. The Adventure of the Engineer’s Thumb\n   X. The Adventure of the Noble Bachelor\n   XI. The Adventure of the Beryl"
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 515,
+          "rrf_score": 0.013889,
+          "dense_contrib": 0.013889,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.62823,
+          "chunk_index": 15,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 255,
+          "text_preview": "From the lower part of the face\nhe appeared to be a man of strong character, with a thick, hanging lip,\nand a long, straight chin suggestive of resolution pushed to the length\nof obstinacy.\n\n“You had"
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 570,
+          "rrf_score": 0.013699,
+          "dense_contrib": 0.013699,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.62762,
+          "chunk_index": 70,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 304,
+          "text_preview": "It’s worth quite a little fortune to any man who gets\nit, and I understand that there are more vacancies than there are men,\nso that the trustees are at their wits’ end what to do with the money. If m"
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 512,
+          "rrf_score": 0.013514,
+          "dense_contrib": 0.013514,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.62351,
+          "chunk_index": 12,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 311,
+          "text_preview": "‘Remarkable\nas being the scene of the death of Wallenstein, and for its numerous\nglass-factories and paper-mills.’ Ha, ha, my boy, what do you make of\nthat?” His eyes sparkled, and he sent up a great"
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 574,
+          "rrf_score": 0.013333,
+          "dense_contrib": 0.013333,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.61921,
+          "chunk_index": 74,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 238,
+          "text_preview": "There was a double stream upon\nthe stair, some going up in hope, and some coming back dejected; but we\nwedged in as well as we could and soon found ourselves in the office.”\n\n“Your experience has been"
+        }
+      ]
+    },
+    "reranker": {
+      "enabled": true,
+      "latency_ms": 592.7,
+      "input_count": 15,
+      "output_count": 5
+    },
+    "post_rerank": [
+      {
+        "rank": 1,
+        "chunk_db_id": 501,
+        "rrf_score": 0.016393,
+        "dense_contrib": 0.016393,
+        "sparse_contrib": 0.0,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.74889,
+        "chunk_index": 1,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 150,
+        "text_preview": "I.     A Scandal in Bohemia\n   II.    The Red-Headed League\n   III.   A Case of Identity\n   IV.    The Boscombe Valley Mystery\n   V.     The Five Orange Pips\n   VI.    The Man with the Twisted Lip",
+        "rerank_score": 0.39887,
+        "pre_rerank_position": 1,
+        "post_rerank_position": 1
+      },
+      {
+        "rank": 3,
+        "chunk_db_id": 559,
+        "rrf_score": 0.015873,
+        "dense_contrib": 0.015873,
+        "sparse_contrib": 0.0,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.70317,
+        "chunk_index": 59,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 280,
+        "text_preview": "Sherlock Holmes were beaten by a\nwoman’s wit. He used to make merry over the cleverness of women, but I\nhave not heard him do it of late. And when he speaks of Irene Adler, or\nwhen he refers to her ph",
+        "rerank_score": 0.30404,
+        "pre_rerank_position": 3,
+        "post_rerank_position": 2
+      },
+      {
+        "rank": 10,
+        "chunk_db_id": 558,
+        "rrf_score": 0.014286,
+        "dense_contrib": 0.014286,
+        "sparse_contrib": 0.0,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.64907,
+        "chunk_index": 58,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 288,
+        "text_preview": "The photograph is now as\nsafe as if it were in the fire.”\n\n“I am glad to hear your Majesty say so.”\n\n“I am immensely indebted to you. Pray tell me in what way I can reward\nyou. This ring—” He slipped",
+        "rerank_score": 0.28697,
+        "pre_rerank_position": 10,
+        "post_rerank_position": 3
+      },
+      {
+        "rank": 2,
+        "chunk_db_id": 583,
+        "rrf_score": 0.016129,
+        "dense_contrib": 0.016129,
+        "sparse_contrib": 0.0,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.71108,
+        "chunk_index": 83,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 308,
+        "text_preview": "It read in this fashion:\n\n“THE RED-HEADED LEAGUE IS DISSOLVED. October 9, 1890.”\n\nSherlock Holmes and I surveyed this curt announcement and the rueful\nface behind it, until the comical side of the aff",
+        "rerank_score": 0.26284,
+        "pre_rerank_position": 2,
+        "post_rerank_position": 4
+      },
+      {
+        "rank": 9,
+        "chunk_db_id": 584,
+        "rrf_score": 0.014493,
+        "dense_contrib": 0.014493,
+        "sparse_contrib": 0.0,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.65488,
+        "chunk_index": 84,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 244,
+        "text_preview": "Finally, I went to the landlord, who is an accountant living on the\nground floor, and I asked him if he could tell me what had become of\nthe Red-headed League. He said that he had never heard of any s",
+        "rerank_score": 0.24799,
+        "pre_rerank_position": 9,
+        "post_rerank_position": 5
+      }
+    ]
+  }
+}

@@ -1,0 +1,551 @@
+{
+  "question": {
+    "q_id": "Q12",
+    "category": "hard",
+    "question": "How are the main antagonists characterized in each story, and how do their outcomes differ?",
+    "expected_keywords": [
+      "Irene Adler",
+      "soul of steel",
+      "actress",
+      "John Clay",
+      "murderer",
+      "forger",
+      "Eton",
+      "Oxford",
+      "outsmarted Holmes",
+      "royal duke"
+    ],
+    "expected_answer": "Irene Adler is described as having 'a soul of steel', 'the face of the most beautiful of women, and the mind of the most resolute of men.' A trained actress, she outsmarts Holmes by disguising herself in male costume and fleeing with the photograph. John Clay is a murderer, thief, smasher, and forger whose grandfather was a royal duke and who attended Eton and Oxford — 'his brain is as cunning as his fingers.' Unlike Adler, Clay is caught by Holmes in the bank cellar.",
+    "section": [
+      "A Scandal in Bohemia",
+      "The Red-Headed League"
+    ],
+    "chunk_index": [
+      21,
+      55,
+      99
+    ],
+    "chunk_text": [
+      "Chunk 21 (Scandal): \"She has a soul of steel. She has the face of the most beautiful of women, and the mind of the most resolute of men.\"",
+      "Chunk 55 (Scandal): \"I have been trained as an actress myself. Male costume is nothing new to me. I often take advantage of the freedom which it gives.\"",
+      "Chunk 99 (RHL): \"John Clay, the murderer, thief, smasher, and forger. He's a young man, Mr. Merryweather, but he is at the head of his profession... His grandfather was a royal duke, and he himself has been to Eton and Oxford. His brain is as cunning as his fingers.\""
+    ]
+  },
+  "debug_response": {
+    "query": "How are the main antagonists characterized in each story, and how do their outcomes differ?",
+    "user_id": "sherlock-rag-test",
+    "config": {
+      "embedding_model": "mxbai-embed-large",
+      "hybrid_search": true,
+      "grep_search": true,
+      "reranker_enabled": true,
+      "rrf_k": 60,
+      "requested_top_k": 5,
+      "fetch_k": 15
+    },
+    "latency": {
+      "embedding_ms": 608.0,
+      "search_ms": 118.9,
+      "rerank_ms": 550.0,
+      "total_ms": 1277.0
+    },
+    "search_breakdown": {
+      "search_mode": "hybrid",
+      "rrf_k": 60,
+      "fetch_k": 45,
+      "requested_top_k": 15,
+      "dense_candidates": 45,
+      "sparse_candidates": 0,
+      "grep_candidates": 0,
+      "dense_leg": [
+        {
+          "rank": 1,
+          "chunk_db_id": 549,
+          "chunk_index": 49,
+          "document_id": 103,
+          "cosine_similarity": 0.50876
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 502,
+          "chunk_index": 2,
+          "document_id": 103,
+          "cosine_similarity": 0.50144
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 529,
+          "chunk_index": 29,
+          "document_id": 103,
+          "cosine_similarity": 0.4954
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 501,
+          "chunk_index": 1,
+          "document_id": 103,
+          "cosine_similarity": 0.49486
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 561,
+          "chunk_index": 61,
+          "document_id": 103,
+          "cosine_similarity": 0.47851
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 596,
+          "chunk_index": 96,
+          "document_id": 103,
+          "cosine_similarity": 0.47768
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 542,
+          "chunk_index": 42,
+          "document_id": 103,
+          "cosine_similarity": 0.47194
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 543,
+          "chunk_index": 43,
+          "document_id": 103,
+          "cosine_similarity": 0.47109
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 503,
+          "chunk_index": 3,
+          "document_id": 103,
+          "cosine_similarity": 0.47
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 545,
+          "chunk_index": 45,
+          "document_id": 103,
+          "cosine_similarity": 0.46944
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 541,
+          "chunk_index": 41,
+          "document_id": 103,
+          "cosine_similarity": 0.46915
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 578,
+          "chunk_index": 78,
+          "document_id": 103,
+          "cosine_similarity": 0.46845
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 559,
+          "chunk_index": 59,
+          "document_id": 103,
+          "cosine_similarity": 0.46757
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 603,
+          "chunk_index": 103,
+          "document_id": 103,
+          "cosine_similarity": 0.46661
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 601,
+          "chunk_index": 101,
+          "document_id": 103,
+          "cosine_similarity": 0.46464
+        },
+        {
+          "rank": 16,
+          "chunk_db_id": 517,
+          "chunk_index": 17,
+          "document_id": 103,
+          "cosine_similarity": 0.46341
+        },
+        {
+          "rank": 17,
+          "chunk_db_id": 600,
+          "chunk_index": 100,
+          "document_id": 103,
+          "cosine_similarity": 0.46289
+        },
+        {
+          "rank": 18,
+          "chunk_db_id": 599,
+          "chunk_index": 99,
+          "document_id": 103,
+          "cosine_similarity": 0.46152
+        },
+        {
+          "rank": 19,
+          "chunk_db_id": 574,
+          "chunk_index": 74,
+          "document_id": 103,
+          "cosine_similarity": 0.45956
+        },
+        {
+          "rank": 20,
+          "chunk_db_id": 528,
+          "chunk_index": 28,
+          "document_id": 103,
+          "cosine_similarity": 0.45953
+        }
+      ],
+      "sparse_leg": [],
+      "grep_leg": [],
+      "pre_rerank": [
+        {
+          "rank": 1,
+          "chunk_db_id": 549,
+          "rrf_score": 0.016393,
+          "dense_contrib": 0.016393,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.50876,
+          "chunk_index": 49,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 166,
+          "text_preview": "They were all engaged for the evening.”\n\n“I guessed as much.”\n\n“Then, when the row broke out, I had a little moist red paint in the\npalm of my hand. I rushed forward, fell down, clapped my hand to my"
+        },
+        {
+          "rank": 2,
+          "chunk_db_id": 502,
+          "rrf_score": 0.016129,
+          "dense_contrib": 0.016129,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.50144,
+          "chunk_index": 2,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 341,
+          "text_preview": "The Adventure of the Blue Carbuncle\n   VIII. The Adventure of the Speckled Band\n   IX. The Adventure of the Engineer’s Thumb\n   X. The Adventure of the Noble Bachelor\n   XI. The Adventure of the Beryl"
+        },
+        {
+          "rank": 3,
+          "chunk_db_id": 529,
+          "rrf_score": 0.015873,
+          "dense_contrib": 0.015873,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.4954,
+          "chunk_index": 29,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 243,
+          "text_preview": "See the advantages of a cabman as a\nconfidant. They had driven him home a dozen times from Serpentine-mews,\nand knew all about him. When I had listened to all they had to tell, I\nbegan to walk up and"
+        },
+        {
+          "rank": 4,
+          "chunk_db_id": 501,
+          "rrf_score": 0.015625,
+          "dense_contrib": 0.015625,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.49486,
+          "chunk_index": 1,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 150,
+          "text_preview": "I.     A Scandal in Bohemia\n   II.    The Red-Headed League\n   III.   A Case of Identity\n   IV.    The Boscombe Valley Mystery\n   V.     The Five Orange Pips\n   VI.    The Man with the Twisted Lip"
+        },
+        {
+          "rank": 5,
+          "chunk_db_id": 561,
+          "rrf_score": 0.015385,
+          "dense_contrib": 0.015385,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.47851,
+          "chunk_index": 61,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 377,
+          "text_preview": "“You will remember that I remarked the other day, just before we went\ninto the very simple problem presented by Miss Mary Sutherland, that\nfor strange effects and extraordinary combinations we must go"
+        },
+        {
+          "rank": 6,
+          "chunk_db_id": 596,
+          "rrf_score": 0.015152,
+          "dense_contrib": 0.015152,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.47768,
+          "chunk_index": 96,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 314,
+          "text_preview": "I shall want your help to-night.”\n\n“At what time?”\n\n“Ten will be early enough.”\n\n“I shall be at Baker Street at ten.”\n\n“Very well. And, I say, Doctor, there may be some little danger, so\nkindly put yo"
+        },
+        {
+          "rank": 7,
+          "chunk_db_id": 542,
+          "rrf_score": 0.014925,
+          "dense_contrib": 0.014925,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.47194,
+          "chunk_index": 42,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 320,
+          "text_preview": "They did not know how to look.”\n\n“But how will you look?”\n\n“I will not look.”\n\n“What then?”\n\n“I will get her to show me.”\n\n“But she will refuse.”\n\n“She will not be able to. But I hear the rumble of wh"
+        },
+        {
+          "rank": 8,
+          "chunk_db_id": 543,
+          "rrf_score": 0.014706,
+          "dense_contrib": 0.014706,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.47109,
+          "chunk_index": 43,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 137,
+          "text_preview": "men, who\nstruck savagely at each other with their fists and sticks. Holmes\ndashed into the crowd to protect the lady; but, just as he reached her,\nhe gave a cry and dropped to the ground, with the blo"
+        },
+        {
+          "rank": 9,
+          "chunk_db_id": 503,
+          "rrf_score": 0.014493,
+          "dense_contrib": 0.014493,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.47,
+          "chunk_index": 3,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 349,
+          "text_preview": "Grit in a sensitive\ninstrument, or a crack in one of his own high-power lenses, would not\nbe more disturbing than a strong emotion in a nature such as his. And\nyet there was but one woman to him, and"
+        },
+        {
+          "rank": 10,
+          "chunk_db_id": 545,
+          "rrf_score": 0.014286,
+          "dense_contrib": 0.014286,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.46944,
+          "chunk_index": 45,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 137,
+          "text_preview": "“Is the poor gentleman much hurt?” she asked.\n\n“He is dead,” cried several voices.\n\n“No, no, there’s life in him!” shouted another. “But he’ll be gone\nbefore you can get him to hospital.”\n\n“He’s a bra"
+        },
+        {
+          "rank": 11,
+          "chunk_db_id": 541,
+          "rrf_score": 0.014085,
+          "dense_contrib": 0.014085,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.46915,
+          "chunk_index": 41,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 266,
+          "text_preview": "It is cabinet\nsize. Too large for easy concealment about a woman’s dress. She knows\nthat the King is capable of having her waylaid and searched. Two\nattempts of the sort have already been made. We may"
+        },
+        {
+          "rank": 12,
+          "chunk_db_id": 578,
+          "rrf_score": 0.013889,
+          "dense_contrib": 0.013889,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.46845,
+          "chunk_index": 78,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 299,
+          "text_preview": "“‘Oh, never mind about that, Mr. Wilson!’ said Vincent Spaulding. ‘I\nshould be able to look after that for you.’\n\n“‘What would be the hours?’ I asked. “‘Ten to two.’\n\n“Now a pawnbroker’s business is m"
+        },
+        {
+          "rank": 13,
+          "chunk_db_id": 559,
+          "rrf_score": 0.013699,
+          "dense_contrib": 0.013699,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.46757,
+          "chunk_index": 59,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 280,
+          "text_preview": "Sherlock Holmes were beaten by a\nwoman’s wit. He used to make merry over the cleverness of women, but I\nhave not heard him do it of late. And when he speaks of Irene Adler, or\nwhen he refers to her ph"
+        },
+        {
+          "rank": 14,
+          "chunk_db_id": 603,
+          "rrf_score": 0.013514,
+          "dense_contrib": 0.013514,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.46661,
+          "chunk_index": 103,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 228,
+          "text_preview": "A few seconds sufficed to\nsatisfy him, for he sprang to his feet again and put his glass in his\npocket.\n\n“We have at least an hour before us,” he remarked, “for they can hardly\ntake any steps until th"
+        },
+        {
+          "rank": 15,
+          "chunk_db_id": 601,
+          "rrf_score": 0.013333,
+          "dense_contrib": 0.013333,
+          "sparse_contrib": 0.0,
+          "grep_contrib": 0.0,
+          "cosine_similarity": 0.46464,
+          "chunk_index": 101,
+          "document_id": 103,
+          "filename": "Sherlock Holmes.txt",
+          "section_heading": null,
+          "page_number": null,
+          "chunk_token_count": 296,
+          "text_preview": "I thought\nit as well to have Jones with us also. He is not a bad fellow, though\nan absolute imbecile in his profession. He has one positive virtue. He\nis as brave as a bulldog and as tenacious as a lo"
+        }
+      ]
+    },
+    "reranker": {
+      "enabled": true,
+      "latency_ms": 550.0,
+      "input_count": 15,
+      "output_count": 5
+    },
+    "post_rerank": [
+      {
+        "rank": 8,
+        "chunk_db_id": 543,
+        "rrf_score": 0.014706,
+        "dense_contrib": 0.014706,
+        "sparse_contrib": 0.0,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.47109,
+        "chunk_index": 43,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 137,
+        "text_preview": "men, who\nstruck savagely at each other with their fists and sticks. Holmes\ndashed into the crowd to protect the lady; but, just as he reached her,\nhe gave a cry and dropped to the ground, with the blo",
+        "rerank_score": 0.07921,
+        "pre_rerank_position": 8,
+        "post_rerank_position": 1
+      },
+      {
+        "rank": 7,
+        "chunk_db_id": 542,
+        "rrf_score": 0.014925,
+        "dense_contrib": 0.014925,
+        "sparse_contrib": 0.0,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.47194,
+        "chunk_index": 42,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 320,
+        "text_preview": "They did not know how to look.”\n\n“But how will you look?”\n\n“I will not look.”\n\n“What then?”\n\n“I will get her to show me.”\n\n“But she will refuse.”\n\n“She will not be able to. But I hear the rumble of wh",
+        "rerank_score": 0.07808,
+        "pre_rerank_position": 7,
+        "post_rerank_position": 2
+      },
+      {
+        "rank": 4,
+        "chunk_db_id": 501,
+        "rrf_score": 0.015625,
+        "dense_contrib": 0.015625,
+        "sparse_contrib": 0.0,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.49486,
+        "chunk_index": 1,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 150,
+        "text_preview": "I.     A Scandal in Bohemia\n   II.    The Red-Headed League\n   III.   A Case of Identity\n   IV.    The Boscombe Valley Mystery\n   V.     The Five Orange Pips\n   VI.    The Man with the Twisted Lip",
+        "rerank_score": 0.06188,
+        "pre_rerank_position": 4,
+        "post_rerank_position": 3
+      },
+      {
+        "rank": 15,
+        "chunk_db_id": 601,
+        "rrf_score": 0.013333,
+        "dense_contrib": 0.013333,
+        "sparse_contrib": 0.0,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.46464,
+        "chunk_index": 101,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 296,
+        "text_preview": "I thought\nit as well to have Jones with us also. He is not a bad fellow, though\nan absolute imbecile in his profession. He has one positive virtue. He\nis as brave as a bulldog and as tenacious as a lo",
+        "rerank_score": 0.0534,
+        "pre_rerank_position": 15,
+        "post_rerank_position": 4
+      },
+      {
+        "rank": 5,
+        "chunk_db_id": 561,
+        "rrf_score": 0.015385,
+        "dense_contrib": 0.015385,
+        "sparse_contrib": 0.0,
+        "grep_contrib": 0.0,
+        "cosine_similarity": 0.47851,
+        "chunk_index": 61,
+        "document_id": 103,
+        "filename": "Sherlock Holmes.txt",
+        "section_heading": null,
+        "page_number": null,
+        "chunk_token_count": 377,
+        "text_preview": "“You will remember that I remarked the other day, just before we went\ninto the very simple problem presented by Miss Mary Sutherland, that\nfor strange effects and extraordinary combinations we must go",
+        "rerank_score": 0.05033,
+        "pre_rerank_position": 5,
+        "post_rerank_position": 5
+      }
+    ]
+  }
+}

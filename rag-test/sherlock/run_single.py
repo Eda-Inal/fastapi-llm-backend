@@ -57,6 +57,12 @@ def extract_result(q: dict, data: dict) -> dict:
             "category": q["category"],
             "error": data["error"],
             "correct_chunk_found": None,
+            "expected_chunks": [],
+            "found_chunks": [],
+            "dense_found": [],
+            "sparse_found": [],
+            "grep_found": [],
+            "chunk_recall": None,
             "rank_before_rerank": None,
             "rank_after_rerank": None,
             "rerank_improved": None,
@@ -74,14 +80,34 @@ def extract_result(q: dict, data: dict) -> dict:
 
     expected_idx = q.get("chunk_index")
     if expected_idx is None:
-        expected_set = set()
+        expected_list = []
     elif isinstance(expected_idx, list):
-        expected_set = set(expected_idx)
+        expected_list = expected_idx
     else:
-        expected_set = {expected_idx}
+        expected_list = [expected_idx]
+    expected_set = set(expected_list)
 
     pre_indices = [e.get("chunk_index") for e in pre_rerank]
     post_indices = [e.get("chunk_index") for e in post_rerank]
+
+    # Per-leg recall
+    dense_leg = breakdown.get("dense_leg", [])
+    sparse_leg = breakdown.get("sparse_leg", [])
+
+    dense_indices = {e.get("chunk_index") for e in dense_leg}
+    sparse_indices = {e.get("chunk_index") for e in sparse_leg}
+    grep_chunk_indices = set()
+    for entry in pre_rerank:
+        if entry.get("grep_contrib", 0) > 0:
+            grep_chunk_indices.add(entry.get("chunk_index"))
+
+    dense_found = sorted(c for c in expected_list if c in dense_indices)
+    sparse_found = sorted(c for c in expected_list if c in sparse_indices)
+    grep_found = sorted(c for c in expected_list if c in grep_chunk_indices)
+
+    all_retrieved = set(pre_indices) | set(post_indices)
+    found_chunks = sorted(c for c in expected_list if c in all_retrieved)
+    chunk_recall = len(found_chunks) / len(expected_list) if expected_list else None
 
     rank_before = None
     correct_dense = None
@@ -99,7 +125,7 @@ def extract_result(q: dict, data: dict) -> dict:
             correct_rerank = entry.get("rerank_score")
             break
 
-    found = rank_before is not None or rank_after is not None
+    found = len(found_chunks) > 0
 
     rerank_improved = None
     if rank_before is not None and rank_after is not None:
@@ -112,6 +138,12 @@ def extract_result(q: dict, data: dict) -> dict:
         "q_id": q["q_id"],
         "category": q["category"],
         "correct_chunk_found": found,
+        "expected_chunks": expected_list,
+        "found_chunks": found_chunks,
+        "dense_found": dense_found,
+        "sparse_found": sparse_found,
+        "grep_found": grep_found,
+        "chunk_recall": chunk_recall,
         "rank_before_rerank": rank_before,
         "rank_after_rerank": rank_after,
         "rerank_improved": rerank_improved,
@@ -165,6 +197,9 @@ def main():
 
     # Print summary
     print(f"\n  correct_chunk_found : {result['correct_chunk_found']}")
+    print(f"  expected_chunks     : {result['expected_chunks']}")
+    print(f"  found_chunks        : {result['found_chunks']}")
+    print(f"  chunk_recall        : {result['chunk_recall']}")
     print(f"  rank_before_rerank  : {result['rank_before_rerank']}")
     print(f"  rank_after_rerank   : {result['rank_after_rerank']}")
     print(f"  rerank_improved     : {result['rerank_improved']}")
