@@ -1,0 +1,21 @@
+{
+  "question": {
+    "q_id": "Q30",
+    "difficulty": "medium",
+    "category": "ambiguous",
+    "question": "How often does TechCorp conduct its compensation-related review cycle?",
+    "expected_keywords": [
+      "annually",
+      "January",
+      "salary review",
+      "February 1st"
+    ],
+    "expected_answer": "TechCorp conducts salary reviews annually, in January. Salary adjustments take effect on February 1st of each year.",
+    "section": "Compensation and Benefits",
+    "subsection": "5.1 Salary",
+    "chunk_index": 12,
+    "chunk_text": "TechCorp conducts salary reviews annually, in January. Salary adjustments resulting from reviews take effect on February 1st of each year."
+  },
+  "model_query": null,
+  "model_answer": ""
+}

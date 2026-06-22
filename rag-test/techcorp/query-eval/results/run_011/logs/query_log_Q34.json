@@ -1,0 +1,17 @@
+{
+  "question": {
+    "q_id": "Q34",
+    "difficulty": "hard",
+    "category": "absent_plausible",
+    "question": "Does TechCorp offer an annual performance bonus or any other variable pay, and if so, how is the amount determined?",
+    "expected_keywords": [],
+    "expected_answer": "The TechCorp handbook does not describe any performance bonus or variable compensation. Section 5 covers salary, equity options, health benefits, and additional stipends, but no bonus structure is mentioned anywhere in the document.",
+    "section": null,
+    "subsection": null,
+    "chunk_index": null,
+    "chunk_text": "Section 5 covers: 5.1 Salary (annual review, market data, performance — no bonus), 5.2 Equity (stock options), 5.3 Health Benefits, 5.4 Additional Benefits (stipends). No performance bonus or variable pay policy exists in this document. A correct RAG response must state that this information is not available.",
+    "precision_note": "Dense retrieval will likely surface chunk 12 (Salary, mentions 'individual performance') and chunk 13 (Equity) as false positives. The word 'performance' also appears in chunk 16 (Performance Reviews). Test measures whether these adjacent chunks trigger a confident but incorrect answer."
+  },
+  "model_query": null,
+  "model_answer": ""
+}

@@ -1,0 +1,391 @@
+{
+  "run_id": "run_009",
+  "timestamp": "2026-06-22T16:51:55.531323",
+  "model": "openai/gpt-oss-120b",
+  "results": [
+    {
+      "q_id": "Q31",
+      "q": {
+        "q_id": "Q31",
+        "difficulty": "hard",
+        "category": "adversarial_paraphrase",
+        "question": "Is there any official guarantee against punishment for staff members who raise concerns about workplace wrongdoing?",
+        "expected_keywords": [
+          "retaliation",
+          "prohibited",
+          "reports harassment",
+          "good faith"
+        ],
+        "expected_answer": "Yes. Retaliation against anyone who reports harassment in good faith is strictly prohibited and is itself a violation of TechCorp's policy.",
+        "section": "Code of Conduct",
+        "subsection": "2.3 Anti-Harassment Policy",
+        "chunk_index": 4,
+        "chunk_text": "Retaliation against anyone who reports harassment in good faith is strictly prohibited and is itself a violation of this policy.",
+        "vocab_gap_note": "Question uses: guarantee/punishment/staff members/raise concerns/workplace wrongdoing. Chunk uses: strictly prohibited/anyone/reports harassment/good faith. Zero direct lexical overlap."
+      },
+      "user_question": "Is there any official guarantee against punishment for staff members who raise concerns about workplace wrongdoing?",
+      "model_answer": "Yes. TechCorp’s anti‑harassment policy states that retaliation against anyone who reports harassment in good faith is strictly prohibited and is itself a violation of the policy. This provides an official guarantee that staff members who raise concerns about harassment will not be punished for doing so. The policy does not explicitly extend the same guarantee to reports of other types of workplace wrongdoing.  \n\nSource: techcorp_company_policies.md (section 2.3 Anti‑Harassment Policy)",
+      "model_query": "official guarantee against punishment for staff members who raise concerns about workplace wrongdoing",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          4
+        ],
+        "found_chunks": [
+          4
+        ],
+        "dense_found": [
+          4
+        ],
+        "sparse_found": [
+          4
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.60735,
+        "correct_chunk_score_rerank": 0.11596,
+        "top1_score_dense": 0.60735,
+        "top1_score_rerank": 0.11596,
+        "pre_rerank_top5": [
+          4,
+          11,
+          3,
+          22,
+          18
+        ],
+        "post_rerank_top5": [
+          4,
+          2,
+          0,
+          18,
+          23
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_007",
+        "category": "adversarial_paraphrase",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          4
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 2,
+        "correct_chunk_score_dense": 0.6108,
+        "correct_chunk_score_rerank": 0.1192,
+        "top1_score_dense": 0.6108,
+        "top1_score_rerank": 0.12507,
+        "pre_rerank_top5": [
+          4,
+          3,
+          11,
+          22,
+          18
+        ],
+        "post_rerank_top5": [
+          2,
+          4,
+          9,
+          18,
+          3
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          4
+        ],
+        "sparse_found": [
+          4
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": -1,
+      "verdict": "improved"
+    },
+    {
+      "q_id": "Q32",
+      "q": {
+        "q_id": "Q32",
+        "difficulty": "hard",
+        "category": "adversarial_paraphrase",
+        "question": "Above what spending level must an employee obtain clearance from their direct superior before committing to the outlay?",
+        "expected_keywords": [
+          "$500",
+          "pre-approval",
+          "manager",
+          "before they are incurred"
+        ],
+        "expected_answer": "Expenses above $500 require pre-approval from the employee's manager before they are incurred.",
+        "section": "Expenses and Reimbursement",
+        "subsection": null,
+        "chunk_index": 21,
+        "chunk_text": "Expenses above $500 require pre-approval from your manager before they are incurred.",
+        "vocab_gap_note": "Question uses: spending level/obtain clearance/direct superior/committing/outlay. Chunk uses: expenses/$500/pre-approval/manager/incurred. Zero direct lexical overlap."
+      },
+      "user_question": "Above what spending level must an employee obtain clearance from their direct superior before committing to the outlay?",
+      "model_answer": "Employees must obtain pre‑approval from their manager for any expense that exceeds **$500** before it is incurred.  \nSource: techcorp_company_policies.md (section 8. Expenses and Reimbursement)",
+      "model_query": "Above what spending level must an employee obtain clearance from their direct superior before committing to the outlay?",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          21
+        ],
+        "found_chunks": [
+          21
+        ],
+        "dense_found": [
+          21
+        ],
+        "sparse_found": [
+          21
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 8,
+        "rank_after_rerank": 1,
+        "rerank_improved": true,
+        "correct_chunk_score_dense": 0.63302,
+        "correct_chunk_score_rerank": 0.20818,
+        "top1_score_dense": 0.57541,
+        "top1_score_rerank": 0.20818,
+        "pre_rerank_top5": [
+          15,
+          6,
+          17,
+          19,
+          18
+        ],
+        "post_rerank_top5": [
+          21,
+          15,
+          17,
+          8,
+          13
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_007",
+        "category": "adversarial_paraphrase",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          21
+        ],
+        "rank_before_rerank": 8,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.63299,
+        "correct_chunk_score_rerank": 0.20818,
+        "top1_score_dense": 0.57539,
+        "top1_score_rerank": 0.20818,
+        "pre_rerank_top5": [
+          15,
+          6,
+          17,
+          19,
+          18
+        ],
+        "post_rerank_top5": [
+          21,
+          15,
+          17,
+          8,
+          13
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          21
+        ],
+        "sparse_found": [
+          21
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q33",
+      "q": {
+        "q_id": "Q33",
+        "difficulty": "hard",
+        "category": "absent_plausible",
+        "question": "What notice period or severance pay does TechCorp provide when it decides to let an employee go?",
+        "expected_keywords": [],
+        "expected_answer": "The TechCorp handbook does not address company-initiated termination, severance pay, or any employer-side notice period. Section 9 covers only voluntary resignation and the offboarding process for employee-initiated departures.",
+        "section": null,
+        "subsection": null,
+        "chunk_index": null,
+        "chunk_text": "Section 9 covers voluntary resignation (9.1) and offboarding (9.2) only. Company-initiated termination, severance pay, and employer-side notice periods are not addressed anywhere in this document. A correct RAG response must state that this information is not available.",
+        "precision_note": "Dense retrieval will likely surface chunks 22 (Resignation) and 23 (Offboarding) with moderate cosine scores (~0.5-0.6). The test measures whether the pipeline avoids a false positive — these adjacent chunks do not answer the question."
+      },
+      "user_question": "What notice period or severance pay does TechCorp provide when it decides to let an employee go?",
+      "model_answer": "The policy document only describes the notice period when an employee **resigns**: you must give at least two weeks’ written notice, and you will be paid through the end of that notice period. It does not contain any information about the notice period or severance pay that TechCorp provides when the company decides to terminate an employee’s employment.  \n\nSource: techcorp_company_policies.md",
+      "model_query": "notice period severance pay TechCorp let employee go",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": false,
+        "expected_chunks": [],
+        "found_chunks": [],
+        "dense_found": [],
+        "sparse_found": [],
+        "grep_found": [],
+        "chunk_recall": null,
+        "rank_before_rerank": null,
+        "rank_after_rerank": null,
+        "rerank_improved": null,
+        "correct_chunk_score_dense": null,
+        "correct_chunk_score_rerank": null,
+        "top1_score_dense": 0.79385,
+        "top1_score_rerank": 0.80317,
+        "pre_rerank_top5": [
+          22,
+          23,
+          2,
+          8,
+          13
+        ],
+        "post_rerank_top5": [
+          22,
+          2,
+          8,
+          13,
+          10
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_007",
+        "category": "absent_plausible",
+        "correct_chunk_found": false,
+        "expected_chunks": [],
+        "rank_before_rerank": null,
+        "rank_after_rerank": null,
+        "correct_chunk_score_dense": null,
+        "correct_chunk_score_rerank": null,
+        "top1_score_dense": 0.83646,
+        "top1_score_rerank": 0.88243,
+        "pre_rerank_top5": [
+          22,
+          11,
+          15,
+          14,
+          10
+        ],
+        "post_rerank_top5": [
+          22,
+          11,
+          13,
+          10,
+          8
+        ],
+        "chunk_recall": null,
+        "dense_found": [],
+        "sparse_found": []
+      },
+      "rank_delta_before": -0.043,
+      "rank_delta_after": -0.079,
+      "verdict": "improved"
+    },
+    {
+      "q_id": "Q34",
+      "q": {
+        "q_id": "Q34",
+        "difficulty": "hard",
+        "category": "absent_plausible",
+        "question": "Does TechCorp offer an annual performance bonus or any other variable pay, and if so, how is the amount determined?",
+        "expected_keywords": [],
+        "expected_answer": "The TechCorp handbook does not describe any performance bonus or variable compensation. Section 5 covers salary, equity options, health benefits, and additional stipends, but no bonus structure is mentioned anywhere in the document.",
+        "section": null,
+        "subsection": null,
+        "chunk_index": null,
+        "chunk_text": "Section 5 covers: 5.1 Salary (annual review, market data, performance — no bonus), 5.2 Equity (stock options), 5.3 Health Benefits, 5.4 Additional Benefits (stipends). No performance bonus or variable pay policy exists in this document. A correct RAG response must state that this information is not available.",
+        "precision_note": "Dense retrieval will likely surface chunk 12 (Salary, mentions 'individual performance') and chunk 13 (Equity) as false positives. The word 'performance' also appears in chunk 16 (Performance Reviews). Test measures whether these adjacent chunks trigger a confident but incorrect answer."
+      },
+      "user_question": "Does TechCorp offer an annual performance bonus or any other variable pay, and if so, how is the amount determined?",
+      "model_answer": "This information was not found in your documents.  \nSource: techcorp_company_policies.md",
+      "model_query": "TechCorp annual performance bonus variable pay amount determined",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": false,
+        "expected_chunks": [],
+        "found_chunks": [],
+        "dense_found": [],
+        "sparse_found": [],
+        "grep_found": [],
+        "chunk_recall": null,
+        "rank_before_rerank": null,
+        "rank_after_rerank": null,
+        "rerank_improved": null,
+        "correct_chunk_score_dense": null,
+        "correct_chunk_score_rerank": null,
+        "top1_score_dense": 0.74703,
+        "top1_score_rerank": 0.3057,
+        "pre_rerank_top5": [
+          12,
+          16,
+          8,
+          17,
+          15
+        ],
+        "post_rerank_top5": [
+          12,
+          15,
+          16,
+          14,
+          1
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_007",
+        "category": "absent_plausible",
+        "correct_chunk_found": false,
+        "expected_chunks": [],
+        "rank_before_rerank": null,
+        "rank_after_rerank": null,
+        "correct_chunk_score_dense": null,
+        "correct_chunk_score_rerank": null,
+        "top1_score_dense": 0.70586,
+        "top1_score_rerank": 0.55881,
+        "pre_rerank_top5": [
+          8,
+          12,
+          15,
+          16,
+          17
+        ],
+        "post_rerank_top5": [
+          12,
+          1,
+          15,
+          16,
+          14
+        ],
+        "chunk_recall": null,
+        "dense_found": [],
+        "sparse_found": []
+      },
+      "rank_delta_before": 0.041,
+      "rank_delta_after": -0.253,
+      "verdict": "worse"
+    }
+  ],
+  "summary": {
+    "model": "openai/gpt-oss-120b",
+    "total": 4,
+    "rag_called": 4,
+    "rag_not_called": 0,
+    "recall_at_5": 1.0,
+    "mrr_pre_rerank": 0.562,
+    "mrr_post_rerank": 1.0,
+    "verdict_counts": {
+      "improved": 2,
+      "same": 1,
+      "worse": 1,
+      "regression": 0,
+      "recovered": 0,
+      "both_missed": 0,
+      "rag_not_called": 0
+    }
+  }
+}

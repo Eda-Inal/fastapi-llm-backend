@@ -1,0 +1,125 @@
+{
+  "run_id": "run_001",
+  "timestamp": "2026-06-22T15:47:27.094505",
+  "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "results": [
+    {
+      "q_id": "Q01",
+      "q": {
+        "q_id": "Q01",
+        "difficulty": "easy",
+        "category": "exact_match",
+        "question": "What must all remote work be conducted over when accessing internal systems?",
+        "expected_keywords": [
+          "VPN",
+          "internal systems",
+          "remote work"
+        ],
+        "expected_answer": "All remote work must be conducted over TechCorp's VPN when accessing internal systems.",
+        "section": "Work Hours and Remote Work",
+        "subsection": "3.2 Remote Work Policy",
+        "chunk_index": 6,
+        "chunk_text": "All remote work must be conducted over TechCorp's VPN when accessing internal systems."
+      },
+      "user_question": "What must all remote work be conducted over when accessing internal systems?",
+      "model_query": "remote work internal systems access requirements",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          6
+        ],
+        "found_chunks": [
+          6
+        ],
+        "dense_found": [
+          6
+        ],
+        "sparse_found": [
+          6
+        ],
+        "grep_found": [
+          6
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.70712,
+        "correct_chunk_score_rerank": 0.77046,
+        "top1_score_dense": 0.70712,
+        "top1_score_rerank": 0.77046,
+        "pre_rerank_top5": [
+          6,
+          18,
+          5,
+          21,
+          23
+        ],
+        "post_rerank_top5": [
+          6,
+          18,
+          5,
+          21,
+          23
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_004",
+        "category": "exact_match",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          6
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.70637,
+        "correct_chunk_score_rerank": 0.63793,
+        "top1_score_dense": 0.70637,
+        "top1_score_rerank": 0.63793,
+        "pre_rerank_top5": [
+          6,
+          18,
+          5,
+          21,
+          19
+        ],
+        "post_rerank_top5": [
+          6,
+          18,
+          5,
+          23,
+          21
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          6
+        ],
+        "sparse_found": [
+          6
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    }
+  ],
+  "summary": {
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "total": 1,
+    "rag_called": 1,
+    "rag_not_called": 0,
+    "recall_at_5": 1.0,
+    "mrr_pre_rerank": 1.0,
+    "mrr_post_rerank": 1.0,
+    "verdict_counts": {
+      "improved": 0,
+      "same": 1,
+      "worse": 0,
+      "regression": 0,
+      "recovered": 0,
+      "both_missed": 0,
+      "rag_not_called": 0
+    }
+  }
+}

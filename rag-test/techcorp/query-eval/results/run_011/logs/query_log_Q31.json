@@ -1,0 +1,22 @@
+{
+  "question": {
+    "q_id": "Q31",
+    "difficulty": "hard",
+    "category": "adversarial_paraphrase",
+    "question": "Is there any official guarantee against punishment for staff members who raise concerns about workplace wrongdoing?",
+    "expected_keywords": [
+      "retaliation",
+      "prohibited",
+      "reports harassment",
+      "good faith"
+    ],
+    "expected_answer": "Yes. Retaliation against anyone who reports harassment in good faith is strictly prohibited and is itself a violation of TechCorp's policy.",
+    "section": "Code of Conduct",
+    "subsection": "2.3 Anti-Harassment Policy",
+    "chunk_index": 4,
+    "chunk_text": "Retaliation against anyone who reports harassment in good faith is strictly prohibited and is itself a violation of this policy.",
+    "vocab_gap_note": "Question uses: guarantee/punishment/staff members/raise concerns/workplace wrongdoing. Chunk uses: strictly prohibited/anyone/reports harassment/good faith. Zero direct lexical overlap."
+  },
+  "model_query": null,
+  "model_answer": ""
+}

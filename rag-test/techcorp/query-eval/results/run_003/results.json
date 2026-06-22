@@ -1,0 +1,86 @@
+{
+  "run_id": "run_003",
+  "timestamp": "2026-06-22T16:11:35.757427",
+  "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+  "results": [
+    {
+      "q_id": "Q01",
+      "q": {
+        "q_id": "Q01",
+        "difficulty": "easy",
+        "category": "exact_match",
+        "question": "What must all remote work be conducted over when accessing internal systems?",
+        "expected_keywords": [
+          "VPN",
+          "internal systems",
+          "remote work"
+        ],
+        "expected_answer": "All remote work must be conducted over TechCorp's VPN when accessing internal systems.",
+        "section": "Work Hours and Remote Work",
+        "subsection": "3.2 Remote Work Policy",
+        "chunk_index": 6,
+        "chunk_text": "All remote work must be conducted over TechCorp's VPN when accessing internal systems."
+      },
+      "user_question": "What must all remote work be conducted over when accessing internal systems?",
+      "model_query": null,
+      "rag_not_called": true,
+      "model_query_retrieval": {},
+      "baseline_retrieval": {
+        "source_run": "run_004",
+        "category": "exact_match",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          6
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.70637,
+        "correct_chunk_score_rerank": 0.63793,
+        "top1_score_dense": 0.70637,
+        "top1_score_rerank": 0.63793,
+        "pre_rerank_top5": [
+          6,
+          18,
+          5,
+          21,
+          19
+        ],
+        "post_rerank_top5": [
+          6,
+          18,
+          5,
+          23,
+          21
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          6
+        ],
+        "sparse_found": [
+          6
+        ]
+      },
+      "rank_delta_before": null,
+      "rank_delta_after": null,
+      "verdict": "rag_not_called"
+    }
+  ],
+  "summary": {
+    "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+    "total": 1,
+    "rag_called": 0,
+    "rag_not_called": 1,
+    "recall_at_5": null,
+    "mrr_pre_rerank": null,
+    "mrr_post_rerank": null,
+    "verdict_counts": {
+      "improved": 0,
+      "same": 0,
+      "worse": 0,
+      "regression": 0,
+      "recovered": 0,
+      "both_missed": 0,
+      "rag_not_called": 1
+    }
+  }
+}

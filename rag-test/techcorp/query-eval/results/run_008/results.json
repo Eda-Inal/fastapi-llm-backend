@@ -1,0 +1,1063 @@
+{
+  "run_id": "run_008",
+  "timestamp": "2026-06-22T16:40:20.568322",
+  "model": "openai/gpt-oss-120b",
+  "results": [
+    {
+      "q_id": "Q21",
+      "q": {
+        "q_id": "Q21",
+        "difficulty": "medium",
+        "category": "multi_chunk",
+        "question": "What happens to an employee's stock options both during and after their employment ends at TechCorp?",
+        "expected_keywords": [
+          "unvested",
+          "forfeited",
+          "90 days",
+          "expire",
+          "vested options"
+        ],
+        "expected_answer": "Unvested options are forfeited when an employee leaves. Employees have 90 days after their last day to exercise vested options, after which unexercised options expire.",
+        "section": "Compensation and Benefits + Leaving TechCorp",
+        "subsection": "5.2 Equity + 9.2 Offboarding",
+        "chunk_index": [
+          13,
+          23
+        ],
+        "chunk_text": "Chunk 13: 'If you leave TechCorp before your options have fully vested, you forfeit the unvested portion. You will have 90 days following your last day of employment to exercise any vested options.' Chunk 23: offboarding session, final paycheck, vested equity info."
+      },
+      "user_question": "What happens to an employee's stock options both during and after their employment ends at TechCorp?",
+      "model_answer": "TechCorp grants full‑time employees stock options that vest over four years with a one‑year cliff (25 % after the first year, then monthly vesting).  \n\n*During employment* – options continue to vest according to that schedule.  \n\n*If you leave the company* – any options that have not yet vested are forfeited. You may keep any options that have already vested, but you must exercise them within 90 days after your last day; otherwise they expire.  \n\nSource: techcorp_company_policies.md (section 5.2 Equity)",
+      "model_query": "employee stock options during after employment ends TechCorp",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          13,
+          23
+        ],
+        "found_chunks": [
+          13,
+          23
+        ],
+        "dense_found": [
+          13,
+          23
+        ],
+        "sparse_found": [
+          13,
+          23
+        ],
+        "grep_found": [
+          13
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.84815,
+        "correct_chunk_score_rerank": 0.83114,
+        "top1_score_dense": 0.84815,
+        "top1_score_rerank": 0.83114,
+        "pre_rerank_top5": [
+          13,
+          15,
+          22,
+          23,
+          11
+        ],
+        "post_rerank_top5": [
+          13,
+          23,
+          22,
+          2,
+          15
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_006",
+        "category": "multi_chunk",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          13,
+          23
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.85326,
+        "correct_chunk_score_rerank": 0.79819,
+        "top1_score_dense": 0.85326,
+        "top1_score_rerank": 0.79819,
+        "pre_rerank_top5": [
+          13,
+          22,
+          15,
+          23,
+          7
+        ],
+        "post_rerank_top5": [
+          13,
+          23,
+          22,
+          1,
+          15
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          13,
+          23
+        ],
+        "sparse_found": [
+          13,
+          23
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q22",
+      "q": {
+        "q_id": "Q22",
+        "difficulty": "medium",
+        "category": "multi_chunk",
+        "question": "What security-related obligations must a remote employee fulfill when working from home?",
+        "expected_keywords": [
+          "VPN",
+          "home network",
+          "TechCorp-issued laptop",
+          "security"
+        ],
+        "expected_answer": "Remote employees must use TechCorp's VPN when accessing internal systems, ensure their home network is secure, and use a TechCorp-issued laptop for work involving internal systems or customer data.",
+        "section": "Work Hours and Remote Work + Security and Data Privacy",
+        "subsection": "3.2 Remote Work Policy + 7.1 Device and Account Security",
+        "chunk_index": [
+          6,
+          18
+        ],
+        "chunk_text": "Chunk 6: 'All remote work must be conducted over TechCorp's VPN when accessing internal systems.' Chunk 18: 'All employees must use a TechCorp-issued laptop for work that involves accessing internal systems, customer data, or source code.'"
+      },
+      "user_question": "What security-related obligations must a remote employee fulfill when working from home?",
+      "model_answer": "When working from home, a TechCorp remote employee must:\n\n* Keep the home network secure and use TechCorp’s VPN for any access to internal systems.  \n* Use only a TechCorp‑issued laptop for work that involves internal systems, customer data, or source code; personal devices may be used only for email and calendar.  \n* Enable full‑disk encryption on the laptop.  \n* Use a strong, unique password for the TechCorp account and enable two‑factor authentication (2FA).  \n* Never share credentials with anyone, including IT staff.  \n* Report a lost or stolen device immediately to the IT Security team (security@techcorp.com) so it can be remotely wiped.  \n* Handle any customer data in accordance with GDPR, CCPA, and other applicable regulations and report any suspected breach or unauthorized access to the Security team within one hour.  \n\nSource: techcorp_company_policies.md",
+      "model_query": "security-related obligations remote employee fulfill working from home",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          6,
+          18
+        ],
+        "found_chunks": [
+          6,
+          18
+        ],
+        "dense_found": [
+          6,
+          18
+        ],
+        "sparse_found": [
+          6,
+          18
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.75019,
+        "correct_chunk_score_rerank": 0.66801,
+        "top1_score_dense": 0.75019,
+        "top1_score_rerank": 0.66801,
+        "pre_rerank_top5": [
+          6,
+          18,
+          5,
+          15,
+          23
+        ],
+        "post_rerank_top5": [
+          6,
+          18,
+          20,
+          23,
+          5
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_006",
+        "category": "multi_chunk",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          6,
+          18
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.74922,
+        "correct_chunk_score_rerank": 0.66367,
+        "top1_score_dense": 0.74922,
+        "top1_score_rerank": 0.66367,
+        "pre_rerank_top5": [
+          6,
+          18,
+          15,
+          5,
+          20
+        ],
+        "post_rerank_top5": [
+          6,
+          18,
+          23,
+          9,
+          2
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          6,
+          18
+        ],
+        "sparse_found": [
+          6,
+          18
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q23",
+      "q": {
+        "q_id": "Q23",
+        "difficulty": "medium",
+        "category": "multi_chunk",
+        "question": "What are the combined leave entitlements for an employee who is both ill and recently became a parent?",
+        "expected_keywords": [
+          "unlimited",
+          "sick days",
+          "16 weeks",
+          "parental leave",
+          "12 months"
+        ],
+        "expected_answer": "Sick days are unlimited and separate from PTO. Parental leave is 16 weeks of fully paid leave, available at any point within the first 12 months after birth, adoption, or foster placement.",
+        "section": "Time Off and Leave",
+        "subsection": "4.2 Sick Leave + 4.3 Parental Leave",
+        "chunk_index": [
+          9,
+          10
+        ],
+        "chunk_text": "Chunk 9: 'Sick days are separate and unlimited.' Chunk 10: 'TechCorp provides 16 weeks of fully paid parental leave for all new parents.'"
+      },
+      "user_question": "What are the combined leave entitlements for an employee who is both ill and recently became a parent?",
+      "model_answer": "TechCorp’s policy lets an employee who is both ill and a new parent use **both** types of leave:\n\n* **Parental leave:** 16 weeks of fully‑paid leave that can be taken any time within the first 12 months after the birth, adoption or foster placement of a child.  \n* **Sick leave:** Unlimited sick days that are separate from PTO; no doctor’s note is required for absences under five consecutive days, and mental‑health days are treated the same way.\n\nThus, an employee can take as many sick days as needed — with no set limit — and also receive the full 16 weeks of paid parental leave.\n\n**Source:** techcorp_company_policies.md (sections 4.3 Parental Leave and 4.2 Sick Leave)",
+      "model_query": "combined leave entitlements employee ill recently became a parent",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          9,
+          10
+        ],
+        "found_chunks": [
+          9,
+          10
+        ],
+        "dense_found": [
+          9,
+          10
+        ],
+        "sparse_found": [
+          9,
+          10
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 2,
+        "rank_after_rerank": 1,
+        "rerank_improved": true,
+        "correct_chunk_score_dense": 0.71307,
+        "correct_chunk_score_rerank": 0.13753,
+        "top1_score_dense": 0.64316,
+        "top1_score_rerank": 0.13753,
+        "pre_rerank_top5": [
+          11,
+          10,
+          9,
+          8,
+          13
+        ],
+        "post_rerank_top5": [
+          10,
+          11,
+          9,
+          8,
+          15
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_006",
+        "category": "multi_chunk",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          9,
+          10
+        ],
+        "rank_before_rerank": 2,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.68502,
+        "correct_chunk_score_rerank": 0.25238,
+        "top1_score_dense": 0.63236,
+        "top1_score_rerank": 0.25238,
+        "pre_rerank_top5": [
+          11,
+          10,
+          9,
+          8,
+          13
+        ],
+        "post_rerank_top5": [
+          10,
+          11,
+          9,
+          8,
+          14
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          9,
+          10
+        ],
+        "sparse_found": [
+          9,
+          10
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q24",
+      "q": {
+        "q_id": "Q24",
+        "difficulty": "medium",
+        "category": "inference",
+        "question": "Can a TechCorp employee choose to work from a co-working space instead of their home?",
+        "expected_keywords": [
+          "any location",
+          "their choosing",
+          "remote",
+          "conditions"
+        ],
+        "expected_answer": "Yes. TechCorp allows employees to work from any location of their choosing, provided they meet the connectivity, security, and availability requirements.",
+        "section": "Work Hours and Remote Work",
+        "subsection": "3.2 Remote Work Policy",
+        "chunk_index": 6,
+        "chunk_text": "All employees are allowed to work from home or any location of their choosing, provided they meet the following conditions."
+      },
+      "user_question": "Can a TechCorp employee choose to work from a co-working space instead of their home?",
+      "model_answer": "Yes. TechCorp’s remote‑first policy states that employees may work “from home or any location of their choosing,” as long as they have a reliable internet connection, are reachable during core hours, have a dedicated, distraction‑free workspace, and use the company VPN for internal systems. A co‑working space satisfies those conditions, so an employee can choose to work there instead of at home.  \n\nSource: techcorp_company_policies.md (section 3.2 Remote Work Policy)",
+      "model_query": "Can a TechCorp employee choose to work from a co-working space instead of their home",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          6
+        ],
+        "found_chunks": [
+          6
+        ],
+        "dense_found": [
+          6
+        ],
+        "sparse_found": [
+          6
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 3,
+        "rank_after_rerank": 1,
+        "rerank_improved": true,
+        "correct_chunk_score_dense": 0.80449,
+        "correct_chunk_score_rerank": 0.86247,
+        "top1_score_dense": 0.69236,
+        "top1_score_rerank": 0.86247,
+        "pre_rerank_top5": [
+          2,
+          23,
+          6,
+          15,
+          5
+        ],
+        "post_rerank_top5": [
+          6,
+          15,
+          5,
+          1,
+          7
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_006",
+        "category": "inference",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          6
+        ],
+        "rank_before_rerank": 3,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.81157,
+        "correct_chunk_score_rerank": 0.83441,
+        "top1_score_dense": 0.69432,
+        "top1_score_rerank": 0.83441,
+        "pre_rerank_top5": [
+          2,
+          23,
+          6,
+          15,
+          5
+        ],
+        "post_rerank_top5": [
+          6,
+          5,
+          15,
+          1,
+          7
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          6
+        ],
+        "sparse_found": [
+          6
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q25",
+      "q": {
+        "q_id": "Q25",
+        "difficulty": "medium",
+        "category": "inference",
+        "question": "Is taking time off considered optional or essential at TechCorp?",
+        "expected_keywords": [
+          "not optional",
+          "essential",
+          "sustainable performance",
+          "20 days"
+        ],
+        "expected_answer": "Taking time off is not optional at TechCorp. Rest is considered essential to sustainable performance, and employees are encouraged to take at least 20 days off per year.",
+        "section": "Time Off and Leave",
+        "subsection": "4.1 Paid Time Off",
+        "chunk_index": 8,
+        "chunk_text": "Taking time off is not optional — rest is considered essential to sustainable performance."
+      },
+      "user_question": "Is taking time off considered optional or essential at TechCorp?",
+      "model_answer": "Taking time off is not optional at TechCorp; rest is considered essential to sustainable performance. Source: techcorp_company_policies.md (section 4.1 Paid Time Off)",
+      "model_query": "taking time off optional essential TechCorp",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          8
+        ],
+        "found_chunks": [
+          8
+        ],
+        "dense_found": [
+          8
+        ],
+        "sparse_found": [
+          8
+        ],
+        "grep_found": [
+          8
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.80028,
+        "correct_chunk_score_rerank": 0.84286,
+        "top1_score_dense": 0.80028,
+        "top1_score_rerank": 0.84286,
+        "pre_rerank_top5": [
+          8,
+          13,
+          5,
+          23,
+          7
+        ],
+        "post_rerank_top5": [
+          8,
+          10,
+          22,
+          7,
+          11
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_006",
+        "category": "inference",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          8
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.86202,
+        "correct_chunk_score_rerank": 0.88243,
+        "top1_score_dense": 0.86202,
+        "top1_score_rerank": 0.88243,
+        "pre_rerank_top5": [
+          8,
+          5,
+          7,
+          13,
+          1
+        ],
+        "post_rerank_top5": [
+          8,
+          7,
+          10,
+          11,
+          22
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          8
+        ],
+        "sparse_found": [
+          8
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q26",
+      "q": {
+        "q_id": "Q26",
+        "difficulty": "medium",
+        "category": "inference",
+        "question": "Does disclosing a conflict of interest mean an employee has acted wrongfully?",
+        "expected_keywords": [
+          "does not automatically",
+          "something wrong",
+          "managed",
+          "disclosed"
+        ],
+        "expected_answer": "No. Disclosing a conflict of interest does not automatically mean the employee has done something wrong. Many conflicts can be managed appropriately once disclosed.",
+        "section": "Code of Conduct",
+        "subsection": "2.2 Conflicts of Interest",
+        "chunk_index": 3,
+        "chunk_text": "Disclosing a conflict of interest does not automatically mean you have done something wrong. Many conflicts can be managed appropriately once they are disclosed."
+      },
+      "user_question": "Does disclosing a conflict of interest mean an employee has acted wrongfully?",
+      "model_answer": "Disclosing a conflict of interest does **not** automatically mean an employee has done something wrong. The policy states that many conflicts can be managed appropriately once they are disclosed, and the issue is with failing to disclose, which is a serious violation.  \n\n**Source:** techcorp_company_policies.md (section 2.2 Conflicts of Interest)",
+      "model_query": "Does disclosing a conflict of interest mean an employee has acted wrongfully?",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          3
+        ],
+        "found_chunks": [
+          3
+        ],
+        "dense_found": [
+          3
+        ],
+        "sparse_found": [
+          3
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.72794,
+        "correct_chunk_score_rerank": 0.63793,
+        "top1_score_dense": 0.72794,
+        "top1_score_rerank": 0.63793,
+        "pre_rerank_top5": [
+          3,
+          2,
+          23,
+          13,
+          11
+        ],
+        "post_rerank_top5": [
+          3,
+          2,
+          23,
+          6,
+          9
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_006",
+        "category": "inference",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          3
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.72794,
+        "correct_chunk_score_rerank": 0.63793,
+        "top1_score_dense": 0.72794,
+        "top1_score_rerank": 0.63793,
+        "pre_rerank_top5": [
+          3,
+          2,
+          23,
+          13,
+          11
+        ],
+        "post_rerank_top5": [
+          3,
+          2,
+          23,
+          6,
+          9
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          3
+        ],
+        "sparse_found": [
+          3
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q27",
+      "q": {
+        "q_id": "Q27",
+        "difficulty": "medium",
+        "category": "negation",
+        "question": "In what situation is an employee not required to submit a doctor's note for sick leave?",
+        "expected_keywords": [
+          "doctor's note",
+          "not required",
+          "five consecutive days"
+        ],
+        "expected_answer": "Employees are not required to provide a doctor's note for absences of fewer than five consecutive days.",
+        "section": "Time Off and Leave",
+        "subsection": "4.2 Sick Leave",
+        "chunk_index": 9,
+        "chunk_text": "You are not required to provide a doctor's note for absences of fewer than five consecutive days."
+      },
+      "user_question": "In what situation is an employee not required to submit a doctor's note for sick leave?",
+      "model_answer": "Employees are not required to provide a doctor’s note for sick‑leave absences that are **fewer than five consecutive days**. For illnesses lasting more than five consecutive days, they must notify People Operations so that appropriate support and documentation can be arranged.  \n\nSource: techcorp_company_policies.md (section 4.2 Sick Leave)",
+      "model_query": "employee not required to submit a doctor's note for sick leave situation",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          9
+        ],
+        "found_chunks": [
+          9
+        ],
+        "dense_found": [
+          9
+        ],
+        "sparse_found": [
+          9
+        ],
+        "grep_found": [
+          9
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.75569,
+        "correct_chunk_score_rerank": 0.76769,
+        "top1_score_dense": 0.75569,
+        "top1_score_rerank": 0.76769,
+        "pre_rerank_top5": [
+          9,
+          8,
+          11,
+          23,
+          21
+        ],
+        "post_rerank_top5": [
+          9,
+          8,
+          11,
+          21,
+          15
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_006",
+        "category": "negation",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          9
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.75152,
+        "correct_chunk_score_rerank": 0.71622,
+        "top1_score_dense": 0.75152,
+        "top1_score_rerank": 0.71622,
+        "pre_rerank_top5": [
+          9,
+          8,
+          11,
+          23,
+          21
+        ],
+        "post_rerank_top5": [
+          9,
+          8,
+          11,
+          10,
+          21
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          9
+        ],
+        "sparse_found": [
+          9
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q28",
+      "q": {
+        "q_id": "Q28",
+        "difficulty": "medium",
+        "category": "negation",
+        "question": "What information will the IT team never ask an employee to provide?",
+        "expected_keywords": [
+          "password",
+          "never",
+          "IT team",
+          "credentials"
+        ],
+        "expected_answer": "The IT team will never ask for an employee's password. Employees must not share their credentials with anyone, including members of the IT team.",
+        "section": "Security and Data Privacy",
+        "subsection": "7.1 Device and Account Security",
+        "chunk_index": 18,
+        "chunk_text": "Do not share your credentials with anyone, including members of the IT team. The IT team will never ask for your password."
+      },
+      "user_question": "What information will the IT team never ask an employee to provide?",
+      "model_answer": "The IT team will never ask an employee for their password.  \nSource: techcorp_company_policies.md",
+      "model_query": "What information will the IT team never ask an employee to provide",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          18
+        ],
+        "found_chunks": [
+          18
+        ],
+        "dense_found": [
+          18
+        ],
+        "sparse_found": [
+          18
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 3,
+        "rank_after_rerank": 1,
+        "rerank_improved": true,
+        "correct_chunk_score_dense": 0.59841,
+        "correct_chunk_score_rerank": 0.7773,
+        "top1_score_dense": 0.634,
+        "top1_score_rerank": 0.7773,
+        "pre_rerank_top5": [
+          19,
+          2,
+          18,
+          6,
+          1
+        ],
+        "post_rerank_top5": [
+          18,
+          2,
+          23,
+          19,
+          4
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_006",
+        "category": "negation",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          18
+        ],
+        "rank_before_rerank": 3,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.61031,
+        "correct_chunk_score_rerank": 0.80317,
+        "top1_score_dense": 0.63562,
+        "top1_score_rerank": 0.80317,
+        "pre_rerank_top5": [
+          19,
+          2,
+          18,
+          6,
+          1
+        ],
+        "post_rerank_top5": [
+          18,
+          2,
+          23,
+          19,
+          4
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          18
+        ],
+        "sparse_found": [
+          18
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q29",
+      "q": {
+        "q_id": "Q29",
+        "difficulty": "medium",
+        "category": "ambiguous",
+        "question": "How much money does TechCorp allocate per employee annually for career-related growth?",
+        "expected_keywords": [
+          "$2,000",
+          "professional development",
+          "per year"
+        ],
+        "expected_answer": "TechCorp provides a professional development budget of $2,000 USD per employee per year, which can be used for conferences, courses, books, certifications, or other relevant learning activities.",
+        "section": "Compensation and Benefits",
+        "subsection": "5.4 Additional Benefits",
+        "chunk_index": 15,
+        "chunk_text": "TechCorp also offers a professional development budget of $2,000 USD per employee per year."
+      },
+      "user_question": "How much money does TechCorp allocate per employee annually for career-related growth?",
+      "model_answer": "TechCorp allocates a professional development budget of **$2,000 USD per employee per year** for career‑related growth.  \nSource: techcorp_company_policies.md (section 5.4 Additional Benefits)",
+      "model_query": "TechCorp allocate per employee annually career-related growth money",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          15
+        ],
+        "found_chunks": [
+          15
+        ],
+        "dense_found": [
+          15
+        ],
+        "sparse_found": [
+          15
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.78887,
+        "correct_chunk_score_rerank": 0.56554,
+        "top1_score_dense": 0.78887,
+        "top1_score_rerank": 0.56554,
+        "pre_rerank_top5": [
+          15,
+          16,
+          1,
+          12,
+          14
+        ],
+        "post_rerank_top5": [
+          15,
+          12,
+          14,
+          1,
+          16
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_006",
+        "category": "ambiguous",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          15
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.79147,
+        "correct_chunk_score_rerank": 0.66017,
+        "top1_score_dense": 0.79147,
+        "top1_score_rerank": 0.66017,
+        "pre_rerank_top5": [
+          15,
+          16,
+          1,
+          14,
+          12
+        ],
+        "post_rerank_top5": [
+          15,
+          14,
+          12,
+          13,
+          7
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          15
+        ],
+        "sparse_found": [
+          15
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q30",
+      "q": {
+        "q_id": "Q30",
+        "difficulty": "medium",
+        "category": "ambiguous",
+        "question": "How often does TechCorp conduct its compensation-related review cycle?",
+        "expected_keywords": [
+          "annually",
+          "January",
+          "salary review",
+          "February 1st"
+        ],
+        "expected_answer": "TechCorp conducts salary reviews annually, in January. Salary adjustments take effect on February 1st of each year.",
+        "section": "Compensation and Benefits",
+        "subsection": "5.1 Salary",
+        "chunk_index": 12,
+        "chunk_text": "TechCorp conducts salary reviews annually, in January. Salary adjustments resulting from reviews take effect on February 1st of each year."
+      },
+      "user_question": "How often does TechCorp conduct its compensation-related review cycle?",
+      "model_answer": "TechCorp conducts its salary (compensation) reviews once a year, in January.   \nSource: techcorp_company_policies.md (section 5.1 Salary)",
+      "model_query": "How often does TechCorp conduct its compensation-related review cycle",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          12
+        ],
+        "found_chunks": [
+          12
+        ],
+        "dense_found": [
+          12
+        ],
+        "sparse_found": [
+          12
+        ],
+        "grep_found": [
+          12
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.78845,
+        "correct_chunk_score_rerank": 0.85777,
+        "top1_score_dense": 0.78845,
+        "top1_score_rerank": 0.85777,
+        "pre_rerank_top5": [
+          12,
+          16,
+          7,
+          1,
+          8
+        ],
+        "post_rerank_top5": [
+          12,
+          16,
+          1,
+          17,
+          7
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_006",
+        "category": "ambiguous",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          12
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.79568,
+        "correct_chunk_score_rerank": 0.8808,
+        "top1_score_dense": 0.79568,
+        "top1_score_rerank": 0.8808,
+        "pre_rerank_top5": [
+          12,
+          16,
+          7,
+          1,
+          15
+        ],
+        "post_rerank_top5": [
+          12,
+          16,
+          1,
+          17,
+          7
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          12
+        ],
+        "sparse_found": [
+          12
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    }
+  ],
+  "summary": {
+    "model": "openai/gpt-oss-120b",
+    "total": 10,
+    "rag_called": 10,
+    "rag_not_called": 0,
+    "recall_at_5": 1.0,
+    "mrr_pre_rerank": 0.817,
+    "mrr_post_rerank": 1.0,
+    "verdict_counts": {
+      "improved": 0,
+      "same": 10,
+      "worse": 0,
+      "regression": 0,
+      "recovered": 0,
+      "both_missed": 0,
+      "rag_not_called": 0
+    }
+  }
+}

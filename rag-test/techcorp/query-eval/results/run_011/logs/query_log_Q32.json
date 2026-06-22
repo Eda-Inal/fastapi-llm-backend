@@ -1,0 +1,22 @@
+{
+  "question": {
+    "q_id": "Q32",
+    "difficulty": "hard",
+    "category": "adversarial_paraphrase",
+    "question": "Above what spending level must an employee obtain clearance from their direct superior before committing to the outlay?",
+    "expected_keywords": [
+      "$500",
+      "pre-approval",
+      "manager",
+      "before they are incurred"
+    ],
+    "expected_answer": "Expenses above $500 require pre-approval from the employee's manager before they are incurred.",
+    "section": "Expenses and Reimbursement",
+    "subsection": null,
+    "chunk_index": 21,
+    "chunk_text": "Expenses above $500 require pre-approval from your manager before they are incurred.",
+    "vocab_gap_note": "Question uses: spending level/obtain clearance/direct superior/committing/outlay. Chunk uses: expenses/$500/pre-approval/manager/incurred. Zero direct lexical overlap."
+  },
+  "model_query": null,
+  "model_answer": ""
+}

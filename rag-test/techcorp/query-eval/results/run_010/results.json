@@ -1,0 +1,2032 @@
+{
+  "run_id": "run_010",
+  "timestamp": "2026-06-22T16:58:18.811746",
+  "model": "llama-3.3-70b-versatile",
+  "results": [
+    {
+      "q_id": "Q01",
+      "q": {
+        "q_id": "Q01",
+        "difficulty": "easy",
+        "category": "exact_match",
+        "question": "What must all remote work be conducted over when accessing internal systems?",
+        "expected_keywords": [
+          "VPN",
+          "internal systems",
+          "remote work"
+        ],
+        "expected_answer": "All remote work must be conducted over TechCorp's VPN when accessing internal systems.",
+        "section": "Work Hours and Remote Work",
+        "subsection": "3.2 Remote Work Policy",
+        "chunk_index": 6,
+        "chunk_text": "All remote work must be conducted over TechCorp's VPN when accessing internal systems."
+      },
+      "user_question": "What must all remote work be conducted over when accessing internal systems?",
+      "model_answer": "All remote work must be conducted over TechCorp's VPN when accessing internal systems.\nSource: techcorp_company_policies.md (section 3.2 Remote Work Policy), uploaded 2026-06-19",
+      "model_query": "remote work internal systems access",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          6
+        ],
+        "found_chunks": [
+          6
+        ],
+        "dense_found": [
+          6
+        ],
+        "sparse_found": [
+          6
+        ],
+        "grep_found": [
+          6
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.68761,
+        "correct_chunk_score_rerank": 0.71938,
+        "top1_score_dense": 0.68761,
+        "top1_score_rerank": 0.71938,
+        "pre_rerank_top5": [
+          6,
+          18,
+          5,
+          21,
+          19
+        ],
+        "post_rerank_top5": [
+          6,
+          18,
+          5,
+          21,
+          19
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_004",
+        "category": "exact_match",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          6
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.70637,
+        "correct_chunk_score_rerank": 0.63793,
+        "top1_score_dense": 0.70637,
+        "top1_score_rerank": 0.63793,
+        "pre_rerank_top5": [
+          6,
+          18,
+          5,
+          21,
+          19
+        ],
+        "post_rerank_top5": [
+          6,
+          18,
+          5,
+          23,
+          21
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          6
+        ],
+        "sparse_found": [
+          6
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q02",
+      "q": {
+        "q_id": "Q02",
+        "difficulty": "easy",
+        "category": "exact_match",
+        "question": "Within how many days must business expenses be submitted through the expense management system?",
+        "expected_keywords": [
+          "30 days",
+          "expense",
+          "submitted"
+        ],
+        "expected_answer": "All business expenses must be submitted within 30 days of the expense being incurred.",
+        "section": "Expenses and Reimbursement",
+        "chunk_index": 21,
+        "chunk_text": "All business expenses must be submitted through the expense management system within 30 days of the expense being incurred."
+      },
+      "user_question": "Within how many days must business expenses be submitted through the expense management system?",
+      "model_answer": "Business expenses must be submitted through the expense management system within 30 days of the expense being incurred.\nSource: techcorp_company_policies.md (section 8. Expenses and Reimbursement), uploaded 2026-06-19",
+      "model_query": "business expenses submission deadline through expense management system",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          21
+        ],
+        "found_chunks": [
+          21
+        ],
+        "dense_found": [
+          21
+        ],
+        "sparse_found": [
+          21
+        ],
+        "grep_found": [
+          21
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.76332,
+        "correct_chunk_score_rerank": 0.79819,
+        "top1_score_dense": 0.76332,
+        "top1_score_rerank": 0.79819,
+        "pre_rerank_top5": [
+          21,
+          8,
+          15,
+          5,
+          3
+        ],
+        "post_rerank_top5": [
+          21,
+          15,
+          8,
+          22,
+          23
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_004",
+        "category": "exact_match",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          21
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.79202,
+        "correct_chunk_score_rerank": 0.82104,
+        "top1_score_dense": 0.79202,
+        "top1_score_rerank": 0.82104,
+        "pre_rerank_top5": [
+          21,
+          6,
+          8,
+          15,
+          11
+        ],
+        "post_rerank_top5": [
+          21,
+          15,
+          8,
+          9,
+          23
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          21
+        ],
+        "sparse_found": [
+          21
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q03",
+      "q": {
+        "q_id": "Q03",
+        "difficulty": "easy",
+        "category": "exact_match",
+        "question": "How much notice must an employee provide in writing before resigning?",
+        "expected_keywords": [
+          "two weeks",
+          "written notice",
+          "manager"
+        ],
+        "expected_answer": "Employees must provide at least two weeks written notice to their manager before resigning.",
+        "section": "Leaving TechCorp",
+        "subsection": "9.1 Resignation",
+        "chunk_index": 22,
+        "chunk_text": "If you decide to leave TechCorp, please provide at least two weeks written notice to your manager."
+      },
+      "user_question": "How much notice must an employee provide in writing before resigning?",
+      "model_answer": "At least two weeks written notice must be provided by an employee before resigning.\nSource: techcorp_company_policies.md (section 9.1 Resignation), uploaded 2026-06-19",
+      "model_query": "employee notice period in writing before resigning",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          22
+        ],
+        "found_chunks": [
+          22
+        ],
+        "dense_found": [
+          22
+        ],
+        "sparse_found": [
+          22
+        ],
+        "grep_found": [
+          22
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.70572,
+        "correct_chunk_score_rerank": 0.60393,
+        "top1_score_dense": 0.70572,
+        "top1_score_rerank": 0.60393,
+        "pre_rerank_top5": [
+          22,
+          8,
+          13,
+          11,
+          23
+        ],
+        "post_rerank_top5": [
+          22,
+          9,
+          2,
+          23,
+          8
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_004",
+        "category": "exact_match",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          22
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.70428,
+        "correct_chunk_score_rerank": 0.60999,
+        "top1_score_dense": 0.70428,
+        "top1_score_rerank": 0.60999,
+        "pre_rerank_top5": [
+          22,
+          11,
+          6,
+          9,
+          2
+        ],
+        "post_rerank_top5": [
+          22,
+          9,
+          6,
+          2,
+          8
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          22
+        ],
+        "sparse_found": [
+          22
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q04",
+      "q": {
+        "q_id": "Q04",
+        "difficulty": "easy",
+        "category": "named_entity",
+        "question": "What is the email address employees should contact if their device is lost or stolen?",
+        "expected_keywords": [
+          "security@techcorp.com",
+          "lost",
+          "stolen"
+        ],
+        "expected_answer": "If a device is lost or stolen, employees must report it immediately to the IT Security team at security@techcorp.com.",
+        "section": "Security and Data Privacy",
+        "subsection": "7.1 Device and Account Security",
+        "chunk_index": 18,
+        "chunk_text": "If your device is lost or stolen, report it to the IT Security team immediately at security@techcorp.com."
+      },
+      "user_question": "What is the email address employees should contact if their device is lost or stolen?",
+      "model_answer": "The email address employees should contact if their device is lost or stolen is security@techcorp.com.\nSource: techcorp_company_policies.md (section 7.1 Device and Account Security)",
+      "model_query": "email address for lost or stolen device",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          18
+        ],
+        "found_chunks": [
+          18
+        ],
+        "dense_found": [
+          18
+        ],
+        "sparse_found": [
+          18
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.57055,
+        "correct_chunk_score_rerank": 0.32082,
+        "top1_score_dense": 0.57055,
+        "top1_score_rerank": 0.32082,
+        "pre_rerank_top5": [
+          18,
+          23,
+          20,
+          4,
+          21
+        ],
+        "post_rerank_top5": [
+          18,
+          23,
+          20,
+          19,
+          2
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_004",
+        "category": "named_entity",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          18
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.65935,
+        "correct_chunk_score_rerank": 0.53753,
+        "top1_score_dense": 0.65935,
+        "top1_score_rerank": 0.53753,
+        "pre_rerank_top5": [
+          18,
+          23,
+          1,
+          6,
+          15
+        ],
+        "post_rerank_top5": [
+          18,
+          23,
+          19,
+          2,
+          4
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          18
+        ],
+        "sparse_found": [
+          18
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q05",
+      "q": {
+        "q_id": "Q05",
+        "difficulty": "easy",
+        "category": "named_entity",
+        "question": "What is the home office stipend amount provided to new employees?",
+        "expected_keywords": [
+          "$1,500",
+          "home office stipend",
+          "90 days"
+        ],
+        "expected_answer": "TechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment.",
+        "section": "Compensation and Benefits",
+        "subsection": "5.4 Additional Benefits",
+        "chunk_index": 15,
+        "chunk_text": "TechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment."
+      },
+      "user_question": "What is the home office stipend amount provided to new employees?",
+      "model_answer": "The home office stipend amount provided to new employees is $1,500 USD, to be used within the first 90 days of employment.\nSource: techcorp_company_policies.md (section 5.4 Additional Benefits)",
+      "model_query": "home office stipend amount provided to new employees",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          15
+        ],
+        "found_chunks": [
+          15
+        ],
+        "dense_found": [
+          15
+        ],
+        "sparse_found": [
+          15
+        ],
+        "grep_found": [
+          15
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.6961,
+        "correct_chunk_score_rerank": 0.82783,
+        "top1_score_dense": 0.6961,
+        "top1_score_rerank": 0.82783,
+        "pre_rerank_top5": [
+          15,
+          14,
+          6,
+          7,
+          10
+        ],
+        "post_rerank_top5": [
+          15,
+          14,
+          21,
+          6,
+          8
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_004",
+        "category": "named_entity",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          15
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.68968,
+        "correct_chunk_score_rerank": 0.74466,
+        "top1_score_dense": 0.68968,
+        "top1_score_rerank": 0.74466,
+        "pre_rerank_top5": [
+          15,
+          14,
+          7,
+          6,
+          10
+        ],
+        "post_rerank_top5": [
+          15,
+          14,
+          21,
+          6,
+          7
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          15
+        ],
+        "sparse_found": [
+          15
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q06",
+      "q": {
+        "q_id": "Q06",
+        "difficulty": "easy",
+        "category": "direct_fact",
+        "question": "How long is the vesting period for stock options at TechCorp?",
+        "expected_keywords": [
+          "four-year",
+          "vesting",
+          "one-year cliff",
+          "25%"
+        ],
+        "expected_answer": "Stock options vest over a four-year period, with a one-year cliff. This means 25% of options vest after the first year, and the remainder vest monthly over the following three years.",
+        "section": "Compensation and Benefits",
+        "subsection": "5.2 Equity",
+        "chunk_index": 13,
+        "chunk_text": "Options vest over a four-year period, with a one-year cliff. This means that 25% of your options vest after your first year, and the remainder vest monthly over the following three years."
+      },
+      "user_question": "How long is the vesting period for stock options at TechCorp?",
+      "model_answer": "The vesting period for stock options at TechCorp is four years, with a one-year cliff. This means that 25% of the options vest after the first year, and the remainder vest monthly over the following three years.\nSource: techcorp_company_policies.md (section 5.2 Equity), uploaded 2026-06-19",
+      "model_query": "vesting period for stock options at TechCorp",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          13
+        ],
+        "found_chunks": [
+          13
+        ],
+        "dense_found": [
+          13
+        ],
+        "sparse_found": [
+          13
+        ],
+        "grep_found": [
+          13
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.83752,
+        "correct_chunk_score_rerank": 0.86883,
+        "top1_score_dense": 0.83752,
+        "top1_score_rerank": 0.86883,
+        "pre_rerank_top5": [
+          13,
+          8,
+          22,
+          23,
+          7
+        ],
+        "post_rerank_top5": [
+          13,
+          22,
+          8,
+          10,
+          23
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_004",
+        "category": "direct_fact",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          13
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.85079,
+        "correct_chunk_score_rerank": 0.84997,
+        "top1_score_dense": 0.85079,
+        "top1_score_rerank": 0.84997,
+        "pre_rerank_top5": [
+          13,
+          8,
+          22,
+          23,
+          7
+        ],
+        "post_rerank_top5": [
+          13,
+          22,
+          10,
+          8,
+          15
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          13
+        ],
+        "sparse_found": [
+          13
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q07",
+      "q": {
+        "q_id": "Q07",
+        "difficulty": "easy",
+        "category": "direct_fact",
+        "question": "How many days of paid bereavement leave does TechCorp provide?",
+        "expected_keywords": [
+          "three days",
+          "bereavement leave",
+          "immediate family member"
+        ],
+        "expected_answer": "TechCorp provides three days of paid bereavement leave following the death of an immediate family member.",
+        "section": "Time Off and Leave",
+        "subsection": "4.4 Other Types of Leave",
+        "chunk_index": 11,
+        "chunk_text": "TechCorp provides three days of paid bereavement leave following the death of an immediate family member, defined as a spouse, partner, child, parent, or sibling."
+      },
+      "user_question": "How many days of paid bereavement leave does TechCorp provide?",
+      "model_answer": "TechCorp provides three days of paid bereavement leave following the death of an immediate family member. \nSource: techcorp_company_policies.md (section 4.4 Other Types of Leave)",
+      "model_query": "TechCorp paid bereavement leave days",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          11
+        ],
+        "found_chunks": [
+          11
+        ],
+        "dense_found": [
+          11
+        ],
+        "sparse_found": [
+          11
+        ],
+        "grep_found": [
+          11
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.90176,
+        "correct_chunk_score_rerank": 0.85488,
+        "top1_score_dense": 0.90176,
+        "top1_score_rerank": 0.85488,
+        "pre_rerank_top5": [
+          11,
+          8,
+          10,
+          22,
+          15
+        ],
+        "post_rerank_top5": [
+          11,
+          8,
+          10,
+          15,
+          22
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_004",
+        "category": "direct_fact",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          11
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.90897,
+        "correct_chunk_score_rerank": 0.83973,
+        "top1_score_dense": 0.90897,
+        "top1_score_rerank": 0.83973,
+        "pre_rerank_top5": [
+          11,
+          10,
+          15,
+          13,
+          22
+        ],
+        "post_rerank_top5": [
+          11,
+          8,
+          10,
+          22,
+          7
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          11
+        ],
+        "sparse_found": [
+          11
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q08",
+      "q": {
+        "q_id": "Q08",
+        "difficulty": "easy",
+        "category": "direct_fact",
+        "question": "What is the annual professional development budget per employee?",
+        "expected_keywords": [
+          "$2,000",
+          "professional development",
+          "per year"
+        ],
+        "expected_answer": "TechCorp offers a professional development budget of $2,000 USD per employee per year, which can be used for conferences, courses, books, certifications, or any other learning activity relevant to the role.",
+        "section": "Compensation and Benefits",
+        "subsection": "5.4 Additional Benefits",
+        "chunk_index": 15,
+        "chunk_text": "TechCorp also offers a professional development budget of $2,000 USD per employee per year."
+      },
+      "user_question": "What is the annual professional development budget per employee?",
+      "model_answer": "The annual professional development budget per employee is $2,000 USD. \nSource: techcorp_company_policies.md (section 5.4 Additional Benefits)",
+      "model_query": "annual professional development budget per employee",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          15
+        ],
+        "found_chunks": [
+          15
+        ],
+        "dense_found": [
+          15
+        ],
+        "sparse_found": [
+          15
+        ],
+        "grep_found": [
+          15
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.60369,
+        "correct_chunk_score_rerank": 0.68511,
+        "top1_score_dense": 0.60369,
+        "top1_score_rerank": 0.68511,
+        "pre_rerank_top5": [
+          15,
+          16,
+          1,
+          12,
+          7
+        ],
+        "post_rerank_top5": [
+          15,
+          16,
+          1,
+          12,
+          14
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_004",
+        "category": "direct_fact",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          15
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.59486,
+        "correct_chunk_score_rerank": 0.63974,
+        "top1_score_dense": 0.59486,
+        "top1_score_rerank": 0.63974,
+        "pre_rerank_top5": [
+          15,
+          16,
+          1,
+          12,
+          7
+        ],
+        "post_rerank_top5": [
+          15,
+          16,
+          14,
+          1,
+          12
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          15
+        ],
+        "sparse_found": [
+          15
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q09",
+      "q": {
+        "q_id": "Q09",
+        "difficulty": "easy",
+        "category": "dense_primary",
+        "question": "When can an employee begin taking parental leave after a child is born?",
+        "expected_keywords": [
+          "12 months",
+          "parental leave",
+          "birth"
+        ],
+        "expected_answer": "Parental leave can be taken at any point within the first 12 months following the birth, adoption, or foster placement of a child.",
+        "section": "Time Off and Leave",
+        "subsection": "4.3 Parental Leave",
+        "chunk_index": 10,
+        "chunk_text": "Leave can be taken at any point within the first 12 months following the birth, adoption, or foster placement of a child."
+      },
+      "user_question": "When can an employee begin taking parental leave after a child is born?",
+      "model_answer": "An employee can begin taking parental leave at any point within the first 12 months following the birth of a child. They must notify the People Operations team and their manager at least 8 weeks before their expected leave start date.\nSource: techcorp_company_policies.md (section 4.3 Parental Leave), uploaded 2026-06-19",
+      "model_query": "When can an employee begin taking parental leave after a child is born",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          10
+        ],
+        "found_chunks": [
+          10
+        ],
+        "dense_found": [
+          10
+        ],
+        "sparse_found": [
+          10
+        ],
+        "grep_found": [
+          10
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.7668,
+        "correct_chunk_score_rerank": 0.68763,
+        "top1_score_dense": 0.7668,
+        "top1_score_rerank": 0.68763,
+        "pre_rerank_top5": [
+          10,
+          11,
+          8,
+          9,
+          13
+        ],
+        "post_rerank_top5": [
+          10,
+          11,
+          8,
+          9,
+          6
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_004",
+        "category": "dense_primary",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          10
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.76822,
+        "correct_chunk_score_rerank": 0.65135,
+        "top1_score_dense": 0.76822,
+        "top1_score_rerank": 0.65135,
+        "pre_rerank_top5": [
+          10,
+          11,
+          8,
+          9,
+          13
+        ],
+        "post_rerank_top5": [
+          10,
+          11,
+          8,
+          9,
+          22
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          10
+        ],
+        "sparse_found": [
+          10
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q10",
+      "q": {
+        "q_id": "Q10",
+        "difficulty": "easy",
+        "category": "dense_primary",
+        "question": "What happens to unexercised stock options after an employee leaves TechCorp?",
+        "expected_keywords": [
+          "90 days",
+          "expire",
+          "vested options"
+        ],
+        "expected_answer": "After leaving TechCorp, employees have 90 days to exercise their vested options. After 90 days, unexercised options expire.",
+        "section": "Compensation and Benefits",
+        "subsection": "5.2 Equity",
+        "chunk_index": 13,
+        "chunk_text": "You will have 90 days following your last day of employment to exercise any vested options. After 90 days, unexercised options expire."
+      },
+      "user_question": "What happens to unexercised stock options after an employee leaves TechCorp?",
+      "model_answer": "After 90 days following the last day of employment, unexercised options expire.\nSource: techcorp_company_policies.md (section 5.2 Equity), uploaded 2026-06-19",
+      "model_query": "unexercised stock options after leaving TechCorp",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          13
+        ],
+        "found_chunks": [
+          13
+        ],
+        "dense_found": [
+          13
+        ],
+        "sparse_found": [
+          13
+        ],
+        "grep_found": [
+          13
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.76386,
+        "correct_chunk_score_rerank": 0.83762,
+        "top1_score_dense": 0.76386,
+        "top1_score_rerank": 0.83762,
+        "pre_rerank_top5": [
+          13,
+          22,
+          23,
+          8,
+          6
+        ],
+        "post_rerank_top5": [
+          13,
+          23,
+          22,
+          2,
+          19
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_004",
+        "category": "dense_primary",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          13
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.80534,
+        "correct_chunk_score_rerank": 0.83004,
+        "top1_score_dense": 0.80534,
+        "top1_score_rerank": 0.83004,
+        "pre_rerank_top5": [
+          13,
+          8,
+          23,
+          11,
+          15
+        ],
+        "post_rerank_top5": [
+          13,
+          23,
+          22,
+          2,
+          8
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          13
+        ],
+        "sparse_found": [
+          13
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q11",
+      "q": {
+        "q_id": "Q11",
+        "difficulty": "medium",
+        "category": "paraphrase",
+        "question": "How long do employees have to use the new hire workspace setup allowance?",
+        "expected_keywords": [
+          "90 days",
+          "$1,500",
+          "home office stipend"
+        ],
+        "expected_answer": "The home office stipend of $1,500 USD must be used within the first 90 days of employment.",
+        "section": "Compensation and Benefits",
+        "subsection": "5.4 Additional Benefits",
+        "chunk_index": 15,
+        "chunk_text": "TechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment."
+      },
+      "user_question": "How long do employees have to use the new hire workspace setup allowance?",
+      "model_answer": "The new hire workspace setup allowance must be used within the first 90 days of employment.\nSource: techcorp_company_policies.md (section 5.4 Additional Benefits), uploaded 2026-06-19",
+      "model_query": "new hire workspace setup allowance time limit",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          15
+        ],
+        "found_chunks": [
+          15
+        ],
+        "dense_found": [
+          15
+        ],
+        "sparse_found": [
+          15
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.61869,
+        "correct_chunk_score_rerank": 0.12592,
+        "top1_score_dense": 0.61869,
+        "top1_score_rerank": 0.12592,
+        "pre_rerank_top5": [
+          15,
+          13,
+          5,
+          8,
+          6
+        ],
+        "post_rerank_top5": [
+          15,
+          6,
+          8,
+          5,
+          13
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_005",
+        "category": "paraphrase",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          15
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.66004,
+        "correct_chunk_score_rerank": 0.33026,
+        "top1_score_dense": 0.66004,
+        "top1_score_rerank": 0.33026,
+        "pre_rerank_top5": [
+          15,
+          6,
+          7,
+          13,
+          1
+        ],
+        "post_rerank_top5": [
+          15,
+          6,
+          8,
+          13,
+          9
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          15
+        ],
+        "sparse_found": [
+          15
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q12",
+      "q": {
+        "q_id": "Q12",
+        "difficulty": "medium",
+        "category": "paraphrase",
+        "question": "What is the minimum recommended amount of time off employees should take each year?",
+        "expected_keywords": [
+          "20 days",
+          "per year",
+          "encouraged"
+        ],
+        "expected_answer": "Employees are encouraged to take at least 20 days off per year.",
+        "section": "Time Off and Leave",
+        "subsection": "4.1 Paid Time Off",
+        "chunk_index": 8,
+        "chunk_text": "Employees are encouraged to take at least 20 days off per year. Taking time off is not optional — rest is considered essential to sustainable performance."
+      },
+      "user_question": "What is the minimum recommended amount of time off employees should take each year?",
+      "model_answer": "The minimum recommended amount of time off employees should take each year is at least 20 days. \nSource: techcorp_company_policies.md (section 4.1 Paid Time Off)",
+      "model_query": "minimum recommended amount of time off employees should take each year",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          8
+        ],
+        "found_chunks": [
+          8
+        ],
+        "dense_found": [
+          8
+        ],
+        "sparse_found": [
+          8
+        ],
+        "grep_found": [
+          8
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.71887,
+        "correct_chunk_score_rerank": 0.59314,
+        "top1_score_dense": 0.71887,
+        "top1_score_rerank": 0.59314,
+        "pre_rerank_top5": [
+          8,
+          13,
+          1,
+          14,
+          5
+        ],
+        "post_rerank_top5": [
+          8,
+          7,
+          5,
+          9,
+          11
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_005",
+        "category": "paraphrase",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          8
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.72922,
+        "correct_chunk_score_rerank": 0.60206,
+        "top1_score_dense": 0.72922,
+        "top1_score_rerank": 0.60206,
+        "pre_rerank_top5": [
+          8,
+          13,
+          1,
+          14,
+          5
+        ],
+        "post_rerank_top5": [
+          8,
+          5,
+          9,
+          7,
+          11
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          8
+        ],
+        "sparse_found": [
+          8
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q13",
+      "q": {
+        "q_id": "Q13",
+        "difficulty": "medium",
+        "category": "paraphrase",
+        "question": "How long after leaving the company can employees act on their vested equity?",
+        "expected_keywords": [
+          "90 days",
+          "vested options",
+          "expire"
+        ],
+        "expected_answer": "Employees have 90 days following their last day of employment to exercise any vested options. After 90 days, unexercised options expire.",
+        "section": "Compensation and Benefits",
+        "subsection": "5.2 Equity",
+        "chunk_index": 13,
+        "chunk_text": "You will have 90 days following your last day of employment to exercise any vested options. After 90 days, unexercised options expire."
+      },
+      "user_question": "How long after leaving the company can employees act on their vested equity?",
+      "model_answer": "Employees have 90 days following their last day of employment to exercise any vested options. After 90 days, unexercised options expire.\nSource: techcorp_company_policies.md (section 5.2 Equity), uploaded 2026-06-19",
+      "model_query": "vested equity post-employment",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          13
+        ],
+        "found_chunks": [
+          13
+        ],
+        "dense_found": [
+          13
+        ],
+        "sparse_found": [
+          13
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 2,
+        "rank_after_rerank": 1,
+        "rerank_improved": true,
+        "correct_chunk_score_dense": 0.70211,
+        "correct_chunk_score_rerank": 0.43111,
+        "top1_score_dense": 0.55951,
+        "top1_score_rerank": 0.43111,
+        "pre_rerank_top5": [
+          23,
+          13,
+          11,
+          15,
+          7
+        ],
+        "post_rerank_top5": [
+          13,
+          23,
+          15,
+          3,
+          22
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_005",
+        "category": "paraphrase",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          13
+        ],
+        "rank_before_rerank": 2,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.76893,
+        "correct_chunk_score_rerank": 0.51379,
+        "top1_score_dense": 0.6264,
+        "top1_score_rerank": 0.51379,
+        "pre_rerank_top5": [
+          23,
+          13,
+          11,
+          8,
+          2
+        ],
+        "post_rerank_top5": [
+          13,
+          23,
+          22,
+          11,
+          8
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          13
+        ],
+        "sparse_found": [
+          13
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q14",
+      "q": {
+        "q_id": "Q14",
+        "difficulty": "medium",
+        "category": "paraphrase",
+        "question": "What connectivity requirement must remote employees meet to work from home?",
+        "expected_keywords": [
+          "reliable internet connection",
+          "video calls",
+          "large file transfers"
+        ],
+        "expected_answer": "Remote employees must have a reliable internet connection capable of supporting video calls and large file transfers.",
+        "section": "Work Hours and Remote Work",
+        "subsection": "3.2 Remote Work Policy",
+        "chunk_index": 6,
+        "chunk_text": "You must have a reliable internet connection capable of supporting video calls and large file transfers."
+      },
+      "user_question": "What connectivity requirement must remote employees meet to work from home?",
+      "model_answer": "Remote employees must have a reliable internet connection capable of supporting video calls and large file transfers to work from home. \n\nSource: techcorp_company_policies.md (section 3.2 Remote Work Policy)",
+      "model_query": "remote employees connectivity requirement work from home",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          6
+        ],
+        "found_chunks": [
+          6
+        ],
+        "dense_found": [
+          6
+        ],
+        "sparse_found": [
+          6
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.75782,
+        "correct_chunk_score_rerank": 0.77865,
+        "top1_score_dense": 0.75782,
+        "top1_score_rerank": 0.77865,
+        "pre_rerank_top5": [
+          6,
+          15,
+          5,
+          7,
+          18
+        ],
+        "post_rerank_top5": [
+          6,
+          5,
+          15,
+          21,
+          18
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_005",
+        "category": "paraphrase",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          6
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.73909,
+        "correct_chunk_score_rerank": 0.70579,
+        "top1_score_dense": 0.73909,
+        "top1_score_rerank": 0.70579,
+        "pre_rerank_top5": [
+          6,
+          5,
+          15,
+          18,
+          21
+        ],
+        "post_rerank_top5": [
+          6,
+          5,
+          15,
+          18,
+          7
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          6
+        ],
+        "sparse_found": [
+          6
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q15",
+      "q": {
+        "q_id": "Q15",
+        "difficulty": "medium",
+        "category": "paraphrase",
+        "question": "What must employees do before spending from their learning and growth budget?",
+        "expected_keywords": [
+          "manager",
+          "approval",
+          "professional development budget"
+        ],
+        "expected_answer": "Employees must obtain approval from their manager before spending from the professional development budget.",
+        "section": "Compensation and Benefits",
+        "subsection": "5.4 Additional Benefits",
+        "chunk_index": 15,
+        "chunk_text": "Approval from your manager is required before spending from this budget."
+      },
+      "user_question": "What must employees do before spending from their learning and growth budget?",
+      "model_answer": "Approval from the manager is required before spending from the professional development budget. \nSource: techcorp_company_policies.md (section 5.4 Additional Benefits), uploaded 2026-06-19",
+      "model_query": "learning and growth budget employee spending requirements",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          15
+        ],
+        "found_chunks": [
+          15
+        ],
+        "dense_found": [
+          15
+        ],
+        "sparse_found": [
+          15
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.60608,
+        "correct_chunk_score_rerank": 0.32939,
+        "top1_score_dense": 0.60608,
+        "top1_score_rerank": 0.32939,
+        "pre_rerank_top5": [
+          15,
+          7,
+          16,
+          21,
+          23
+        ],
+        "post_rerank_top5": [
+          15,
+          21,
+          16,
+          0,
+          8
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_005",
+        "category": "paraphrase",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          15
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.61246,
+        "correct_chunk_score_rerank": 0.35309,
+        "top1_score_dense": 0.61246,
+        "top1_score_rerank": 0.35309,
+        "pre_rerank_top5": [
+          15,
+          8,
+          16,
+          6,
+          2
+        ],
+        "post_rerank_top5": [
+          15,
+          18,
+          21,
+          8,
+          2
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          15
+        ],
+        "sparse_found": [
+          15
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q16",
+      "q": {
+        "q_id": "Q16",
+        "difficulty": "medium",
+        "category": "distractor",
+        "question": "What is the minimum expense amount that requires a receipt for reimbursement?",
+        "expected_keywords": [
+          "$25",
+          "receipts",
+          "expenses"
+        ],
+        "expected_answer": "Receipts are required for all expenses above $25.",
+        "section": "Expenses and Reimbursement",
+        "chunk_index": 21,
+        "chunk_text": "Receipts are required for all expenses above $25. Expenses submitted without receipts will not be reimbursed."
+      },
+      "user_question": "What is the minimum expense amount that requires a receipt for reimbursement?",
+      "model_answer": "The minimum expense amount that requires a receipt for reimbursement is $25. \nSource: techcorp_company_policies.md (section 8. Expenses and Reimbursement), uploaded 2026-06-19",
+      "model_query": "minimum expense amount that requires a receipt for reimbursement",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          21
+        ],
+        "found_chunks": [
+          21
+        ],
+        "dense_found": [
+          21
+        ],
+        "sparse_found": [
+          21
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.78253,
+        "correct_chunk_score_rerank": 0.68511,
+        "top1_score_dense": 0.78253,
+        "top1_score_rerank": 0.68511,
+        "pre_rerank_top5": [
+          21,
+          15,
+          9,
+          14,
+          23
+        ],
+        "post_rerank_top5": [
+          21,
+          15,
+          14,
+          23,
+          8
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_005",
+        "category": "distractor",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          21
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.78411,
+        "correct_chunk_score_rerank": 0.5794,
+        "top1_score_dense": 0.78411,
+        "top1_score_rerank": 0.5794,
+        "pre_rerank_top5": [
+          21,
+          15,
+          14,
+          9,
+          23
+        ],
+        "post_rerank_top5": [
+          21,
+          15,
+          14,
+          23,
+          8
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          21
+        ],
+        "sparse_found": [
+          21
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q17",
+      "q": {
+        "q_id": "Q17",
+        "difficulty": "medium",
+        "category": "distractor",
+        "question": "Which teams may have different in-office expectations compared to most employees?",
+        "expected_keywords": [
+          "Sales",
+          "Customer Success",
+          "Executive Leadership",
+          "in-office"
+        ],
+        "expected_answer": "Certain roles — primarily those in Sales, Customer Success, and Executive Leadership — may have different in-office expectations defined in their employment contracts.",
+        "section": "Work Hours and Remote Work",
+        "subsection": "3.3 In-Office Expectations",
+        "chunk_index": 7,
+        "chunk_text": "Certain roles — primarily those in Sales, Customer Success, and Executive Leadership — may have different in-office expectations defined in their employment contracts."
+      },
+      "user_question": "Which teams may have different in-office expectations compared to most employees?",
+      "model_answer": "The teams that may have different in-office expectations compared to most employees are Sales, Customer Success, and Executive Leadership. \n\nSource: techcorp_company_policies.md (section 3.3 In-Office Expectations)",
+      "model_query": "teams with different in-office expectations",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          7
+        ],
+        "found_chunks": [
+          7
+        ],
+        "dense_found": [
+          7
+        ],
+        "sparse_found": [
+          7
+        ],
+        "grep_found": [
+          7
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.59804,
+        "correct_chunk_score_rerank": 0.65135,
+        "top1_score_dense": 0.59804,
+        "top1_score_rerank": 0.65135,
+        "pre_rerank_top5": [
+          7,
+          1,
+          2,
+          5,
+          17
+        ],
+        "post_rerank_top5": [
+          7,
+          2,
+          1,
+          5,
+          17
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_005",
+        "category": "distractor",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          7
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.59794,
+        "correct_chunk_score_rerank": 0.69347,
+        "top1_score_dense": 0.59794,
+        "top1_score_rerank": 0.69347,
+        "pre_rerank_top5": [
+          7,
+          1,
+          2,
+          5,
+          16
+        ],
+        "post_rerank_top5": [
+          7,
+          2,
+          5,
+          1,
+          17
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          7
+        ],
+        "sparse_found": [
+          7
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q18",
+      "q": {
+        "q_id": "Q18",
+        "difficulty": "medium",
+        "category": "distractor",
+        "question": "What is the health benefit provided to TechCorp employees based outside the United States?",
+        "expected_keywords": [
+          "$300",
+          "monthly",
+          "health stipend",
+          "outside the United States"
+        ],
+        "expected_answer": "Employees outside the United States receive a monthly health stipend of $300 USD to be used toward private health insurance or other health-related expenses.",
+        "section": "Compensation and Benefits",
+        "subsection": "5.3 Health Benefits",
+        "chunk_index": 14,
+        "chunk_text": "For employees outside the United States, TechCorp provides a monthly health stipend of $300 USD to be used toward private health insurance or other health-related expenses."
+      },
+      "user_question": "What is the health benefit provided to TechCorp employees based outside the United States?",
+      "model_answer": "For employees outside the United States, TechCorp provides a monthly health stipend of $300 USD to be used toward private health insurance or other health-related expenses. This stipend is paid monthly and is taxable income in most jurisdictions.\nSource: techcorp_company_policies.md (section 5.3 Health Benefits), uploaded 2026-06-19",
+      "model_query": "health benefit provided to TechCorp employees based outside the United States",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          14
+        ],
+        "found_chunks": [
+          14
+        ],
+        "dense_found": [
+          14
+        ],
+        "sparse_found": [
+          14
+        ],
+        "grep_found": [
+          14
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.83806,
+        "correct_chunk_score_rerank": 0.86793,
+        "top1_score_dense": 0.83806,
+        "top1_score_rerank": 0.86793,
+        "pre_rerank_top5": [
+          14,
+          1,
+          15,
+          6,
+          7
+        ],
+        "post_rerank_top5": [
+          14,
+          15,
+          6,
+          1,
+          7
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_005",
+        "category": "distractor",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          14
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.83797,
+        "correct_chunk_score_rerank": 0.85294,
+        "top1_score_dense": 0.83797,
+        "top1_score_rerank": 0.85294,
+        "pre_rerank_top5": [
+          14,
+          1,
+          15,
+          6,
+          5
+        ],
+        "post_rerank_top5": [
+          14,
+          15,
+          1,
+          6,
+          7
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          14
+        ],
+        "sparse_found": [
+          14
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q19",
+      "q": {
+        "q_id": "Q19",
+        "difficulty": "medium",
+        "category": "distractor",
+        "question": "How frequently must managers and employees meet one-on-one at a minimum?",
+        "expected_keywords": [
+          "twice per month",
+          "one-on-one",
+          "manager"
+        ],
+        "expected_answer": "Employees and managers are expected to meet one-on-one at least twice per month.",
+        "section": "Performance and Growth",
+        "subsection": "6.1 Performance Reviews",
+        "chunk_index": 16,
+        "chunk_text": "Employees and managers are expected to meet one-on-one at least twice per month."
+      },
+      "user_question": "How frequently must managers and employees meet one-on-one at a minimum?",
+      "model_answer": "Employees and managers are expected to meet one-on-one at least twice per month. \nSource: techcorp_company_policies.md (section 6.1 Performance Reviews), uploaded 2026-06-19",
+      "model_query": "minimum frequency of one-on-one meetings between managers and employees",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          16
+        ],
+        "found_chunks": [
+          16
+        ],
+        "dense_found": [
+          16
+        ],
+        "sparse_found": [
+          16
+        ],
+        "grep_found": [],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.53629,
+        "correct_chunk_score_rerank": 0.60346,
+        "top1_score_dense": 0.53629,
+        "top1_score_rerank": 0.60346,
+        "pre_rerank_top5": [
+          16,
+          5,
+          8,
+          17,
+          6
+        ],
+        "post_rerank_top5": [
+          16,
+          7,
+          5,
+          8,
+          6
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_005",
+        "category": "distractor",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          16
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.54945,
+        "correct_chunk_score_rerank": 0.57129,
+        "top1_score_dense": 0.54945,
+        "top1_score_rerank": 0.57129,
+        "pre_rerank_top5": [
+          16,
+          5,
+          6,
+          8,
+          17
+        ],
+        "post_rerank_top5": [
+          16,
+          7,
+          5,
+          6,
+          8
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          16
+        ],
+        "sparse_found": [
+          16
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    },
+    {
+      "q_id": "Q20",
+      "q": {
+        "q_id": "Q20",
+        "difficulty": "medium",
+        "category": "distractor",
+        "question": "When do salary adjustments from the annual review take effect?",
+        "expected_keywords": [
+          "February 1st",
+          "salary adjustments",
+          "annual review"
+        ],
+        "expected_answer": "Salary adjustments resulting from the annual review take effect on February 1st of each year.",
+        "section": "Compensation and Benefits",
+        "subsection": "5.1 Salary",
+        "chunk_index": 12,
+        "chunk_text": "Salary adjustments resulting from reviews take effect on February 1st of each year."
+      },
+      "user_question": "When do salary adjustments from the annual review take effect?",
+      "model_answer": "Salary adjustments from the annual review take effect on February 1st of each year.\nSource: techcorp_company_policies.md (section 5.1 Salary), uploaded 2026-06-19",
+      "model_query": "salary adjustments from the annual review take effect",
+      "rag_not_called": false,
+      "model_query_retrieval": {
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          12
+        ],
+        "found_chunks": [
+          12
+        ],
+        "dense_found": [
+          12
+        ],
+        "sparse_found": [
+          12
+        ],
+        "grep_found": [
+          12
+        ],
+        "chunk_recall": 1.0,
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "rerank_improved": false,
+        "correct_chunk_score_dense": 0.68518,
+        "correct_chunk_score_rerank": 0.78266,
+        "top1_score_dense": 0.68518,
+        "top1_score_rerank": 0.78266,
+        "pre_rerank_top5": [
+          12,
+          16,
+          8,
+          21,
+          11
+        ],
+        "post_rerank_top5": [
+          12,
+          16,
+          23,
+          8,
+          15
+        ]
+      },
+      "baseline_retrieval": {
+        "source_run": "run_005",
+        "category": "distractor",
+        "correct_chunk_found": true,
+        "expected_chunks": [
+          12
+        ],
+        "rank_before_rerank": 1,
+        "rank_after_rerank": 1,
+        "correct_chunk_score_dense": 0.69542,
+        "correct_chunk_score_rerank": 0.69181,
+        "top1_score_dense": 0.69542,
+        "top1_score_rerank": 0.69181,
+        "pre_rerank_top5": [
+          12,
+          16,
+          8,
+          21,
+          1
+        ],
+        "post_rerank_top5": [
+          12,
+          16,
+          22,
+          13,
+          8
+        ],
+        "chunk_recall": 1.0,
+        "dense_found": [
+          12
+        ],
+        "sparse_found": [
+          12
+        ]
+      },
+      "rank_delta_before": 0,
+      "rank_delta_after": 0,
+      "verdict": "same"
+    }
+  ],
+  "summary": {
+    "model": "llama-3.3-70b-versatile",
+    "total": 20,
+    "rag_called": 20,
+    "rag_not_called": 0,
+    "recall_at_5": 1.0,
+    "mrr_pre_rerank": 0.975,
+    "mrr_post_rerank": 1.0,
+    "verdict_counts": {
+      "improved": 0,
+      "same": 20,
+      "worse": 0,
+      "regression": 0,
+      "recovered": 0,
+      "both_missed": 0,
+      "rag_not_called": 0
+    }
+  }
+}
