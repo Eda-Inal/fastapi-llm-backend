@@ -45,3 +45,73 @@ LLM-as-judge metrics. Faith = Faithfulness, Correct = Answer Correctness, Recall
 | Q28 | medium | negation | 1.00 | 0.60 | 1.00 | 1.00 | ❌ |
 | Q31 | hard | adversarial_paraphrase | 0.50 | 0.72 | 0.50 | 1.00 | ❌ |
 | Q33 | hard | absent_plausible | — | — | — | — | ⏭️ — |
+
+## run_015 — 2026-06-23 15:13 | chat: llama-3.3-70b-versatile | judge: openai/gpt-oss-120b
+**Avg: Faith=1.0 | Correct=0.1862 | Recall=1.0 | Precision=1.0**
+
+| Q | Diff | Category | Faith | Correct | Recall | Precision | Status |
+|---|---|---|---|---|---|---|---|
+| Q11 | medium | paraphrase | 1.00 | 0.19 | 1.00 | 1.00 | ❌ |
+
+## run_016 — 2026-06-23 15:24 | chat: llama-3.3-70b-versatile | judge: openai/gpt-oss-120b
+**Avg: Faith=1.0 | Correct=0.5497 | Recall=1.0 | Precision=1.0**
+
+| Q | Diff | Category | Faith | Correct | Recall | Precision | Status |
+|---|---|---|---|---|---|---|---|
+| Q11 | medium | paraphrase | 1.00 | 0.55 | 1.00 | 1.00 | ❌ |
+
+## run_017 — 2026-06-23 15:26 | chat: llama-3.3-70b-versatile | judge: openai/gpt-oss-120b
+**Avg: Faith=1.0 | Correct=0.7245 | Recall=1.0 | Precision=1.0**
+
+| Q | Diff | Category | Faith | Correct | Recall | Precision | Status |
+|---|---|---|---|---|---|---|---|
+| Q28 | medium | negation | 1.00 | 0.72 | 1.00 | 1.00 | ✅ |
+
+## run_018 — 2026-06-23 15:29 | chat: llama-3.3-70b-versatile | judge: openai/gpt-oss-120b
+**Avg: Faith=0.75 | Correct=0.8423 | Recall=1.0 | Precision=1.0**
+
+| Q | Diff | Category | Faith | Correct | Recall | Precision | Status |
+|---|---|---|---|---|---|---|---|
+| Q25 | medium | inference | 0.75 | 0.84 | 1.00 | 1.00 | ❌ |
+
+## run_019 — 2026-06-23 15:30 | chat: llama-3.3-70b-versatile | judge: openai/gpt-oss-120b
+**Avg: Faith=0.5 | Correct=None | Recall=0.5 | Precision=1.0**
+
+| Q | Diff | Category | Faith | Correct | Recall | Precision | Status |
+|---|---|---|---|---|---|---|---|
+| Q31 | hard | adversarial_paraphrase | 0.50 | — | 0.50 | 1.00 | ❌ |
+
+## run_020 — 2026-06-23 15:32 | chat: llama-3.3-70b-versatile | judge: openai/gpt-oss-120b
+**Avg: Faith=None | Correct=None | Recall=None | Precision=None**
+
+| Q | Diff | Category | Faith | Correct | Recall | Precision | Status |
+|---|---|---|---|---|---|---|---|
+| Q31 | hard | adversarial_paraphrase | — | — | — | — | ❌ |
+
+## run_021 — 2026-06-23 15:36 | chat: llama-3.3-70b-versatile | judge: openai/gpt-oss-120b
+**Avg: Faith=None | Correct=None | Recall=None | Precision=None**
+
+| Q | Diff | Category | Faith | Correct | Recall | Precision | Status |
+|---|---|---|---|---|---|---|---|
+| Q31 | hard | adversarial_paraphrase | — | — | — | — | ❌ |
+
+## run_022 — 2026-06-23 15:42 | chat: llama-3.3-70b-versatile | judge: gpt-oss-120b
+**Avg: Faith=1.0 | Correct=0.8302 | Recall=0.5 | Precision=1.0**
+
+| Q | Diff | Category | Faith | Correct | Recall | Precision | Status |
+|---|---|---|---|---|---|---|---|
+| Q31 | hard | adversarial_paraphrase | 1.00 | 0.83 | 0.50 | 1.00 | ✅ |
+
+## run_023 — 2026-06-23 15:48 | chat: llama-3.3-70b-versatile | judge: gpt-oss-120b
+**Avg: Faith=None | Correct=0.6501 | Recall=0.5 | Precision=1.0**
+
+| Q | Diff | Category | Faith | Correct | Recall | Precision | Status |
+|---|---|---|---|---|---|---|---|
+| Q31 | hard | adversarial_paraphrase | — | 0.65 | 0.50 | 1.00 | ❌ |
+
+## run_025 — 2026-06-23 16:02 | chat: llama-3.3-70b-versatile | judge: gpt-oss-120b
+**Avg: Faith=0.5 | Correct=0.1935 | Recall=1.0 | Precision=1.0**
+
+| Q | Diff | Category | Faith | Correct | Recall | Precision | Status |
+|---|---|---|---|---|---|---|---|
+| Q16 | medium | distractor | 0.50 | 0.19 | 1.00 | 1.00 | ❌ |

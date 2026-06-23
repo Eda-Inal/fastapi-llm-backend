@@ -36,8 +36,20 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ── Config ───────────────────────────────────────────────────────────────────
-JUDGE_MODEL = "openai/gpt-oss-120b"
-GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+JUDGE_PROVIDERS = {
+    "groq": {
+        "base_url": "https://api.groq.com/openai/v1",
+        "env_key": "GROQ_API_KEY",
+        "judge_model": "openai/gpt-oss-120b",
+    },
+    "sambanova": {
+        "base_url": "https://api.sambanova.ai/v1",
+        "env_key": "SAMBANOVA_API_KEY",
+        "judge_model": "gpt-oss-120b",
+    },
+}
+DEFAULT_JUDGE_PROVIDER = "groq"
+JUDGE_MODEL = JUDGE_PROVIDERS[DEFAULT_JUDGE_PROVIDER]["judge_model"]
 CHAT_MODEL = "llama-3.3-70b-versatile"
 CHAT_URL = "http://localhost:8000/api/v1/chat/stream"
 DB_CONTAINER = "groq_stream_db"
@@ -300,7 +312,7 @@ def collect_data(questions: list[dict], run_id: str) -> list[dict]:
 
 # ── RAGAS evaluation ─────────────────────────────────────────────────────────
 
-def run_ragas_eval(collected: list[dict]) -> dict[str, dict]:
+def run_ragas_eval(collected: list[dict], judge_provider: str = DEFAULT_JUDGE_PROVIDER) -> dict[str, dict]:
     from openai import AsyncOpenAI
     from ragas import evaluate, EvaluationDataset, SingleTurnSample
     from ragas.llms import llm_factory
@@ -312,13 +324,15 @@ def run_ragas_eval(collected: list[dict]) -> dict[str, dict]:
         ContextPrecision,
     )
 
-    groq_key = os.environ.get("GROQ_API_KEY")
-    if not groq_key:
-        print("ERROR: GROQ_API_KEY not set")
+    provider_cfg = JUDGE_PROVIDERS[judge_provider]
+    api_key = os.environ.get(provider_cfg["env_key"])
+    if not api_key:
+        print(f"ERROR: {provider_cfg['env_key']} not set")
         sys.exit(1)
 
-    groq_client = AsyncOpenAI(api_key=groq_key, base_url=GROQ_BASE_URL)
-    judge_llm = llm_factory(JUDGE_MODEL, provider="openai", client=groq_client)
+    judge_model = provider_cfg["judge_model"]
+    judge_client = AsyncOpenAI(api_key=api_key, base_url=provider_cfg["base_url"])
+    judge_llm = llm_factory(judge_model, provider="openai", client=judge_client)
 
     emb_base = os.environ.get("EMBEDDING_BASE_URL")
     emb_key = os.environ.get("EMBEDDING_API_KEY")
@@ -535,7 +549,15 @@ def main() -> None:
         "--evaluate-only", default=None, metavar="DATASET_JSON",
         help="Skip data collection; evaluate an existing dataset.json",
     )
+    parser.add_argument(
+        "--judge", default=DEFAULT_JUDGE_PROVIDER,
+        choices=JUDGE_PROVIDERS.keys(),
+        help=f"Judge LLM provider (default: {DEFAULT_JUDGE_PROVIDER})",
+    )
     args = parser.parse_args()
+
+    global JUDGE_MODEL
+    JUDGE_MODEL = JUDGE_PROVIDERS[args.judge]["judge_model"]
 
     run_id = next_run_id()
     run_dir = RESULTS_DIR / run_id
@@ -554,6 +576,9 @@ def main() -> None:
             print(f"ERROR: dataset not found: {args.evaluate_only}")
             sys.exit(1)
         collected = json.loads(src.read_text(encoding="utf-8"))
+        if args.range:
+            allowed = {q["q_id"] for q in load_questions(args.range)}
+            collected = [c for c in collected if c["q_id"] in allowed]
         print(f"Loaded {len(collected)} items from {src}")
         dataset_file.write_text(
             json.dumps(collected, indent=2, ensure_ascii=False), encoding="utf-8"
@@ -574,7 +599,7 @@ def main() -> None:
         print(f"\nDataset saved: {dataset_file}")
 
     # ── Phase 2: Evaluate with RAGAS ─────────────────────────────────────
-    scores_by_qid = run_ragas_eval(collected)
+    scores_by_qid = run_ragas_eval(collected, judge_provider=args.judge)
 
     # ── Phase 3: Merge scores + save results ─────────────────────────────
     final_results: list[dict] = []

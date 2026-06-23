@@ -1,0 +1,40 @@
+{
+  "run_id": "run_017",
+  "timestamp": "2026-06-23T15:26:41.435914",
+  "chat_model": "llama-3.3-70b-versatile",
+  "judge_model": "openai/gpt-oss-120b",
+  "results": [
+    {
+      "q_id": "Q28",
+      "category": "negation",
+      "difficulty": "medium",
+      "ragas_skipped": false,
+      "skip_reason": null,
+      "rag_called": true,
+      "scores": {
+        "faithfulness": 1.0,
+        "answer_correctness": 0.7245,
+        "context_recall": 1.0,
+        "context_precision": 1.0
+      }
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "ragas_evaluated": 1,
+    "ragas_skipped": 0,
+    "avg_faithfulness": 1.0,
+    "avg_answer_correctness": 0.7245,
+    "avg_context_recall": 1.0,
+    "avg_context_precision": 1.0,
+    "absent_plausible_total": 0,
+    "absent_plausible_passed": 0,
+    "by_category": {
+      "negation": {
+        "count": 1,
+        "avg_faithfulness": 1.0,
+        "avg_answer_correctness": 0.7245
+      }
+    }
+  }
+}

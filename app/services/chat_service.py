@@ -92,10 +92,10 @@ FINALIZATION_SYSTEM_MESSAGE = {
     "content": (
         "Tool results are available above. Read every tool message carefully before answering. "
         "If rag_search returned passages: base your answer exclusively on those passages. "
+        "Preserve exact figures, dates, names, and terminology from the retrieved text. "
         "Do not use your training knowledge to override or supplement the retrieved content. "
-        "If the retrieved passages do not cover the specific framing of the user's question "
-        "(for example, the question asks about captivity but the document only describes wild behavior), "
-        "state explicitly what the document does and does not cover. "
+        "If the passages answer the question, give a direct answer without disclaimers about what the document doesn't cover. "
+        "Only state that information is missing when the retrieved passages genuinely do not address the question. "
         "Do not extrapolate or infer information that is not explicitly stated in the retrieved text. "
         "If web_search returned results: summarise the relevant information. "
         "If rag_search returned nothing: respond with "
