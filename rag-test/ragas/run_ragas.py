@@ -224,6 +224,10 @@ def parse_contexts(raw: str) -> list[str]:
     return contexts
 
 
+def strip_source_line(answer: str) -> str:
+    return re.sub(r"\n*\s*Source:\s*[^\n]+$", "", answer, flags=re.IGNORECASE).strip()
+
+
 def detect_not_in_document(answer: str) -> bool:
     lower = answer.lower()
     return any(phrase in lower for phrase in NOT_FOUND_PHRASES)
@@ -366,7 +370,7 @@ def run_ragas_eval(collected: list[dict], judge_provider: str = DEFAULT_JUDGE_PR
 
         sample = SingleTurnSample(
             user_input=item["question"],
-            response=item["answer"],
+            response=strip_source_line(item["answer"]),
             retrieved_contexts=item["contexts"],
             reference=item["ground_truth"],
         )

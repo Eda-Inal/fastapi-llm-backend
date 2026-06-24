@@ -1,0 +1,18 @@
+{
+  "q_id": "Q28",
+  "question": "What information will the IT team never ask an employee to provide?",
+  "model_answer": "This information was not found in your documents.",
+  "ground_truth": "The IT team will never ask for an employee's password. Employees must not share their credentials with anyone, including members of the IT team.",
+  "contexts": [
+    "[rag_search unavailable: Retrieval unavailable: embedding error.]"
+  ],
+  "rag_query": "IT team never ask employee to provide information",
+  "scores": {
+    "faithfulness": 1.0,
+    "answer_correctness": 0.1247,
+    "context_recall": 0.0,
+    "context_precision": 0.0
+  },
+  "ragas_skipped": false,
+  "skip_reason": null
+}

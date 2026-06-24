@@ -1,0 +1,11 @@
+{
+  "q_id": "Q34",
+  "question": "Does TechCorp offer an annual performance bonus or any other variable pay, and if so, how is the amount determined?",
+  "model_answer": "",
+  "ground_truth": "The TechCorp handbook does not describe any performance bonus or variable compensation. Section 5 covers salary, equity options, health benefits, and additional stipends, but no bonus structure is mentioned anywhere in the document.",
+  "contexts": [],
+  "rag_query": null,
+  "scores": null,
+  "ragas_skipped": true,
+  "skip_reason": "absent_plausible/trap"
+}

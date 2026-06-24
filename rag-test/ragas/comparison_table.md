@@ -2,6 +2,7 @@
 
 LLM-as-judge metrics. Faith = Faithfulness, Correct = Answer Correctness, Recall = Context Recall, Precision = Context Precision.
 
+
 ## run_009 — 2026-06-23 13:27 | chat: meta-llama/llama-4-scout-17b-16e-instruct | judge: meta-llama/llama-4-scout-17b-16e-instruct
 **Avg: Faith=1.0 | Correct=None | Recall=1.0 | Precision=1.0**
 
@@ -115,3 +116,23 @@ LLM-as-judge metrics. Faith = Faithfulness, Correct = Answer Correctness, Recall
 | Q | Diff | Category | Faith | Correct | Recall | Precision | Status |
 |---|---|---|---|---|---|---|---|
 | Q16 | medium | distractor | 0.50 | 0.19 | 1.00 | 1.00 | ❌ |
+
+## run_026 — 2026-06-24 08:31 | chat: llama-3.3-70b-versatile | judge: openai/gpt-oss-120b
+**Avg: Faith=1.0 | Correct=0.5365 | Recall=0.5833 | Precision=0.5972**
+
+| Q | Diff | Category | Faith | Correct | Recall | Precision | Status |
+|---|---|---|---|---|---|---|---|
+| Q27 | medium | negation | 1.00 | 0.98 | 1.00 | 1.00 | ✅ |
+| Q28 | medium | negation | 1.00 | 0.12 | 0.00 | 0.00 | ❌ |
+| Q29 | medium | ambiguous | 1.00 | 0.43 | 1.00 | 1.00 | ❌ |
+| Q30 | medium | ambiguous | 1.00 | 0.67 | 1.00 | 0.58 | ✅ |
+| Q31 | hard | adversarial_paraphrase | 1.00 | 0.83 | 0.50 | 1.00 | ✅ |
+| Q32 | hard | adversarial_paraphrase | 1.00 | 0.19 | 0.00 | 0.00 | ❌ |
+| Q33 | hard | absent_plausible | — | — | — | — | ⏭️ — |
+| Q34 | hard | absent_plausible | — | — | — | — | ⏭️ — |
+
+**Notes:**
+- Q28: Embedding API returned error during rag_search ("Retrieval unavailable: embedding error."). Transient infrastructure failure — model had no context and defaulted to "not found". Needs re-run.
+- Q32: Retrieval failure caused by adversarial vocabulary. Question asked about $500 expense pre-approval (Section 8) but terms like "spending level", "clearance", "outlay" pulled Section 5.4 (professional development budget) instead. Model answered the wrong question.
+- Q29: Model returned correct figure ($2,000) but omitted usage details (conferences, courses, etc.).
+- Q30: Retrieval ranked Performance Reviews chunk above the correct Salary chunk (precision=0.58).

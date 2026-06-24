@@ -1,0 +1,146 @@
+[
+  {
+    "q_id": "Q27",
+    "question": "In what situation is an employee not required to submit a doctor's note for sick leave?",
+    "answer": "An employee is not required to submit a doctor's note for sick leave when they are absent for fewer than five consecutive days. \nSource: techcorp_company_policies.md (section 4.2 Sick Leave)",
+    "contexts": [
+      "[Belge: techcorp_company_policies.md] ### 4.2 Sick Leave\n\nEmployees do not need to use PTO when they are ill. Sick days are separate and unlimited. You are not required to provide a doctor's note for absences of fewer than five consecutive days. For extended illnesses lasting more than five consecutive days, please notify People Operations so that appropriate support and documentation can be arranged.\n\nMental health days are treated the same as physical sick days. You do not need to explain or justify taking a mental health day to your manager. Simply notify them that you are unwell and will not be working that day.",
+      "[Belge: techcorp_company_policies.md] ## 4. Time Off and Leave\n\n### 4.1 Paid Time Off\n\nTechCorp offers unlimited paid time off (PTO) for all full-time employees. There is no fixed number of vacation days. Employees are encouraged to take at least 20 days off per year. Taking time off is not optional — rest is considered essential to sustainable performance.\n\nTo request time off, submit a request through the HR portal at least five business days in advance for absences of three days or fewer. For absences longer than three days, submit your request at least two weeks in advance. Your manager must approve all time off requests. Approval will generally not be denied unless the timing creates a significant business impact, such as a major product launch or a critical customer deadline.\n\nDuring busy periods, your manager may ask you to adjust your time off dates. This will be communicated as early as possible and with consideration for any non-refundable travel bookings you may have made.",
+      "[Belge: techcorp_company_policies.md] ### 4.4 Other Types of Leave\n\nTechCorp provides three days of paid bereavement leave following the death of an immediate family member, defined as a spouse, partner, child, parent, or sibling. Additional bereavement leave beyond three days may be granted at the discretion of your manager and People Operations.\n\nEmployees called for jury duty will receive their full salary for the duration of their service. Employees serving in the military are entitled to leave in accordance with applicable laws in their country of employment.",
+      "[Belge: techcorp_company_policies.md] ### 4.3 Parental Leave\n\nTechCorp provides 16 weeks of fully paid parental leave for all new parents, regardless of gender. This applies to biological parents, adoptive parents, and foster parents. Leave can be taken at any point within the first 12 months following the birth, adoption, or foster placement of a child.\n\nTo initiate parental leave, notify the People Operations team and your manager at least 8 weeks before your expected leave start date. We will work with you to create a coverage plan that minimizes disruption to your team and ensures a smooth transition when you return.",
+      "[Belge: techcorp_company_policies.md] ## 8. Expenses and Reimbursement\n\nAll business expenses must be submitted through the expense management system within 30 days of the expense being incurred. Receipts are required for all expenses above $25. Expenses submitted without receipts will not be reimbursed.\n\nApproved expense categories include travel for business purposes, client entertainment, software subscriptions required for your role, and office supplies for remote workers. Alcohol may be included as part of a client entertainment expense, but may not exceed 20% of the total bill.\n\nExpenses above $500 require pre-approval from your manager before they are incurred. Expense reports are reviewed by the Finance team and reimbursed within 10 business days of approval."
+    ],
+    "ground_truth": "Employees are not required to provide a doctor's note for absences of fewer than five consecutive days.",
+    "rag_query": "situation when employee not required to submit doctor's note for sick leave",
+    "rag_called": true,
+    "category": "negation",
+    "difficulty": "medium",
+    "ragas_skipped": false,
+    "skip_reason": null,
+    "not_in_document_said": null
+  },
+  {
+    "q_id": "Q28",
+    "question": "What information will the IT team never ask an employee to provide?",
+    "answer": "This information was not found in your documents.",
+    "contexts": [
+      "[rag_search unavailable: Retrieval unavailable: embedding error.]"
+    ],
+    "ground_truth": "The IT team will never ask for an employee's password. Employees must not share their credentials with anyone, including members of the IT team.",
+    "rag_query": "IT team never ask employee to provide information",
+    "rag_called": true,
+    "category": "negation",
+    "difficulty": "medium",
+    "ragas_skipped": false,
+    "skip_reason": null,
+    "not_in_document_said": null
+  },
+  {
+    "q_id": "Q29",
+    "question": "How much money does TechCorp allocate per employee annually for career-related growth?",
+    "answer": "TechCorp allocates $2,000 USD per employee per year for career-related growth. \nSource: techcorp_company_policies.md (section 5.4 Additional Benefits)",
+    "contexts": [
+      "[Belge: techcorp_company_policies.md] ### 5.4 Additional Benefits\n\nTechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment. This is intended to help you set up a productive workspace. Receipts must be submitted through the expense system for reimbursement.\n\nEmployees receive a monthly internet and phone stipend of $75 USD to offset the cost of home internet and mobile data used for work. This stipend is paid automatically each month and does not require receipts.\n\nTechCorp also offers a professional development budget of $2,000 USD per employee per year. This can be used for conferences, courses, books, certifications, or any other learning activity relevant to your role. Approval from your manager is required before spending from this budget.",
+      "[Belge: techcorp_company_policies.md] ## 5. Compensation and Benefits\n\n### 5.1 Salary\n\nTechCorp conducts salary reviews annually, in January. Reviews take into account individual performance, market data, and company financial performance. Salary adjustments resulting from reviews take effect on February 1st of each year.\n\nEmployees may also receive salary increases outside of the annual cycle in connection with a promotion or a significant change in responsibilities. All salary information is confidential. Discussing your salary with colleagues is not prohibited, but we ask that you use discretion and recognize that comparisons without full context can be misleading.",
+      "[Belge: techcorp_company_policies.md] ## 6. Performance and Growth\n\n### 6.1 Performance Reviews\n\nTechCorp conducts formal performance reviews twice per year — in June and in December. Reviews are conducted through a combination of self-assessment, peer feedback, and a structured conversation with your manager.\n\nThe review process is designed to help you understand where you are performing well, where there is room to grow, and what support the company can provide. Reviews are not primarily about justifying salary decisions — they are a tool for development and alignment.\n\nIn addition to the formal reviews, employees and managers are expected to meet one-on-one at least twice per month. These meetings should focus on near-term work, blockers, feedback, and career development. The frequency and format of these meetings can be adjusted by mutual agreement.",
+      "[Belge: techcorp_company_policies.md] ## 1. Introduction\n\nTechCorp is a software company founded in 2015, headquartered in San Francisco, California, with additional offices in London, Berlin, and Singapore. We build cloud-based developer tools used by over 50,000 companies worldwide. Our mission is to make software development faster, more reliable, and more collaborative for engineering teams of all sizes.\n\nThis handbook applies to all full-time employees, part-time employees, and contractors working with TechCorp. It outlines our expectations, benefits, and the principles that guide how we work together. Every employee is expected to read this handbook in full during their first week and refer to it whenever questions arise about company policies.\n\nIf you have questions about any policy in this document, contact the People Operations team at people@techcorp.com. Policies are reviewed annually and updated as the company evolves. The most recent version of this handbook is always available on the internal company portal.",
+      "[Belge: techcorp_company_policies.md] ### 3.3 In-Office Expectations\n\nTechCorp maintains offices in San Francisco, London, Berlin, and Singapore. Employees are welcome to use any office at any time. There is no requirement to come into the office for most roles. However, certain roles — primarily those in Sales, Customer Success, and Executive Leadership — may have different in-office expectations defined in their employment contracts.\n\nAll employees are expected to attend company offsites twice per year. These are in-person events typically lasting three to four days, held in rotating locations. Travel and accommodation costs are fully covered by TechCorp."
+    ],
+    "ground_truth": "TechCorp provides a professional development budget of $2,000 USD per employee per year, which can be used for conferences, courses, books, certifications, or other relevant learning activities.",
+    "rag_query": "TechCorp career-related growth allocation per employee annually",
+    "rag_called": true,
+    "category": "ambiguous",
+    "difficulty": "medium",
+    "ragas_skipped": false,
+    "skip_reason": null,
+    "not_in_document_said": null
+  },
+  {
+    "q_id": "Q30",
+    "question": "How often does TechCorp conduct its compensation-related review cycle?",
+    "answer": "TechCorp conducts its compensation-related review cycle annually, in January. Reviews take into account individual performance, market data, and company financial performance. Salary adjustments resulting from reviews take effect on February 1st of each year.\nSource: techcorp_company_policies.md (section 5.1 Salary)",
+    "contexts": [
+      "[Belge: techcorp_company_policies.md] ## 6. Performance and Growth\n\n### 6.1 Performance Reviews\n\nTechCorp conducts formal performance reviews twice per year — in June and in December. Reviews are conducted through a combination of self-assessment, peer feedback, and a structured conversation with your manager.\n\nThe review process is designed to help you understand where you are performing well, where there is room to grow, and what support the company can provide. Reviews are not primarily about justifying salary decisions — they are a tool for development and alignment.\n\nIn addition to the formal reviews, employees and managers are expected to meet one-on-one at least twice per month. These meetings should focus on near-term work, blockers, feedback, and career development. The frequency and format of these meetings can be adjusted by mutual agreement.",
+      "[Belge: techcorp_company_policies.md] ## 5. Compensation and Benefits\n\n### 5.1 Salary\n\nTechCorp conducts salary reviews annually, in January. Reviews take into account individual performance, market data, and company financial performance. Salary adjustments resulting from reviews take effect on February 1st of each year.\n\nEmployees may also receive salary increases outside of the annual cycle in connection with a promotion or a significant change in responsibilities. All salary information is confidential. Discussing your salary with colleagues is not prohibited, but we ask that you use discretion and recognize that comparisons without full context can be misleading.",
+      "[Belge: techcorp_company_policies.md] ## 1. Introduction\n\nTechCorp is a software company founded in 2015, headquartered in San Francisco, California, with additional offices in London, Berlin, and Singapore. We build cloud-based developer tools used by over 50,000 companies worldwide. Our mission is to make software development faster, more reliable, and more collaborative for engineering teams of all sizes.\n\nThis handbook applies to all full-time employees, part-time employees, and contractors working with TechCorp. It outlines our expectations, benefits, and the principles that guide how we work together. Every employee is expected to read this handbook in full during their first week and refer to it whenever questions arise about company policies.\n\nIf you have questions about any policy in this document, contact the People Operations team at people@techcorp.com. Policies are reviewed annually and updated as the company evolves. The most recent version of this handbook is always available on the internal company portal.",
+      "[Belge: techcorp_company_policies.md] ### 5.4 Additional Benefits\n\nTechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment. This is intended to help you set up a productive workspace. Receipts must be submitted through the expense system for reimbursement.\n\nEmployees receive a monthly internet and phone stipend of $75 USD to offset the cost of home internet and mobile data used for work. This stipend is paid automatically each month and does not require receipts.\n\nTechCorp also offers a professional development budget of $2,000 USD per employee per year. This can be used for conferences, courses, books, certifications, or any other learning activity relevant to your role. Approval from your manager is required before spending from this budget.",
+      "[Belge: techcorp_company_policies.md] ### 5.3 Health Benefits\n\nTechCorp covers 100% of the premium for health, dental, and vision insurance for all full-time employees in the United States. Dependents can be added to your plan at a cost of 50% of the dependent premium, which is deducted from your paycheck.\n\nFor employees outside the United States, TechCorp provides a monthly health stipend of $300 USD to be used toward private health insurance or other health-related expenses. This stipend is paid monthly and is taxable income in most jurisdictions."
+    ],
+    "ground_truth": "TechCorp conducts salary reviews annually, in January. Salary adjustments take effect on February 1st of each year.",
+    "rag_query": "TechCorp compensation-related review cycle frequency",
+    "rag_called": true,
+    "category": "ambiguous",
+    "difficulty": "medium",
+    "ragas_skipped": false,
+    "skip_reason": null,
+    "not_in_document_said": null
+  },
+  {
+    "q_id": "Q31",
+    "question": "Is there any official guarantee against punishment for staff members who raise concerns about workplace wrongdoing?",
+    "answer": "Retaliation against anyone who reports harassment in good faith is strictly prohibited and is itself a violation of this policy.\nSource: techcorp_company_policies.md (section 2.3 Anti-Harassment Policy), uploaded 2026-06-19",
+    "contexts": [
+      "[Belge: techcorp_company_policies.md] ### 2.3 Anti-Harassment Policy\n\nTechCorp has zero tolerance for harassment of any kind. Harassment includes unwelcome conduct based on race, gender, sexual orientation, religion, national origin, disability, age, or any other protected characteristic. It includes verbal abuse, offensive jokes, unwanted physical contact, threats, and the display of offensive materials.\n\nIf you experience or witness harassment, report it immediately to your manager, any member of the People Operations team, or through our anonymous reporting tool available on the internal portal. All reports are investigated promptly and confidentially. Retaliation against anyone who reports harassment in good faith is strictly prohibited and is itself a violation of this policy.",
+      "[Belge: techcorp_company_policies.md] ## 2. Code of Conduct\n\n### 2.1 Core Principles\n\nTechCorp expects all employees to act with integrity, respect, and professionalism in every interaction — whether with colleagues, customers, or partners. We hold ourselves to a high standard not because we are told to, but because we genuinely believe that trust is the foundation of good work.\n\nThe following behaviors are expected of every TechCorp employee:\n\nTreat every colleague with respect regardless of their role, seniority, background, or location. We operate as a distributed team across many time zones and cultures, and that diversity makes us stronger. Be honest in your communications. If you make a mistake, own it, fix it, and learn from it. Dishonesty — including misrepresenting your work, hiding errors, or providing false information to management or customers — is grounds for immediate termination. Protect confidential information. You will have access to sensitive data including customer information, financial records, and proprietary source code. Do not share this information outside the company without explicit written approval.",
+      "[Belge: techcorp_company_policies.md] # TechCorp Company Policies and Employee Handbook\n\n**Version 3.2 | Last Updated: January 2025**",
+      "[Belge: techcorp_company_policies.md] ## 7. Security and Data Privacy\n\n### 7.1 Device and Account Security\n\nAll employees must use a TechCorp-issued laptop for work that involves accessing internal systems, customer data, or source code. Personal devices may be used for email and calendar access only.\n\nYou must enable full-disk encryption on your laptop. You must use a strong, unique password for your TechCorp account and enable two-factor authentication (2FA). Do not share your credentials with anyone, including members of the IT team. The IT team will never ask for your password.\n\nIf your device is lost or stolen, report it to the IT Security team immediately at security@techcorp.com. The team will remotely wipe the device to protect company and customer data.",
+      "[Belge: techcorp_company_policies.md] ### 9.2 Offboarding\n\nOn your last day, you will participate in an offboarding session with People Operations. During this session, you will return all company equipment, your system access will be revoked, and you will receive information about your final paycheck and any vested equity.\n\nYou are required to return all company property in good condition. The cost of repairing or replacing damaged or unreturned equipment may be deducted from your final paycheck where permitted by law.\n\nAfter leaving TechCorp, you remain bound by your confidentiality obligations. You may not use or disclose any confidential information you accessed during your employment.\n\n*For questions about any policy in this document, contact People Operations at people@techcorp.com.*\n\n*TechCorp Employee Handbook v3.2 — All rights reserved.*"
+    ],
+    "ground_truth": "Yes. Retaliation against anyone who reports harassment in good faith is strictly prohibited and is itself a violation of TechCorp's policy.",
+    "rag_query": "official guarantee against punishment for staff members who raise concerns about workplace wrongdoing",
+    "rag_called": true,
+    "category": "adversarial_paraphrase",
+    "difficulty": "hard",
+    "ragas_skipped": false,
+    "skip_reason": null,
+    "not_in_document_said": null
+  },
+  {
+    "q_id": "Q32",
+    "question": "Above what spending level must an employee obtain clearance from their direct superior before committing to the outlay?",
+    "answer": "Approval from your manager is required before spending from the professional development budget of $2,000 USD per employee per year.\nSource: techcorp_company_policies.md (section 5.4 Additional Benefits), uploaded 2026-06-19",
+    "contexts": [
+      "[Belge: techcorp_company_policies.md] ### 5.4 Additional Benefits\n\nTechCorp provides a home office stipend of $1,500 USD to all new employees, to be used within the first 90 days of employment. This is intended to help you set up a productive workspace. Receipts must be submitted through the expense system for reimbursement.\n\nEmployees receive a monthly internet and phone stipend of $75 USD to offset the cost of home internet and mobile data used for work. This stipend is paid automatically each month and does not require receipts.\n\nTechCorp also offers a professional development budget of $2,000 USD per employee per year. This can be used for conferences, courses, books, certifications, or any other learning activity relevant to your role. Approval from your manager is required before spending from this budget.",
+      "[Belge: techcorp_company_policies.md] ### 6.2 Career Levels and Promotions\n\nTechCorp uses a defined career ladder for each function. Levels are numbered from IC1 (entry level) to IC6 (distinguished individual contributor), with a parallel management track from M1 to M5. Level descriptions, expectations, and example behaviors for each level are published on the internal wiki.\n\nPromotions are not automatic. They are based on demonstrated performance at the next level over a sustained period — typically six months or more. To be considered for promotion, your manager must nominate you, and the nomination must be approved by a cross-functional calibration committee that meets quarterly.\n\nIf you believe you are performing above your current level and have not been nominated for promotion, speak with your manager directly. You are encouraged to advocate for yourself and to ask for clear, specific feedback about what is expected before a promotion can be considered.",
+      "[Belge: techcorp_company_policies.md] ### 5.3 Health Benefits\n\nTechCorp covers 100% of the premium for health, dental, and vision insurance for all full-time employees in the United States. Dependents can be added to your plan at a cost of 50% of the dependent premium, which is deducted from your paycheck.\n\nFor employees outside the United States, TechCorp provides a monthly health stipend of $300 USD to be used toward private health insurance or other health-related expenses. This stipend is paid monthly and is taxable income in most jurisdictions.",
+      "[Belge: techcorp_company_policies.md] ### 5.2 Equity\n\nAll full-time employees receive equity in TechCorp in the form of stock options. The number of options granted depends on your role and level at the time of hire. Options vest over a four-year period, with a one-year cliff. This means that 25% of your options vest after your first year, and the remainder vest monthly over the following three years.\n\nIf you leave TechCorp before your options have fully vested, you forfeit the unvested portion. You will have 90 days following your last day of employment to exercise any vested options. After 90 days, unexercised options expire.",
+      "[Belge: techcorp_company_policies.md] ## 4. Time Off and Leave\n\n### 4.1 Paid Time Off\n\nTechCorp offers unlimited paid time off (PTO) for all full-time employees. There is no fixed number of vacation days. Employees are encouraged to take at least 20 days off per year. Taking time off is not optional — rest is considered essential to sustainable performance.\n\nTo request time off, submit a request through the HR portal at least five business days in advance for absences of three days or fewer. For absences longer than three days, submit your request at least two weeks in advance. Your manager must approve all time off requests. Approval will generally not be denied unless the timing creates a significant business impact, such as a major product launch or a critical customer deadline.\n\nDuring busy periods, your manager may ask you to adjust your time off dates. This will be communicated as early as possible and with consideration for any non-refundable travel bookings you may have made."
+    ],
+    "ground_truth": "Expenses above $500 require pre-approval from the employee's manager before they are incurred.",
+    "rag_query": "employee spending level clearance from direct superior",
+    "rag_called": true,
+    "category": "adversarial_paraphrase",
+    "difficulty": "hard",
+    "ragas_skipped": false,
+    "skip_reason": null,
+    "not_in_document_said": null
+  },
+  {
+    "q_id": "Q33",
+    "question": "What notice period or severance pay does TechCorp provide when it decides to let an employee go?",
+    "answer": "",
+    "contexts": [],
+    "ground_truth": "The TechCorp handbook does not address company-initiated termination, severance pay, or any employer-side notice period. Section 9 covers only voluntary resignation and the offboarding process for employee-initiated departures.",
+    "rag_query": null,
+    "rag_called": false,
+    "category": "absent_plausible",
+    "difficulty": "hard",
+    "ragas_skipped": true,
+    "skip_reason": "absent_plausible/trap",
+    "not_in_document_said": null
+  },
+  {
+    "q_id": "Q34",
+    "question": "Does TechCorp offer an annual performance bonus or any other variable pay, and if so, how is the amount determined?",
+    "answer": "",
+    "contexts": [],
+    "ground_truth": "The TechCorp handbook does not describe any performance bonus or variable compensation. Section 5 covers salary, equity options, health benefits, and additional stipends, but no bonus structure is mentioned anywhere in the document.",
+    "rag_query": null,
+    "rag_called": false,
+    "category": "absent_plausible",
+    "difficulty": "hard",
+    "ragas_skipped": true,
+    "skip_reason": "absent_plausible/trap",
+    "not_in_document_said": null
+  }
+]
