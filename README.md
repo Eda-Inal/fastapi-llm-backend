@@ -179,7 +179,7 @@ ChatService.stream_chat()
   |         │                                                                            │
   |         │  Inject tool results into message history                                  │
   |         │  Re-inject last RAG result as a system message (prevents model skipping it)│
-  |         │  Apply context budget (trim RAG payload → evict old history → truncate)    │
+  |         │  Apply context budget (evict old history → trim RAG payload → truncate)    │
   |         │                                                                            │
   |         │  LLM call 3 — FINALIZATION (no tools, user temperature)                   │
   |         │    Model synthesizes a final answer from tool results.                    │

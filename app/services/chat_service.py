@@ -168,22 +168,9 @@ class ChatService:
                 tail_start = i
                 break
 
-        # 1) Trim rag_search tool payload first, keeping top chunks.
-        for m in trimmed:
-            if not isinstance(m, dict):
-                continue
-            if m.get("role") != "tool" or m.get("name") != "rag_search":
-                continue
-            content = m.get("content")
-            if not isinstance(content, str):
-                continue
-            blocks = [b.strip() for b in content.split("\n---\n") if b.strip()]
-            if not blocks:
-                continue
-            kept = truncate_rag_chunks(blocks, rag_tool_budget)
-            m["content"] = "\n---\n".join(kept)
-
-        # 2) Remove oldest **history** messages (before current turn).
+        # 1) Remove oldest history messages (before current turn) first.
+        # History turns from several messages ago are less relevant than even
+        # the lowest-ranked RAG chunks, which were retrieved for the current question.
         def _over_budget() -> bool:
             return estimate_messages_tokens(trimmed) > max_input_tokens
 
@@ -193,8 +180,35 @@ class ChatService:
             if isinstance(m, dict) and not self._is_protected(m, tail_start, idx):
                 trimmed.pop(idx)
                 tail_start -= 1
+                # Remove the immediately following assistant message together
+                # with its user message so we never leave a half-turn.
+                if m.get("role") == "user":
+                    nxt = trimmed[idx] if idx < len(trimmed) else None
+                    if (
+                        isinstance(nxt, dict)
+                        and nxt.get("role") == "assistant"
+                        and not self._is_protected(nxt, tail_start, idx)
+                    ):
+                        trimmed.pop(idx)
+                        tail_start -= 1
                 continue
             idx += 1
+
+        # 2) Trim rag_search tool payload if still over budget, keeping top chunks.
+        if _over_budget():
+            for m in trimmed:
+                if not isinstance(m, dict):
+                    continue
+                if m.get("role") != "tool" or m.get("name") != "rag_search":
+                    continue
+                content = m.get("content")
+                if not isinstance(content, str):
+                    continue
+                blocks = [b.strip() for b in content.split("\n---\n") if b.strip()]
+                if not blocks:
+                    continue
+                kept = truncate_rag_chunks(blocks, rag_tool_budget)
+                m["content"] = "\n---\n".join(kept)
 
         # 3) Last resort: trim longest tool content (even in current turn).
         if _over_budget():
@@ -583,6 +597,20 @@ class ChatService:
                 rate_limit_retry_after: int | None = None
                 detected_tool: str | None = None
                 detected_args: dict | None = None
+
+                # ── Pre-routing context budget ─────────────────────────────────
+                # Tool schemas are passed separately and not counted by
+                # estimate_messages_tokens, so measure them explicitly.
+                _routing_context_window = AVAILABLE_MODELS.get(active_model, {}).get(
+                    "context_window", settings.max_context_tokens
+                )
+                _tool_schema_tokens = count_tokens(json.dumps(tools_schema)) if tools_schema else 0
+                _routing_max_input = max(500, _routing_context_window - 256 - _tool_schema_tokens)
+                effective_messages = self._apply_context_budget(
+                    effective_messages,
+                    max_input_tokens=_routing_max_input,
+                    rag_tool_budget=settings.rag_tool_max_context_tokens,
+                )
 
                 # ── LLM call 1: tool routing pass ──────────────────────────────
                 async for event in self._traced_llm_call(
@@ -999,8 +1027,11 @@ class ChatService:
                     if settings.rag_system_prompt_enabled:
                         effective_messages.append(FINALIZATION_SYSTEM_MESSAGE)
 
+                    context_window = AVAILABLE_MODELS.get(active_model, {}).get(
+                        "context_window", settings.max_context_tokens
+                    )
                     reserve = max(0, max_tokens or settings.response_reserve_tokens)
-                    max_input_tokens = max(500, settings.max_context_tokens - reserve)
+                    max_input_tokens = max(500, context_window - reserve)
                     effective_messages = self._apply_context_budget(
                         effective_messages,
                         max_input_tokens=max_input_tokens,
