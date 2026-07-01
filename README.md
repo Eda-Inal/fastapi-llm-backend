@@ -23,6 +23,8 @@ The project was built step by step to understand how streaming, async database a
 - **Async-first design** — all I/O is non-blocking; no thread pools, no sync ORM calls
 - **Alembic migrations** — schema versioned and reproducible
 
+> **Scope note:** This is an educational/portfolio project. Authentication, per-user rate limiting, and CORS restrictions are intentionally omitted. Do not deploy as-is to a public endpoint.
+
 ---
 
 ## Architecture
