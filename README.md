@@ -1,4 +1,4 @@
-# groq-stream-fastapi
+# fastapi-llm-backend
 
 A learning-focused FastAPI project that demonstrates how to build a production-grade streaming LLM backend with tool use, a private RAG knowledge base, multi-provider model support, and full observability.
 
